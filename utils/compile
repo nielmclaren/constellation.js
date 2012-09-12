@@ -1,0 +1,19 @@
+#!/bin/sh
+
+cd ..
+java \
+	-jar utils/closure/compiler.jar \
+	--compilation_level ADVANCED_OPTIMIZATIONS \
+	--js src/utils.js \
+	--js src/graph.js \
+	--js src/graph.loader.js \
+	--js src/graph.parser.js \
+	--js src/graph.view.js \
+	--js src/layout.js \
+	--js src/renderer.js \
+	--js src/constellation.js \
+	--js_output_file build/constellation.min.js \
+	--externs utils/externs/jquery-1.4.3.externs.js \
+	--externs utils/externs/jquery.ui.externs.js \
+	--externs utils/externs/jquery.mousewheel.externs.js \
+	--externs utils/externs/jquery.svg.externs.js

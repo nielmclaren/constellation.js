@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+        <title>Gephi Example</title>
+        
+        <link type="text/css" href="../../libs/ui-lightness/jquery-ui-1.8.17.custom.css" rel="stylesheet" />    
+        <script type="text/javascript" src="../../libs/jquery-1.6.2.min.js"></script>
+        <script type="text/javascript" src="../../libs/jquery-ui-1.8.17.custom.min.js"></script>
+        <script type="text/javascript" src="../../libs/jquery.mousewheel.js"></script>
+        <script type="text/javascript" src="../../libs/jquery.svg.js"></script>
+        
+        <script type="text/javascript" src="../../build/constellation.min.js"></script>
+        
+        <script type="text/javascript">
+            var constellation;
+            var config = {
+                id: 'container',
+                graphLoaderClass: SimpleGraphLoader,
+                graphLoader: {
+                    url: 'data.graphml'
+                },
+                graphParserClass: GraphMlParser,
+                graphViewClass: DirectGraphView,
+                layoutClass: StaticLayout
+            };
+            var styles = [
+                ['node', {
+                    rendererClass: GephiNodeRenderer
+                }],
+                ['edge', {
+                    rendererClass: RoamerEdgeRenderer
+                }]
+            ];
+                        
+            $(document).ready(function() {
+                constellation = new Constellation(config, styles);
+                constellation.init();
+            });
+        </script>
+        
+        <style type="text/css">@import "../../libs/jquery.svg.css";</style>
+        <style type="text/css">
+            #container {
+                border: 1px solid black;
+                height: 600px;
+                width: 800px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div id="container"></div>
+    </body>
+</html>
+
