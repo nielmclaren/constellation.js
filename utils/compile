@@ -4,6 +4,7 @@ cd ..
 java \
 	-jar utils/closure/compiler.jar \
 	--compilation_level ADVANCED_OPTIMIZATIONS \
+	--js src/license.js \
 	--js src/utils.js \
 	--js src/graph.js \
 	--js src/graph.loader.js \
