@@ -206,13 +206,13 @@ TreeGraphView.prototype.constructor = TreeGraphView;
 
 TreeGraphView.prototype.setConstellation = function(constellation){
     if (this['constellation']) {
-        jQuery(this['constellation']).unbind('nodeSelected');
+        jQuery(this['constellation']).unbind('nodeselect');
     }
     
     GraphView.prototype.setConstellation.call(this, constellation);
     
     if (this['constellation']) {
-        jQuery(this['constellation']).bind('nodeSelected', {context: this}, function(event){
+        jQuery(this['constellation']).bind('nodeselect', {context: this}, function(event){
             event.data.context.selectedNodeHandler();
         });
     }

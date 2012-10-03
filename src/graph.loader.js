@@ -103,7 +103,7 @@ TreeGraphLoader.prototype.setConstellation = function(constellation) {
     GraphLoader.prototype.setConstellation.call(this, constellation);
     
     // When the selected node changes, load more of the graph.
-    jQuery(this['constellation']).bind('nodeSelected', function(event, node) {
+    jQuery(this['constellation']).bind('nodeselected', function(event, node) {
         // FIXME: Implement TreeGraphLoader.
     });
 };
