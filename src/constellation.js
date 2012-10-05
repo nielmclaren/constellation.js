@@ -414,13 +414,13 @@ Constellation.prototype.setSelectedNodeId = function(v){
     
     if (this.selectedEdgeId) {
         this.selectedEdgeId = null;
-        jQuery(this).trigger('edgeSelected');
+        jQuery(this).trigger('edgeselect');
     }
     
     if (this.selectedNodeId == v) 
         return;
     this.selectedNodeId = v;
-    jQuery(this).trigger('nodeSelected');
+    jQuery(this).trigger('nodeselect');
 };
 Constellation.prototype['setSelectedNodeId'] = Constellation.prototype.setSelectedNodeId;
 
@@ -432,13 +432,13 @@ Constellation.prototype['getSelectedEdgeId'] = Constellation.prototype.getSelect
 Constellation.prototype.setSelectedEdgeId = function(v){
     if (this.selectedNodeId) {
         this.selectedNodeId = null;
-        jQuery(this).trigger('nodeSelected');
+        jQuery(this).trigger('nodeselect');
     }
     
     if (this.selectedEdgeId == v) 
         return;
     this.selectedEdgeId = v;
-    jQuery(this).trigger('edgeSelected');
+    jQuery(this).trigger('edgeselect');
 };
 Constellation.prototype['setSelectedEdgeId'] = Constellation.prototype.setSelectedEdgeId;
 
