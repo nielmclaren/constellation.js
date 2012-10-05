@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
-        <title>Gephi Example</title>
+        <title>Constellation</title>
         
         <link type="text/css" href="../../libs/ui-lightness/jquery-ui-1.8.17.custom.css" rel="stylesheet" />    
         <script type="text/javascript" src="../../libs/jquery-1.6.2.min.js"></script>
@@ -13,6 +13,13 @@
         <script type="text/javascript" src="../../build/constellation.min.js"></script>
         
         <script type="text/javascript">
+
+            function output(str) {
+                var output = $('#output');
+                output.val(output.val() + str + "\n");
+                output.scrollTop(output[0].scrollHeight - output.height());
+            }
+
             var constellation;
             var config = {
                 id: 'container',
@@ -21,12 +28,12 @@
                     url: 'data.graphml'
                 },
                 graphParserClass: GraphMlParser,
-                graphViewClass: DirectGraphView,
-                layoutClass: StaticLayout
+                graphViewClass: TreeGraphView,
+                layoutClass: RoamerLayout
             };
             var styles = [
                 ['node', {
-                    rendererClass: GephiNodeRenderer
+                    rendererClass: DefaultNodeRenderer
                 }],
                 ['edge', {
                     rendererClass: DefaultEdgeRenderer
@@ -34,23 +41,44 @@
             ];
                         
             $(document).ready(function() {
+                output('ready');
+
                 constellation = new Constellation(config, styles);
                 constellation.init();
+                
+                $(constellation)
+                    .bind('nodeclick', function(event, nodeId) {
+                        this.setSelectedNodeId(nodeId);
+                    });
+
+                constellation.setSelectedNodeId('1');
             });
         </script>
         
         <style type="text/css">@import "../../libs/jquery.svg.css";</style>
         <style type="text/css">
+            html, body {
+                overflow: hidden;
+                margin: 0;
+                padding: 0;
+                height: 100%;
+                width: 100%;
+            }
             #container {
                 border: 1px solid black;
-                height: 600px;
-                width: 800px;
+                height: 70%;
+                width: 100%;
+            }
+            #output {
+                height: 30%;
+                width: 100%;
             }
         </style>
     </head>
 
     <body>
         <div id="container"></div>
+        <textarea id="output"></textarea>
     </body>
 </html>
 

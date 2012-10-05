@@ -18,7 +18,7 @@ CustomGraphLoader.prototype.constructor = CustomGraphLoader;
 CustomGraphLoader.prototype.setConstellation = function(constellation) {
     GraphLoader.prototype.setConstellation.call(this, constellation);
 
-    jQuery(this.constellation).bind('nodeSelected', {
+    jQuery(this.constellation).bind('nodeselect', {
         context : this
     }, function(event) {
         var context = event.data.context;
@@ -153,6 +153,12 @@ CustomNodeRenderer.prototype.create = function(){
             if ((new Date()).getTime() - event.data.context.mouseDownTime < 300) {
                 event.data.context.constellation.nodeclickHandler(event, event.data.context);
             }
+        })
+        .bind('touchstart', {'context':this}, function(event) {
+            event.data.context.constellation.nodetouchstartHandler(event, event.data.context);
+        })
+        .bind('touchend', {'context':this}, function(event) {
+            event.data.context.constellation.nodetouchendHandler(event, event.data.context);
         });
 };
 
@@ -195,7 +201,8 @@ CustomNodeRenderer.prototype.draw = function() {
 
 CustomNodeRenderer.prototype.position = function() {
     jQuery(this.renderer.group)
-        .attr('transform', 'translate(' + this['x'] + ',' + this['y'] + ')');
+        .attr('transform', 'translate(' + this['x'] + ',' + this['y'] + ')' + 
+            'rotate(' + (-this['constellation'].rotation * 180/Math.PI) + ')');
 };
 
 CustomNodeRenderer.prototype.destroy = function() {

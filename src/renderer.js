@@ -397,6 +397,12 @@ GephiNodeRenderer.prototype.create = function(){
         })
         .bind('click', {'context':this}, function(event) {
             event.data.context['constellation']['nodeclickHandler'](event, event.data.context);
+        })
+        .bind('touchstart', {'context':this}, function(event) {
+            event.data.context['constellation']['nodetouchstartHandler'](event, event.data.context);
+        })
+        .bind('touchend', {'context':this}, function(event) {
+            event.data.context['constellation']['nodetouchendHandler'](event, event.data.context);
         });
 };
 GephiNodeRenderer.prototype["create"] = GephiNodeRenderer.prototype.create;
@@ -442,7 +448,8 @@ GephiNodeRenderer.prototype["draw"] = GephiNodeRenderer.prototype.draw;
 
 GephiNodeRenderer.prototype.position = function() {
     jQuery(this.renderer.group)
-        .attr('transform', 'translate(' + this['x'] + ',' + this['y'] + ')');
+        .attr('transform', 'translate(' + this['x'] + ',' + this['y'] + ')' + 
+            'rotate(' + (-this['constellation'].rotation * 180/Math.PI) + ')');
 };
 GephiNodeRenderer.prototype["position"] = GephiNodeRenderer.prototype.position;
 

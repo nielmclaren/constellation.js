@@ -840,8 +840,6 @@ Constellation.prototype.nodemouseupHandler = function(event, node){
     event.stopPropagation();
     event.preventDefault();
 
-    delete this.touchMetadata['_mouse'];
-
     jQuery(this).trigger('nodemouseup', node['id']);
 };
 Constellation.prototype['nodemouseupHandler'] = Constellation.prototype.nodemouseupHandler;
@@ -853,6 +851,8 @@ Constellation.prototype.nodeclickHandler = function(event, node){
     if (touchMetadata && (new Date()).getTime() - touchMetadata.timestamp < 300) {
         jQuery(this).trigger('nodeclick', node['id']);
     }
+
+    delete this.touchMetadata['_mouse'];
 };
 Constellation.prototype['nodeclickHandler'] = Constellation.prototype.nodeclickHandler;
 Constellation.prototype.nodetouchstartHandler = function(event, node){
@@ -1211,6 +1211,11 @@ Constellation.prototype.containerDrag = function(){
             this.scrollOffsetY = this.scrollOffsetY +
             this.worldToViewportY(m0.x, m0.y) -
             this.pageToViewportY(m0.touch.pageX, m0.touch.pageY);
+
+            if (dr != 0) {
+                // Have to redraw the nodes to update their rotation.
+                this.draw();
+            }
         }
         else {
             // Container is being drag-panned.

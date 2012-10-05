@@ -470,7 +470,7 @@ TreeGraphLoader.prototype.setConstellation = function(constellation) {
     GraphLoader.prototype.setConstellation.call(this, constellation);
     
     // When the selected node changes, load more of the graph.
-    jQuery(this['constellation']).bind('nodeSelected', function(event, node) {
+    jQuery(this['constellation']).bind('nodeselected', function(event, node) {
         // FIXME: Implement TreeGraphLoader.
     });
 };
@@ -843,13 +843,13 @@ TreeGraphView.prototype.constructor = TreeGraphView;
 
 TreeGraphView.prototype.setConstellation = function(constellation){
     if (this['constellation']) {
-        jQuery(this['constellation']).unbind('nodeSelected');
+        jQuery(this['constellation']).unbind('nodeselect');
     }
     
     GraphView.prototype.setConstellation.call(this, constellation);
     
     if (this['constellation']) {
-        jQuery(this['constellation']).bind('nodeSelected', {context: this}, function(event){
+        jQuery(this['constellation']).bind('nodeselect', {context: this}, function(event){
             event.data.context.selectedNodeHandler();
         });
     }
@@ -1820,6 +1820,12 @@ GephiNodeRenderer.prototype.create = function(){
         })
         .bind('click', {'context':this}, function(event) {
             event.data.context['constellation']['nodeclickHandler'](event, event.data.context);
+        })
+        .bind('touchstart', {'context':this}, function(event) {
+            event.data.context['constellation']['nodetouchstartHandler'](event, event.data.context);
+        })
+        .bind('touchend', {'context':this}, function(event) {
+            event.data.context['constellation']['nodetouchendHandler'](event, event.data.context);
         });
 };
 GephiNodeRenderer.prototype["create"] = GephiNodeRenderer.prototype.create;
@@ -1865,7 +1871,8 @@ GephiNodeRenderer.prototype["draw"] = GephiNodeRenderer.prototype.draw;
 
 GephiNodeRenderer.prototype.position = function() {
     jQuery(this.renderer.group)
-        .attr('transform', 'translate(' + this['x'] + ',' + this['y'] + ')');
+        .attr('transform', 'translate(' + this['x'] + ',' + this['y'] + ')' + 
+            'rotate(' + (-this['constellation'].rotation * 180/Math.PI) + ')');
 };
 GephiNodeRenderer.prototype["position"] = GephiNodeRenderer.prototype.position;
 
@@ -2437,13 +2444,13 @@ Constellation.prototype.setSelectedNodeId = function(v){
     
     if (this.selectedEdgeId) {
         this.selectedEdgeId = null;
-        jQuery(this).trigger('edgeSelected');
+        jQuery(this).trigger('edgeselect');
     }
     
     if (this.selectedNodeId == v) 
         return;
     this.selectedNodeId = v;
-    jQuery(this).trigger('nodeSelected');
+    jQuery(this).trigger('nodeselect');
 };
 Constellation.prototype['setSelectedNodeId'] = Constellation.prototype.setSelectedNodeId;
 
@@ -2455,13 +2462,13 @@ Constellation.prototype['getSelectedEdgeId'] = Constellation.prototype.getSelect
 Constellation.prototype.setSelectedEdgeId = function(v){
     if (this.selectedNodeId) {
         this.selectedNodeId = null;
-        jQuery(this).trigger('nodeSelected');
+        jQuery(this).trigger('nodeselect');
     }
     
     if (this.selectedEdgeId == v) 
         return;
     this.selectedEdgeId = v;
-    jQuery(this).trigger('edgeSelected');
+    jQuery(this).trigger('edgeselect');
 };
 Constellation.prototype['setSelectedEdgeId'] = Constellation.prototype.setSelectedEdgeId;
 
@@ -2863,8 +2870,6 @@ Constellation.prototype.nodemouseupHandler = function(event, node){
     event.stopPropagation();
     event.preventDefault();
 
-    delete this.touchMetadata['_mouse'];
-
     jQuery(this).trigger('nodemouseup', node['id']);
 };
 Constellation.prototype['nodemouseupHandler'] = Constellation.prototype.nodemouseupHandler;
@@ -2876,6 +2881,8 @@ Constellation.prototype.nodeclickHandler = function(event, node){
     if (touchMetadata && (new Date()).getTime() - touchMetadata.timestamp < 300) {
         jQuery(this).trigger('nodeclick', node['id']);
     }
+
+    delete this.touchMetadata['_mouse'];
 };
 Constellation.prototype['nodeclickHandler'] = Constellation.prototype.nodeclickHandler;
 Constellation.prototype.nodetouchstartHandler = function(event, node){
@@ -3234,6 +3241,11 @@ Constellation.prototype.containerDrag = function(){
             this.scrollOffsetY = this.scrollOffsetY +
             this.worldToViewportY(m0.x, m0.y) -
             this.pageToViewportY(m0.touch.pageX, m0.touch.pageY);
+
+            if (dr != 0) {
+                // Have to redraw the nodes to update their rotation.
+                this.draw();
+            }
         }
         else {
             // Container is being drag-panned.
