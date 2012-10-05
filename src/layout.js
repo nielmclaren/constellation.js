@@ -297,6 +297,7 @@ RoamerLayout.prototype.step = function() {
         node['ay'] = 0;
     }
     
+    // FIXME: Need an API to expose the touchMetadata objects somehow.
     // Keep the touch-dragged nodes under the mouse.
     for (var key in this['constellation'].touchMetadata) {
         var touchMetadata = this['constellation'].touchMetadata[key];
@@ -304,10 +305,8 @@ RoamerLayout.prototype.step = function() {
             var touch = touchMetadata.touch;
             var dragNode = touchMetadata.node;
             
-            var viewportX = this['constellation'].pageToViewportX(touch.pageX, touch.pageY)
-                - touchMetadata.nodeOffsetX;
-            var viewportY = this['constellation'].pageToViewportY(touch.pageX, touch.pageY)
-                - touchMetadata.nodeOffsetY;
+            var viewportX = this['constellation'].pageToViewportX(touch.pageX, touch.pageY) - touchMetadata.nodeOffsetX;
+            var viewportY = this['constellation'].pageToViewportY(touch.pageX, touch.pageY) - touchMetadata.nodeOffsetY;
             dragNode['x'] = this['constellation'].viewportToWorldX(viewportX, viewportY);
             dragNode['y'] = this['constellation'].viewportToWorldY(viewportX, viewportY);
         }

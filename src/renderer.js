@@ -123,19 +123,19 @@ DefaultNodeRenderer.prototype.create = function(){
     
     jQuery(this.renderer.group)
         .bind('mouseover', {'context':this}, function(event) {
-            event.data.context['constellation'].nodemouseoverHandler(event, event.data.context);
+            event.data.context['constellation']['nodemouseoverHandler'](event, event.data.context);
         })
         .bind('mouseout', {'context':this}, function(event) {
-            event.data.context['constellation'].nodemouseoutHandler(event, event.data.context);
+            event.data.context['constellation']['nodemouseoutHandler'](event, event.data.context);
         })
         .bind('mousedown', {'context':this}, function(event) {
-            event.data.context['constellation'].nodemousedownHandler(event, event.data.context);
+            event.data.context['constellation']['nodemousedownHandler'](event, event.data.context);
         })
         .bind('mouseup', {'context':this}, function(event) {
-            event.data.context['constellation'].nodemouseupHandler(event, event.data.context);
+            event.data.context['constellation']['nodemouseupHandler'](event, event.data.context);
         })
         .bind('click', {'context':this}, function(event) {
-            event.data.context['constellation'].nodeclickHandler(event, event.data.context);
+            event.data.context['constellation']['nodeclickHandler'](event, event.data.context);
         });
 };
 DefaultNodeRenderer.prototype["create"] = DefaultNodeRenderer.prototype.create;
@@ -287,19 +287,25 @@ RoamerNodeRenderer.prototype.create = function(){
     
     jQuery(this.renderer.group)
         .bind('mouseover', {'context':this}, function(event) {
-            event.data.context['constellation'].nodemouseoverHandler(event, event.data.context);
+            event.data.context['constellation']['nodemouseoverHandler'](event, event.data.context);
         })
         .bind('mouseout', {'context':this}, function(event) {
-            event.data.context['constellation'].nodemouseoutHandler(event, event.data.context);
+            event.data.context['constellation']['nodemouseoutHandler'](event, event.data.context);
         })
         .bind('mousedown', {'context':this}, function(event) {
-            event.data.context['constellation'].nodemousedownHandler(event, event.data.context);
+            event.data.context['constellation']['nodemousedownHandler'](event, event.data.context);
         })
         .bind('mouseup', {'context':this}, function(event) {
-            event.data.context['constellation'].nodemouseupHandler(event, event.data.context);
+            event.data.context['constellation']['nodemouseupHandler'](event, event.data.context);
         })
         .bind('click', {'context':this}, function(event) {
-            event.data.context['constellation'].nodeclickHandler(event, event.data.context);
+            event.data.context['constellation']['nodeclickHandler'](event, event.data.context);
+        })
+        .bind('touchstart', {'context':this}, function(event) {
+            event.data.context['constellation']['nodetouchstartHandler'](event, event.data.context);
+        })
+        .bind('touchend', {'context':this}, function(event) {
+            event.data.context['constellation']['nodetouchendHandler'](event, event.data.context);
         });
 };
 RoamerNodeRenderer.prototype["create"] = RoamerNodeRenderer.prototype.create;
@@ -415,7 +421,8 @@ RoamerNodeRenderer.prototype["draw"] = RoamerNodeRenderer.prototype.draw;
 
 RoamerNodeRenderer.prototype.position = function() {
     jQuery(this.renderer.group)
-        .attr('transform', 'translate(' + this['x'] + ',' + this['y'] + ')');
+        .attr('transform', 'translate(' + this['x'] + ',' + this['y'] + ')' + 
+            'rotate(' + (-this['constellation'].rotation * 180/Math.PI) + ')');
 };
 RoamerNodeRenderer.prototype["position"] = RoamerNodeRenderer.prototype.position;
 
@@ -481,19 +488,19 @@ GephiNodeRenderer.prototype.create = function(){
     
     jQuery(this.renderer.group)
         .bind('mouseover', {'context':this}, function(event) {
-            event.data.context['constellation'].nodemouseoverHandler(event, event.data.context);
+            event.data.context['constellation']['nodemouseoverHandler'](event, event.data.context);
         })
         .bind('mouseout', {'context':this}, function(event) {
-            event.data.context['constellation'].nodemouseoutHandler(event, event.data.context);
+            event.data.context['constellation']['nodemouseoutHandler'](event, event.data.context);
         })
         .bind('mousedown', {'context':this}, function(event) {
-            event.data.context['constellation'].nodemousedownHandler(event, event.data.context);
+            event.data.context['constellation']['nodemousedownHandler'](event, event.data.context);
         })
         .bind('mouseup', {'context':this}, function(event) {
-            event.data.context['constellation'].nodemouseupHandler(event, event.data.context);
+            event.data.context['constellation']['nodemouseupHandler'](event, event.data.context);
         })
         .bind('click', {'context':this}, function(event) {
-            event.data.context['constellation'].nodeclickHandler(event, event.data.context);
+            event.data.context['constellation']['nodeclickHandler'](event, event.data.context);
         });
 };
 GephiNodeRenderer.prototype["create"] = GephiNodeRenderer.prototype.create;
@@ -647,19 +654,25 @@ DefaultEdgeRenderer.prototype.create = function() {
     
     jQuery(this.renderer.line)
         .bind('mouseover', {'context':this}, function(event) {
-            event.data.context['constellation'].edgemouseoverHandler(event, event.data.context);
+            event.data.context['constellation']['edgemouseoverHandler'](event, event.data.context);
         })
         .bind('mouseout', {'context':this}, function(event) {
-            event.data.context['constellation'].edgemouseoutHandler(event, event.data.context);
+            event.data.context['constellation']['edgemouseoutHandler'](event, event.data.context);
         })
         .bind('mousedown', {'context':this}, function(event) {
-            event.data.context['constellation'].edgemousedownHandler(event, event.data.context);
+            event.data.context['constellation']['edgemousedownHandler'](event, event.data.context);
         })
         .bind('mouseup', {'context':this}, function(event) {
-            event.data.context['constellation'].edgemouseupHandler(event, event.data.context);
+            event.data.context['constellation']['edgemouseupHandler'](event, event.data.context);
         })
         .bind('click', {'context':this}, function(event) {
-            event.data.context['constellation'].edgeclickHandler(event, event.data.context);
+            event.data.context['constellation']['edgeclickHandler'](event, event.data.context);
+        })
+        .bind('touchstart', {'context':this}, function(event) {
+            event.data.context['constellation']['edgetouchstartHandler'](event, event.data.context);
+        })
+        .bind('touchend', {'context':this}, function(event) {
+            event.data.context['constellation']['edgetouchendHandler'](event, event.data.context);
         });
 };
 DefaultEdgeRenderer.prototype["create"] = DefaultEdgeRenderer.prototype.create;
@@ -724,19 +737,25 @@ RoamerEdgeRenderer.prototype.create = function() {
     
     jQuery(this.renderer.line)
         .bind('mouseover', {'context':this}, function(event) {
-            event.data.context['constellation'].edgemouseoverHandler(event, event.data.context);
+            event.data.context['constellation']['edgemouseoverHandler'](event, event.data.context);
         })
         .bind('mouseout', {'context':this}, function(event) {
-            event.data.context['constellation'].edgemouseoutHandler(event, event.data.context);
+            event.data.context['constellation']['edgemouseoutHandler'](event, event.data.context);
         })
         .bind('mousedown', {'context':this}, function(event) {
-            event.data.context['constellation'].edgemousedownHandler(event, event.data.context);
+            event.data.context['constellation']['edgemousedownHandler'](event, event.data.context);
         })
         .bind('mouseup', {'context':this}, function(event) {
-            event.data.context['constellation'].edgemouseupHandler(event, event.data.context);
+            event.data.context['constellation']['edgemouseupHandler'](event, event.data.context);
         })
         .bind('click', {'context':this}, function(event) {
-            event.data.context['constellation'].edgeclickHandler(event, event.data.context);
+            event.data.context['constellation']['edgeclickHandler'](event, event.data.context);
+        })
+        .bind('touchstart', {'context':this}, function(event) {
+            event.data.context['constellation']['edgetouchstartHandler'](event, event.data.context);
+        })
+        .bind('touchend', {'context':this}, function(event) {
+            event.data.context['constellation']['edgetouchendHandler'](event, event.data.context);
         });
 };
 RoamerEdgeRenderer.prototype["create"] = RoamerEdgeRenderer.prototype.create;
