@@ -1503,110 +1503,6 @@ NodeRenderer.prototype["destroy"] = NodeRenderer.prototype.destroy;
  */
 DefaultNodeRenderer = function(constellation, nodeId, data) {
     NodeRenderer.call(this, constellation, nodeId, data);
-};
-window["DefaultNodeRenderer"] = DefaultNodeRenderer;
-
-DefaultNodeRenderer.prototype = new NodeRenderer();
-DefaultNodeRenderer.prototype.constructor = DefaultNodeRenderer;
-
-DefaultNodeRenderer.prototype.defaultStyles = {
-    
-};
-
-DefaultNodeRenderer.prototype.create = function(){
-    var svg = this['constellation']['svg'];
-    var container = this['constellation'].getNodeContainer();
-    
-    var group = svg.group(container, {'display': 'none'});
-    this.renderer = {
-        group: group,
-        graphic: svg.circle(group, 0, 0, 30, {
-            'fill': '#ffffff',
-            'stroke': '#666666',
-            'strokeWidth': 1
-        }),
-        labelBackground: svg.rect(group, 0, 0, 0, 0, 2, 2, {
-            'fill': '#ffffcc',
-            'stroke': '#333333',
-            'strokeWidth': 1
-        }),
-        label: svg.text(group, 0, 0, this['data']['label'], {
-            'style': '-webkit-user-select: none;-khtml-user-select: none;-moz-user-select: none;-o-user-select: none;user-select: none;',
-            'fontFamily': 'Verdana',
-            'fontSize': 15,
-            'fontWeight': 'bold',
-            'fill': '#441111',
-            'textAnchor': 'middle',
-            
-            // HACK: Better cross-browser compatibility with 'dy'
-            //dominantBaseline: 'central'
-            'dy': '.35em'
-        })
-    };
-    
-    jQuery(this.renderer.group)
-        .bind('mouseover', {'context':this}, function(event) {
-            event.data.context['constellation']['nodemouseoverHandler'](event, event.data.context);
-        })
-        .bind('mouseout', {'context':this}, function(event) {
-            event.data.context['constellation']['nodemouseoutHandler'](event, event.data.context);
-        })
-        .bind('mousedown', {'context':this}, function(event) {
-            event.data.context['constellation']['nodemousedownHandler'](event, event.data.context);
-        })
-        .bind('mouseup', {'context':this}, function(event) {
-            event.data.context['constellation']['nodemouseupHandler'](event, event.data.context);
-        })
-        .bind('click', {'context':this}, function(event) {
-            event.data.context['constellation']['nodeclickHandler'](event, event.data.context);
-        });
-};
-DefaultNodeRenderer.prototype["create"] = DefaultNodeRenderer.prototype.create;
-
-DefaultNodeRenderer.prototype.draw = function() {
-    var labelBounds = this.renderer.label.getBBox();
-    var horizontalPadding = 8, verticalPadding = 3;
-    
-    var labelBackground = jQuery(this.renderer.labelBackground);
-    if (labelBounds.width > 0 && labelBounds.height > 0) {
-        labelBackground.css('display', 'inline');
-        labelBackground.attr('x', labelBounds.x - horizontalPadding);
-        labelBackground.attr('y', labelBounds.y - verticalPadding);
-        labelBackground.attr('width', labelBounds.width + 2*horizontalPadding);
-        labelBackground.attr('height', labelBounds.height + 2*verticalPadding);
-    }
-    else {
-        labelBackground.css('display', 'none');
-    }
-    
-    this.position();
-    
-    jQuery(this.renderer.group).css('display', 'inline');
-};
-DefaultNodeRenderer.prototype["draw"] = DefaultNodeRenderer.prototype.draw;
-
-DefaultNodeRenderer.prototype.position = function() {
-    jQuery(this.renderer.group)
-        .attr('transform', 'translate(' + this['x'] + ',' + this['y'] + ')');
-};
-DefaultNodeRenderer.prototype["position"] = DefaultNodeRenderer.prototype.position;
-
-DefaultNodeRenderer.prototype.destroy = function() {
-    jQuery(this.renderer.group).remove();
-    this.renderer = null;
-};
-DefaultNodeRenderer.prototype["destroy"] = DefaultNodeRenderer.prototype.destroy;
-
-/**
- * 
- * @param constellation
- * @param nodeId
- * @param data
- * @returns {RoamerNodeRenderer}
- * @constructor
- */
-RoamerNodeRenderer = function(constellation, nodeId, data) {
-    NodeRenderer.call(this, constellation, nodeId, data);
 
     // Keep track of state to optimize redraw.
     this.label = null;
@@ -1616,12 +1512,12 @@ RoamerNodeRenderer = function(constellation, nodeId, data) {
     this.prevLeftIconUrl = null;
     this.prevRightIconUrl = null;
 };
-window["RoamerNodeRenderer"] = RoamerNodeRenderer;
+window["DefaultNodeRenderer"] = DefaultNodeRenderer;
 
-RoamerNodeRenderer.prototype = new NodeRenderer();
-RoamerNodeRenderer.prototype.constructor = RoamerNodeRenderer;
+DefaultNodeRenderer.prototype = new NodeRenderer();
+DefaultNodeRenderer.prototype.constructor = DefaultNodeRenderer;
 
-RoamerNodeRenderer.prototype.defaultStyles = {
+DefaultNodeRenderer.prototype.defaultStyles = {
     'label': "",
     'tooltip': "",
     
@@ -1680,7 +1576,7 @@ RoamerNodeRenderer.prototype.defaultStyles = {
 
 // FIXME: Implement graphic image in node renderers.
 // FIXME: Implement left and right icons.
-RoamerNodeRenderer.prototype.create = function(){
+DefaultNodeRenderer.prototype.create = function(){
     var svg = this['constellation']['svg'];
     var container = this['constellation'].getNodeContainer();
     
@@ -1731,9 +1627,9 @@ RoamerNodeRenderer.prototype.create = function(){
             event.data.context['constellation']['nodetouchendHandler'](event, event.data.context);
         });
 };
-RoamerNodeRenderer.prototype["create"] = RoamerNodeRenderer.prototype.create;
+DefaultNodeRenderer.prototype["create"] = DefaultNodeRenderer.prototype.create;
 
-RoamerNodeRenderer.prototype.draw = function() {
+DefaultNodeRenderer.prototype.draw = function() {
     var svg = this['constellation']['svg'];
 
     // Update the display at the beginning of the draw call so getBBox doesn't fail in Firefox.
@@ -1840,20 +1736,20 @@ RoamerNodeRenderer.prototype.draw = function() {
     //this.prevLeftIconUrl = prevLeftIconUrl;
     //this.prevRightIconUrl = prevRightIconUrl;
 };
-RoamerNodeRenderer.prototype["draw"] = RoamerNodeRenderer.prototype.draw;
+DefaultNodeRenderer.prototype["draw"] = DefaultNodeRenderer.prototype.draw;
 
-RoamerNodeRenderer.prototype.position = function() {
+DefaultNodeRenderer.prototype.position = function() {
     jQuery(this.renderer.group)
         .attr('transform', 'translate(' + this['x'] + ',' + this['y'] + ')' + 
             'rotate(' + (-this['constellation'].rotation * 180/Math.PI) + ')');
 };
-RoamerNodeRenderer.prototype["position"] = RoamerNodeRenderer.prototype.position;
+DefaultNodeRenderer.prototype["position"] = DefaultNodeRenderer.prototype.position;
 
-RoamerNodeRenderer.prototype.destroy = function() {
+DefaultNodeRenderer.prototype.destroy = function() {
     jQuery(this.renderer.group).remove();
     this.renderer = null;
 };
-RoamerNodeRenderer.prototype["destroy"] = RoamerNodeRenderer.prototype.destroy;
+DefaultNodeRenderer.prototype["destroy"] = DefaultNodeRenderer.prototype.destroy;
 
 /**
  * Node renderer based on Gephi.
@@ -2061,7 +1957,16 @@ DefaultEdgeRenderer.prototype = new EdgeRenderer();
 DefaultEdgeRenderer.prototype.constructor = DefaultEdgeRenderer;
 
 DefaultEdgeRenderer.prototype.defaultStyles = {
-        
+    'tooltip': "",
+    
+    'edge_line_color': '#000000',
+    'edge_line_thickness': 1,
+    
+    'arrowhead': true,
+    'bidirectional': false,
+    'reverse': false,
+    
+    'edge_length_weight': 0
 };
 
 DefaultEdgeRenderer.prototype.create = function() {
@@ -2070,8 +1975,8 @@ DefaultEdgeRenderer.prototype.create = function() {
     this.renderer = {
         line: svg.line(container, 0, 0, 10, 0, {
             'display': 'none',
-            'stroke': '#999999',
-            'strokeWidth': 5
+            'stroke': this.getStyle('edge_line_color'),
+            'strokeWidth': this.getStyle('edge_line_thickness')
         })
     };
     
@@ -2106,6 +2011,8 @@ DefaultEdgeRenderer.prototype.draw = function() {
         .attr('y1', this['tailNode']['y'])
         .attr('x2', this['headNode']['x'])
         .attr('y2', this['headNode']['y'])
+        .css('stroke', this.getStyle('edge_line_color'))
+        .css('strokeWidth', this.getStyle('edge_line_thickness'))
         .css('display', 'inline');
 };
 DefaultEdgeRenderer.prototype["draw"] = DefaultEdgeRenderer.prototype.draw;
@@ -2114,91 +2021,6 @@ DefaultEdgeRenderer.prototype.destroy = function() {
     jQuery(this.renderer.line).remove();
 };
 DefaultEdgeRenderer.prototype["destroy"] = DefaultEdgeRenderer.prototype.destroy;
-
-
-/**
- * 
- * @param constellation
- * @param edgeId
- * @param tailNodeRenderer
- * @param headNodeRenderer
- * @param data
- * @returns {RoamerEdgeRenderer}
- * @constructor
- */
-RoamerEdgeRenderer = function(constellation, edgeId, tailNodeRenderer, headNodeRenderer, data) {
-    EdgeRenderer.call(this, constellation, edgeId, tailNodeRenderer, headNodeRenderer, data);
-};
-window["RoamerEdgeRenderer"] = RoamerEdgeRenderer;
-
-RoamerEdgeRenderer.prototype = new EdgeRenderer();
-RoamerEdgeRenderer.prototype.constructor = RoamerEdgeRenderer;
-
-RoamerEdgeRenderer.prototype.defaultStyles = {
-    'tooltip': "",
-    
-    'edge_line_color': '#000000',
-    'edge_line_thickness': 1,
-    
-    'arrowhead': true,
-    'bidirectional': false,
-    'reverse': false,
-    
-    'edge_length_weight': 0
-};
-
-RoamerEdgeRenderer.prototype.create = function() {
-    var svg = this['constellation']['svg'];
-    var container = this['constellation'].getEdgeContainer();
-    this.renderer = {
-        line: svg.line(container, 0, 0, 10, 0, {
-            'display': 'none',
-            'stroke': this.getStyle('edge_line_color'),
-            'strokeWidth': this.getStyle('edge_line_thickness')
-        })
-    };
-    
-    jQuery(this.renderer.line)
-        .bind('mouseover', {'context':this}, function(event) {
-            event.data.context['constellation']['edgemouseoverHandler'](event, event.data.context);
-        })
-        .bind('mouseout', {'context':this}, function(event) {
-            event.data.context['constellation']['edgemouseoutHandler'](event, event.data.context);
-        })
-        .bind('mousedown', {'context':this}, function(event) {
-            event.data.context['constellation']['edgemousedownHandler'](event, event.data.context);
-        })
-        .bind('mouseup', {'context':this}, function(event) {
-            event.data.context['constellation']['edgemouseupHandler'](event, event.data.context);
-        })
-        .bind('click', {'context':this}, function(event) {
-            event.data.context['constellation']['edgeclickHandler'](event, event.data.context);
-        })
-        .bind('touchstart', {'context':this}, function(event) {
-            event.data.context['constellation']['edgetouchstartHandler'](event, event.data.context);
-        })
-        .bind('touchend', {'context':this}, function(event) {
-            event.data.context['constellation']['edgetouchendHandler'](event, event.data.context);
-        });
-};
-RoamerEdgeRenderer.prototype["create"] = RoamerEdgeRenderer.prototype.create;
-
-RoamerEdgeRenderer.prototype.draw = function() {
-    jQuery(this.renderer.line)
-        .attr('x1', this['tailNode']['x'])
-        .attr('y1', this['tailNode']['y'])
-        .attr('x2', this['headNode']['x'])
-        .attr('y2', this['headNode']['y'])
-        .css('stroke', this.getStyle('edge_line_color'))
-        .css('strokeWidth', this.getStyle('edge_line_thickness'))
-        .css('display', 'inline');
-};
-RoamerEdgeRenderer.prototype["draw"] = RoamerEdgeRenderer.prototype.draw;
-
-RoamerEdgeRenderer.prototype.destroy = function() {
-    jQuery(this.renderer.line).remove();
-};
-RoamerEdgeRenderer.prototype["destroy"] = RoamerEdgeRenderer.prototype.destroy;
 
 
 /**
@@ -3202,9 +3024,8 @@ Constellation.prototype.mousedownHandler = function(event){
     // Track the first two touch events that hit the container.
     if (!this.containerTouchMetadata0) 
         this.containerTouchMetadata0 = touchMetadata;
-    else 
-        if (!this.containerTouchMetadata1) 
-            this.containerTouchMetadata1 = touchMetadata;
+    else if (!this.containerTouchMetadata1) 
+        this.containerTouchMetadata1 = touchMetadata;
     
     jQuery(this).trigger('mousedown');
 };
@@ -3239,15 +3060,20 @@ Constellation.prototype.mouseupHandler = function(event){
     
     delete this.touchMetadata['_mouse'];
     
-    if (this.containerTouchMetadata0 == touchMetadata) 
+    if (this.containerTouchMetadata0 == touchMetadata){
         this.containerTouchMetadata0 = this.containerTouchMetadata1;
-    if (this.containerTouchMetadata1 == touchMetadata) 
         this.containerTouchMetadata1 = null;
+    }
+    if (this.containerTouchMetadata1 == touchMetadata){
+        this.containerTouchMetadata1 = null;
+    }
 
     jQuery(this).trigger('mouseup');
 };
 
 Constellation.prototype.clickHandler = function(event){
+    event.stopPropagation();
+    event.preventDefault();
 };
 
 Constellation.prototype.mousewheelHandler = function(event, delta){
@@ -3284,9 +3110,8 @@ Constellation.prototype.touchstartHandler = function(event){
         // Track the first two touch events that hit the container.
         if (!this.containerTouchMetadata0) 
             this.containerTouchMetadata0 = touchMetadata;
-        else 
-            if (!this.containerTouchMetadata1) 
-                this.containerTouchMetadata1 = touchMetadata;
+        else if (!this.containerTouchMetadata1) 
+            this.containerTouchMetadata1 = touchMetadata;
     }
 
     jQuery(this).trigger('touchstart');
