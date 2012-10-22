@@ -107,9 +107,6 @@ DefaultNodeRenderer.prototype.defaultStyles = {
     'left_icon_url': "",
     'right_icon_url': "",
     
-    'selected_left_icon_url': "",
-    'selected_right_icon_url': "",
-    
     'left_icon_spacing': 0,
     'right_icon_spacing': 0,
     
