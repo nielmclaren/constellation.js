@@ -95,33 +95,31 @@ DefaultNodeRenderer.prototype = new NodeRenderer();
 DefaultNodeRenderer.prototype.constructor = DefaultNodeRenderer;
 
 DefaultNodeRenderer.prototype.defaultStyles = {
-    'label': "",
-    'tooltip': "",
+    'label': '',
     
-    'graphic_shape': "circle",
-    'graphic_fill_color': '#ffffff',
-    'graphic_line_color': '#000000',
-    'graphic_gradient_fill': true,
-    'graphic_size': 40,
+    'graphicShape': 'circle',
+    'graphicFillColor': '#ffffff',
+    'graphicLineColor': '#000000',
+    'graphicSize': 40,
     
-    'left_icon_url': "",
-    'right_icon_url': "",
+    'leftIconUrl': '',
+    'rightIconUrl': '',
     
-    'left_icon_spacing': 0,
-    'right_icon_spacing': 0,
+    'leftIconSpacing': 0,
+    'rightIconSpacing': 0,
     
-    'label_bg_enabled': true,
-    'label_bg_fill_color': '#ffffff',
-    'label_bg_line_color': '#000000',
-    'label_bg_rounded_corners': true,
+    'labelBgEnabled': true,
+    'labelBgFillColor': '#ffffff',
+    'labelBgLineColor': '#000000',
+    'labelBgCornerRadius': 5,
     
-    'label_position': "center",
+    'labelPosition': 'center',
     
-    'label_font_color': '#000000',
-    'label_font_bold': false,
-    'label_font_family': "Arial",
-    'label_font_italic': false,
-    'label_font_size': 12
+    'labelFontColor': '#000000',
+    'labelFontWeight': 'normal',
+    'labelFontFamily': 'Arial',
+    'labelFontStyle': 'normal',
+    'labelFontSize': 12
 };
 
 // FIXME: Implement graphic image in node renderers.
@@ -186,13 +184,13 @@ DefaultNodeRenderer.prototype.draw = function() {
     jQuery(this.renderer.group).css('display', 'inline');
     
     var graphicSettings = {
-        'fill': this.getStyle('graphic_fill_color'),
-        'stroke': this.getStyle('graphic_line_color')
+        'fill': this.getStyle('graphicFillColor'),
+        'stroke': this.getStyle('graphicLineColor')
     };
     
     var label = this.getStyle('label');
-    var graphicSize = this.getStyle('graphic_size');
-    var graphicShape = this.getStyle('graphic_shape');
+    var graphicSize = this.getStyle('graphicSize');
+    var graphicShape = this.getStyle('graphicShape');
     
     if (this.graphicShape != graphicShape) {
         // Shape changed so we need to redraw the graphic.
@@ -513,10 +511,8 @@ DefaultEdgeRenderer.prototype = new EdgeRenderer();
 DefaultEdgeRenderer.prototype.constructor = DefaultEdgeRenderer;
 
 DefaultEdgeRenderer.prototype.defaultStyles = {
-    'tooltip': "",
-    
-    'edge_line_color': '#000000',
-    'edge_line_thickness': 1,
+    'edgeLineColor': '#000000',
+    'edgeLineThickness': 1,
     
     'arrowhead': true,
     'bidirectional': false,
@@ -529,8 +525,8 @@ DefaultEdgeRenderer.prototype.create = function() {
     this.renderer = {
         line: svg.line(container, 0, 0, 10, 0, {
             'display': 'none',
-            'stroke': this.getStyle('edge_line_color'),
-            'strokeWidth': this.getStyle('edge_line_thickness')
+            'stroke': this.getStyle('edgeLineColor'),
+            'strokeWidth': this.getStyle('edgeLineThickness')
         })
     };
     
@@ -565,8 +561,8 @@ DefaultEdgeRenderer.prototype.draw = function() {
         .attr('y1', this['tailNode']['y'])
         .attr('x2', this['headNode']['x'])
         .attr('y2', this['headNode']['y'])
-        .css('stroke', this.getStyle('edge_line_color'))
-        .css('strokeWidth', this.getStyle('edge_line_thickness'))
+        .css('stroke', this.getStyle('edgeLineColor'))
+        .css('strokeWidth', this.getStyle('edgeLineThickness'))
         .css('display', 'inline');
 };
 DefaultEdgeRenderer.prototype["draw"] = DefaultEdgeRenderer.prototype.draw;
