@@ -187,7 +187,7 @@ DefaultNodeRenderer.prototype.draw = function() {
         'fill': this.getStyle('graphicFillColor'),
         'stroke': this.getStyle('graphicLineColor')
     };
-    
+
     var label = this.getStyle('label');
     var graphicSize = this.getStyle('graphicSize');
     var graphicShape = this.getStyle('graphicShape');
@@ -257,6 +257,15 @@ DefaultNodeRenderer.prototype.draw = function() {
             .contents().remove().end()
             .append(label);
     }
+
+    svg.change(this.renderer.label, {
+        'fontFamily': this.getStyle('labelFontFamily'),
+        'fontSize': this.getStyle('labelFontSize'),
+        'fontStyle': this.getStyle('labelFontStyle'),
+        'fontWeight': this.getStyle('labelFontWeight'),
+        'fill': this.getStyle('labelFontColor')
+    });
+
     
     // FIXME: Implement label positioning.
     
@@ -264,12 +273,20 @@ DefaultNodeRenderer.prototype.draw = function() {
     var horizontalPadding = 8, verticalPadding = 3;
     
     var labelBackground = jQuery(this.renderer.labelBackground);
-    if (labelBounds.width > 0 && labelBounds.height > 0) {
+    if (this.getStyle('labelBgEnabled')
+        && labelBounds.width > 0
+        && labelBounds.height > 0) {
         labelBackground.css('display', 'inline');
         labelBackground.attr('x', labelBounds.x - horizontalPadding);
         labelBackground.attr('y', labelBounds.y - verticalPadding);
         labelBackground.attr('width', labelBounds.width + 2*horizontalPadding);
         labelBackground.attr('height', labelBounds.height + 2*verticalPadding);
+
+        svg.change(this.renderer.labelBackground, {
+            'fill': this.getStyle('labelBgFillColor'),
+            'stroke': this.getStyle('labelBgLineColor')
+        });
+    
     }
     else {
         labelBackground.css('display', 'none');
