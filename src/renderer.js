@@ -98,23 +98,11 @@ DefaultNodeRenderer.prototype.defaultStyles = {
     'label': "",
     'tooltip': "",
     
-    'url': "",
-    'url_target': "_self",
-    
-    'graphic_type': "shape",
-    'graphic_image_url': "",
-    
     'graphic_shape': "circle",
     'graphic_fill_color': '#ffffff',
     'graphic_line_color': '#000000',
     'graphic_gradient_fill': true,
     'graphic_size': 40,
-    
-    'selected_graphic_shape': "circle",
-    'selected_graphic_fill_color': '#ffffff',
-    'selected_graphic_line_color': '#000000',
-    'selected_graphic_gradient_fill': true,
-    'selected_graphic_size': 40,
     
     'left_icon_url': "",
     'right_icon_url': "",
@@ -130,25 +118,13 @@ DefaultNodeRenderer.prototype.defaultStyles = {
     'label_bg_line_color': '#000000',
     'label_bg_rounded_corners': true,
     
-    'selected_label_bg_enabled': true,
-    'selected_label_bg_fill_color': '#ffffff',
-    'selected_label_bg_line_color': '#000000',
-    'selected_label_bg_rounded_corners': true,
-    
     'label_position': "center",
-    'label_embed_fonts': true,
     
     'label_font_color': '#000000',
     'label_font_bold': false,
     'label_font_family': "Arial",
     'label_font_italic': false,
-    'label_font_size': 12,
-    
-    'selected_label_font_color': '#000000',
-    'selected_label_font_bold': true,
-    'selected_label_font_family': "Arial",
-    'selected_label_font_italic': false,
-    'selected_label_font_size': 12
+    'label_font_size': 12
 };
 
 // FIXME: Implement graphic image in node renderers.
@@ -309,7 +285,6 @@ DefaultNodeRenderer.prototype.draw = function() {
     this.label = label;
     this.graphicSize = graphicSize;
     this.graphicShape = graphicShape;
-    //this.graphicImageUrl = graphicImageUrl;
     //this.prevLeftIconUrl = prevLeftIconUrl;
     //this.prevRightIconUrl = prevRightIconUrl;
 };
@@ -548,9 +523,7 @@ DefaultEdgeRenderer.prototype.defaultStyles = {
     
     'arrowhead': true,
     'bidirectional': false,
-    'reverse': false,
-    
-    'edge_length_weight': 0
+    'reverse': false
 };
 
 DefaultEdgeRenderer.prototype.create = function() {
