@@ -93,16 +93,16 @@ Constellation.prototype.init = function(){
     this.setModel(new Graph());
     
     var graphLoaderClass = this['config']['graphLoaderClass'];
-    this.setGraphLoader(new graphLoaderClass(this['config']['graphLoader']));
+    this.setGraphLoader(graphLoaderClass ? new graphLoaderClass(this['config']['graphLoader']) : null);
 
     var graphParserClass = this['config']['graphParserClass'];
-    this.setGraphParser(new graphParserClass(this['config']['graphParser']));
+    this.setGraphParser(graphParserClass ? new graphParserClass(this['config']['graphParser']) : null);
 
     var graphViewClass = this['config']['graphViewClass'];
-    this.setGraphView(new graphViewClass(this['config']['graphView']));
+    this.setGraphView(graphViewClass ? new graphViewClass(this['config']['graphView']) : null);
 
     var layoutClass = this['config']['layoutClass'];
-    this.setLayout(new layoutClass(this['config']['layout']));
+    this.setLayout(layoutClass ? new layoutClass(this['config']['layout']) : null);
     
     // Add listeners and make sure the call context
     // is the Constellation Canvas instance.
