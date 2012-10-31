@@ -15,6 +15,13 @@ NodeRenderer = function(constellation, nodeId, data) {
     if (!this['data']['classes']) {
         this['data']['classes'] = [];
     }
+
+    if (this['data']['class']) {
+        var classes = this['data']['class'].split(/\s/);
+        for (var i = 0; i < classes.length; i++) {
+            this.addClass(classes[i]);
+        }
+    }
     
     // Initial node placement is performed by the GraphView.
     this['x'] = null;
@@ -464,6 +471,13 @@ EdgeRenderer = function(constellation, edgeId, tailNodeRenderer, headNodeRendere
     
     if (!this['data']['classes']) {
         this['data']['classes'] = [];
+    }
+
+    if (this['data']['class']) {
+        var classes = this['data']['class'].split(/\s/);
+        for (var i = 0; i < classes.length; i++) {
+            this.addClass(classes[i]);
+        }
     }
 };
 window["EdgeRenderer"] = EdgeRenderer;
