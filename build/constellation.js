@@ -166,7 +166,7 @@ window["Graph"] = Graph;
 
 Graph.prototype.addNode = function(nodeId, data) {
     if (this.getNode(nodeId)) {
-        throw "Failed to add node. Node already exists.";
+        throw "Failed to add node. Node already exists. id=" + nodeId;
     }
     
     var node = new Node(nodeId, data);
@@ -210,7 +210,7 @@ Graph.prototype.removeNode = function(nodeId) {
             return;
         }
     }
-    throw "Failed to remove node. Node does not exist.";
+    throw "Failed to remove node. Node does not exist. id=" + nodeId;
 };
 Graph.prototype['removeNode'] = Graph.prototype.removeNode;
 
@@ -220,7 +220,7 @@ Graph.prototype.updateNode = function(nodeId, data) {
         node['data'] = data;
     }
     else {
-        throw "Failed to update node. Node does not exist.";
+        throw "Failed to update node. Node does not exist. id=" + nodeId;
     }
     return node;
 };
@@ -248,17 +248,17 @@ Graph.prototype['upsertNode'] = Graph.prototype.upsertNode;
 
 Graph.prototype.addEdge = function(edgeId, tailNodeId, headNodeId, data) {
     if (this.getEdge(edgeId)) {
-        throw "Failed to add edge. Edge already exists.";
+        throw "Failed to add edge. Edge already exists. id=" + edgeId;
     }
     
     var tailNode = this.getNode(tailNodeId);
     if (!tailNode) {
-        throw "Failed to add edge. Tail node does not exist.";
+        throw "Failed to add edge. Tail node does not exist. id=" + tailNodeId;
     }
     
     var headNode = this.getNode(headNodeId);
     if (!headNode) {
-        throw "Failed to add edge. Head node does not exist.";
+        throw "Failed to add edge. Head node does not exist. id=" + headNodeId;
     }
     
     var edge = new Edge(edgeId, tailNode, headNode, data);
@@ -329,7 +329,7 @@ Graph.prototype.removeEdge = function(edgeId) {
         }
     }
     else {
-        throw "Failed to remove edge. Edge does not exist.";
+        throw "Failed to remove edge. Edge does not exist. id=" + edgeId;
     }
 };
 Graph.prototype['removeEdge'] = Graph.prototype.removeEdge;
@@ -340,7 +340,7 @@ Graph.prototype.updateEdge = function(edgeId, data) {
         edge['data'] = data;
     }
     else {
-        throw "Failed to update edge. Edge does not exist.";
+        throw "Failed to update edge. Edge does not exist. id=" + edgeId;
     }
     return edge;
 };
@@ -1518,33 +1518,31 @@ DefaultNodeRenderer.prototype = new NodeRenderer();
 DefaultNodeRenderer.prototype.constructor = DefaultNodeRenderer;
 
 DefaultNodeRenderer.prototype.defaultStyles = {
-    'label': "",
-    'tooltip': "",
+    'label': '',
     
-    'graphic_shape': "circle",
-    'graphic_fill_color': '#ffffff',
-    'graphic_line_color': '#000000',
-    'graphic_gradient_fill': true,
-    'graphic_size': 40,
+    'graphicShape': 'circle',
+    'graphicFillColor': '#ffffff',
+    'graphicLineColor': '#000000',
+    'graphicSize': 40,
     
-    'left_icon_url': "",
-    'right_icon_url': "",
+    'leftIconUrl': '',
+    'rightIconUrl': '',
     
-    'left_icon_spacing': 0,
-    'right_icon_spacing': 0,
+    'leftIconSpacing': 0,
+    'rightIconSpacing': 0,
     
-    'label_bg_enabled': true,
-    'label_bg_fill_color': '#ffffff',
-    'label_bg_line_color': '#000000',
-    'label_bg_rounded_corners': true,
+    'labelBgEnabled': true,
+    'labelBgFillColor': '#ffffff',
+    'labelBgLineColor': '#000000',
+    'labelBgCornerRadius': 5,
     
-    'label_position': "center",
+    'labelPosition': 'center',
     
-    'label_font_color': '#000000',
-    'label_font_bold': false,
-    'label_font_family': "Arial",
-    'label_font_italic': false,
-    'label_font_size': 12
+    'labelFontColor': '#000000',
+    'labelFontWeight': 'normal',
+    'labelFontFamily': 'Arial',
+    'labelFontStyle': 'normal',
+    'labelFontSize': 12
 };
 
 // FIXME: Implement graphic image in node renderers.
@@ -1609,13 +1607,13 @@ DefaultNodeRenderer.prototype.draw = function() {
     jQuery(this.renderer.group).css('display', 'inline');
     
     var graphicSettings = {
-        'fill': this.getStyle('graphic_fill_color'),
-        'stroke': this.getStyle('graphic_line_color')
+        'fill': this.getStyle('graphicFillColor'),
+        'stroke': this.getStyle('graphicLineColor')
     };
-    
+
     var label = this.getStyle('label');
-    var graphicSize = this.getStyle('graphic_size');
-    var graphicShape = this.getStyle('graphic_shape');
+    var graphicSize = this.getStyle('graphicSize');
+    var graphicShape = this.getStyle('graphicShape');
     
     if (this.graphicShape != graphicShape) {
         // Shape changed so we need to redraw the graphic.
@@ -1682,6 +1680,15 @@ DefaultNodeRenderer.prototype.draw = function() {
             .contents().remove().end()
             .append(label);
     }
+
+    svg.change(this.renderer.label, {
+        'fontFamily': this.getStyle('labelFontFamily'),
+        'fontSize': this.getStyle('labelFontSize'),
+        'fontStyle': this.getStyle('labelFontStyle'),
+        'fontWeight': this.getStyle('labelFontWeight'),
+        'fill': this.getStyle('labelFontColor')
+    });
+
     
     // FIXME: Implement label positioning.
     
@@ -1689,12 +1696,20 @@ DefaultNodeRenderer.prototype.draw = function() {
     var horizontalPadding = 8, verticalPadding = 3;
     
     var labelBackground = jQuery(this.renderer.labelBackground);
-    if (labelBounds.width > 0 && labelBounds.height > 0) {
+    if (this.getStyle('labelBgEnabled')
+        && labelBounds.width > 0
+        && labelBounds.height > 0) {
         labelBackground.css('display', 'inline');
         labelBackground.attr('x', labelBounds.x - horizontalPadding);
         labelBackground.attr('y', labelBounds.y - verticalPadding);
         labelBackground.attr('width', labelBounds.width + 2*horizontalPadding);
         labelBackground.attr('height', labelBounds.height + 2*verticalPadding);
+
+        svg.change(this.renderer.labelBackground, {
+            'fill': this.getStyle('labelBgFillColor'),
+            'stroke': this.getStyle('labelBgLineColor')
+        });
+    
     }
     else {
         labelBackground.css('display', 'none');
@@ -1936,10 +1951,8 @@ DefaultEdgeRenderer.prototype = new EdgeRenderer();
 DefaultEdgeRenderer.prototype.constructor = DefaultEdgeRenderer;
 
 DefaultEdgeRenderer.prototype.defaultStyles = {
-    'tooltip': "",
-    
-    'edge_line_color': '#000000',
-    'edge_line_thickness': 1,
+    'edgeLineColor': '#000000',
+    'edgeLineThickness': 1,
     
     'arrowhead': true,
     'bidirectional': false,
@@ -1952,8 +1965,8 @@ DefaultEdgeRenderer.prototype.create = function() {
     this.renderer = {
         line: svg.line(container, 0, 0, 10, 0, {
             'display': 'none',
-            'stroke': this.getStyle('edge_line_color'),
-            'strokeWidth': this.getStyle('edge_line_thickness')
+            'stroke': this.getStyle('edgeLineColor'),
+            'strokeWidth': this.getStyle('edgeLineThickness')
         })
     };
     
@@ -1988,8 +2001,8 @@ DefaultEdgeRenderer.prototype.draw = function() {
         .attr('y1', this['tailNode']['y'])
         .attr('x2', this['headNode']['x'])
         .attr('y2', this['headNode']['y'])
-        .css('stroke', this.getStyle('edge_line_color'))
-        .css('strokeWidth', this.getStyle('edge_line_thickness'))
+        .css('stroke', this.getStyle('edgeLineColor'))
+        .css('strokeWidth', this.getStyle('edgeLineThickness'))
         .css('display', 'inline');
 };
 DefaultEdgeRenderer.prototype["draw"] = DefaultEdgeRenderer.prototype.draw;
@@ -2068,9 +2081,10 @@ Constellation.prototype.init = function(){
         throw "Failed to initialize Constellation. SVG not supported.";
     }
     
-    var placeholder = jQuery('#' + this['config']['id']);
+    var containerId = '#' + this['config']['id'];
+    var placeholder = jQuery(containerId);
     if (placeholder.length <= 0) {
-        throw "Failed to initialize Constellation. Container does not exist.";
+        throw "Failed to initialize Constellation. Container does not exist. id=" + containerId;
     }
     
     placeholder.html('<div style="position:relative;width:100%;height:100%">' +
@@ -2472,7 +2486,7 @@ Constellation.prototype.addNode = function(nodeId, data){
     this.debug('Add node:', nodeId);
     
     if (this.getNode(nodeId)) {
-        throw "Failed to add node. Node already exists.";
+        throw "Failed to add node. Node already exists. id=" + nodeId;
     }
 
     var rendererClass = this.getStyle('node', data ? data['classes'] : [],
@@ -2531,7 +2545,7 @@ Constellation.prototype.removeNode = function(nodeId){
             return;
         }
     }
-    throw "Failed to remove node. Node does not exist.";
+    throw "Failed to remove node. Node does not exist. id=" + nodeId;
 };
 Constellation.prototype['removeNode'] = Constellation.prototype.removeNode;
 
@@ -2541,7 +2555,7 @@ Constellation.prototype.updateNode = function(nodeId, data) {
         node['data'] = data;
     }
     else {
-        throw "Failed to update node. Node does not exist.";
+        throw "Failed to update node. Node does not exist. id=" + nodeId;
     }
     return node;
 };
@@ -2571,17 +2585,17 @@ Constellation.prototype.addEdge = function(edgeId, tailNodeId, headNodeId, data)
     this.debug('Add edge:', edgeId);
     
     if (this.getEdge(edgeId)) {
-        throw "Failed to add edge. Edge already exists.";
+        throw "Failed to add edge. Edge already exists. id=" + edgeId;
     }
     
     var tailNode = this.getNode(tailNodeId);
     if (!tailNode) {
-        throw "Failed to add edge. Tail node does not exist.";
+        throw "Failed to add edge. Tail node does not exist. id=" + tailNodeId;
     }
     
     var headNode = this.getNode(headNodeId);
     if (!headNode) {
-        throw "Failed to add edge. Head node does not exist.";
+        throw "Failed to add edge. Head node does not exist. id=" + headNodeId;
     }
 
     var rendererClass = this.getStyle('edge', data ? data['classes'] : [],
@@ -2664,7 +2678,7 @@ Constellation.prototype.removeEdge = function(edgeId){
         jQuery(this).trigger('edgeRemoved', edge);
     }
     else {
-        throw "Failed to remove edge. Edge does not exist.";
+        throw "Failed to remove edge. Edge does not exist. id=" + edgeId;
     }
 };
 Constellation.prototype['removeEdge'] = Constellation.prototype.removeEdge;
@@ -2675,7 +2689,7 @@ Constellation.prototype.updateEdge = function(edgeId, data) {
         edge['data'] = data;
     }
     else {
-        throw "Failed to update edge. Edge does not exist.";
+        throw "Failed to update edge. Edge does not exist. id=" + edgeId;
     }
     return edge;
 };

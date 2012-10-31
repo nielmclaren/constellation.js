@@ -105,7 +105,7 @@ window["Graph"] = Graph;
 
 Graph.prototype.addNode = function(nodeId, data) {
     if (this.getNode(nodeId)) {
-        throw "Failed to add node. Node already exists.";
+        throw "Failed to add node. Node already exists. id=" + nodeId;
     }
     
     var node = new Node(nodeId, data);
@@ -149,7 +149,7 @@ Graph.prototype.removeNode = function(nodeId) {
             return;
         }
     }
-    throw "Failed to remove node. Node does not exist.";
+    throw "Failed to remove node. Node does not exist. id=" + nodeId;
 };
 Graph.prototype['removeNode'] = Graph.prototype.removeNode;
 
@@ -159,7 +159,7 @@ Graph.prototype.updateNode = function(nodeId, data) {
         node['data'] = data;
     }
     else {
-        throw "Failed to update node. Node does not exist.";
+        throw "Failed to update node. Node does not exist. id=" + nodeId;
     }
     return node;
 };
@@ -187,17 +187,17 @@ Graph.prototype['upsertNode'] = Graph.prototype.upsertNode;
 
 Graph.prototype.addEdge = function(edgeId, tailNodeId, headNodeId, data) {
     if (this.getEdge(edgeId)) {
-        throw "Failed to add edge. Edge already exists.";
+        throw "Failed to add edge. Edge already exists. id=" + edgeId;
     }
     
     var tailNode = this.getNode(tailNodeId);
     if (!tailNode) {
-        throw "Failed to add edge. Tail node does not exist.";
+        throw "Failed to add edge. Tail node does not exist. id=" + tailNodeId;
     }
     
     var headNode = this.getNode(headNodeId);
     if (!headNode) {
-        throw "Failed to add edge. Head node does not exist.";
+        throw "Failed to add edge. Head node does not exist. id=" + headNodeId;
     }
     
     var edge = new Edge(edgeId, tailNode, headNode, data);
@@ -268,7 +268,7 @@ Graph.prototype.removeEdge = function(edgeId) {
         }
     }
     else {
-        throw "Failed to remove edge. Edge does not exist.";
+        throw "Failed to remove edge. Edge does not exist. id=" + edgeId;
     }
 };
 Graph.prototype['removeEdge'] = Graph.prototype.removeEdge;
@@ -279,7 +279,7 @@ Graph.prototype.updateEdge = function(edgeId, data) {
         edge['data'] = data;
     }
     else {
-        throw "Failed to update edge. Edge does not exist.";
+        throw "Failed to update edge. Edge does not exist. id=" + edgeId;
     }
     return edge;
 };

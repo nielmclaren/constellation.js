@@ -68,9 +68,10 @@ Constellation.prototype.init = function(){
         throw "Failed to initialize Constellation. SVG not supported.";
     }
     
-    var placeholder = jQuery('#' + this['config']['id']);
+    var containerId = '#' + this['config']['id'];
+    var placeholder = jQuery(containerId);
     if (placeholder.length <= 0) {
-        throw "Failed to initialize Constellation. Container does not exist.";
+        throw "Failed to initialize Constellation. Container does not exist. id=" + containerId;
     }
     
     placeholder.html('<div style="position:relative;width:100%;height:100%">' +
@@ -472,7 +473,7 @@ Constellation.prototype.addNode = function(nodeId, data){
     this.debug('Add node:', nodeId);
     
     if (this.getNode(nodeId)) {
-        throw "Failed to add node. Node already exists.";
+        throw "Failed to add node. Node already exists. id=" + nodeId;
     }
 
     var rendererClass = this.getStyle('node', data ? data['classes'] : [],
@@ -531,7 +532,7 @@ Constellation.prototype.removeNode = function(nodeId){
             return;
         }
     }
-    throw "Failed to remove node. Node does not exist.";
+    throw "Failed to remove node. Node does not exist. id=" + nodeId;
 };
 Constellation.prototype['removeNode'] = Constellation.prototype.removeNode;
 
@@ -541,7 +542,7 @@ Constellation.prototype.updateNode = function(nodeId, data) {
         node['data'] = data;
     }
     else {
-        throw "Failed to update node. Node does not exist.";
+        throw "Failed to update node. Node does not exist. id=" + nodeId;
     }
     return node;
 };
@@ -571,17 +572,17 @@ Constellation.prototype.addEdge = function(edgeId, tailNodeId, headNodeId, data)
     this.debug('Add edge:', edgeId);
     
     if (this.getEdge(edgeId)) {
-        throw "Failed to add edge. Edge already exists.";
+        throw "Failed to add edge. Edge already exists. id=" + edgeId;
     }
     
     var tailNode = this.getNode(tailNodeId);
     if (!tailNode) {
-        throw "Failed to add edge. Tail node does not exist.";
+        throw "Failed to add edge. Tail node does not exist. id=" + tailNodeId;
     }
     
     var headNode = this.getNode(headNodeId);
     if (!headNode) {
-        throw "Failed to add edge. Head node does not exist.";
+        throw "Failed to add edge. Head node does not exist. id=" + headNodeId;
     }
 
     var rendererClass = this.getStyle('edge', data ? data['classes'] : [],
@@ -664,7 +665,7 @@ Constellation.prototype.removeEdge = function(edgeId){
         jQuery(this).trigger('edgeRemoved', edge);
     }
     else {
-        throw "Failed to remove edge. Edge does not exist.";
+        throw "Failed to remove edge. Edge does not exist. id=" + edgeId;
     }
 };
 Constellation.prototype['removeEdge'] = Constellation.prototype.removeEdge;
@@ -675,7 +676,7 @@ Constellation.prototype.updateEdge = function(edgeId, data) {
         edge['data'] = data;
     }
     else {
-        throw "Failed to update edge. Edge does not exist.";
+        throw "Failed to update edge. Edge does not exist. id=" + edgeId;
     }
     return edge;
 };
