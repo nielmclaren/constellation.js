@@ -146,11 +146,6 @@ RoamerLayout = function(config) {
     this.timeoutId = null;
     
     this.toBePlacedNodes = [];
-    
-    this.delayStartTime = NaN;
-    
-    this.velocityLimit = 20;
-    this.nodeMouseDown = false;
 };
 window["RoamerLayout"] = RoamerLayout;
 
