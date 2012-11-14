@@ -139,9 +139,9 @@ StaticLayout.prototype.step = function() {
  * @param {Object} constellation
  * @constructor
  */
-RoamerLayout = function(constellation) {
+RoamerLayout = function(config) {
     if (arguments.length <= 0) return;
-    Layout.call(this, constellation);
+    Layout.call(this, config);
     
     this.timeoutId = null;
     
