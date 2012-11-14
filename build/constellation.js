@@ -1180,18 +1180,13 @@ StaticLayout.prototype.step = function() {
  * @param {Object} constellation
  * @constructor
  */
-RoamerLayout = function(constellation) {
+RoamerLayout = function(config) {
     if (arguments.length <= 0) return;
-    Layout.call(this, constellation);
+    Layout.call(this, config);
     
     this.timeoutId = null;
     
     this.toBePlacedNodes = [];
-    
-    this.delayStartTime = NaN;
-    
-    this.velocityLimit = 20;
-    this.nodeMouseDown = false;
 };
 window["RoamerLayout"] = RoamerLayout;
 
@@ -1231,13 +1226,14 @@ RoamerLayout.prototype.nodeAddedHandler = function(event, node) {
 };
 
 RoamerLayout.prototype.step = function() {
-    var scrollRate = 0.1;
-
-    var baseEdgeLength = 100;
-    var attractionFactor = 0.2;
-    var repulsionFactor = 0.2;
-    var accelerationLimit = 15;
-    var dampingConstant = 0.3;
+    var p = this['config'];
+    
+    var scrollRate = p['scrollRate'] ? p['scrollRate'] : 0.1;
+    var baseEdgeLength = p['baseEdgeLength'] ? p['baseEdgeLength'] : 100;
+    var attractionFactor = p['attractionFactor'] ? p['attractionFactor'] : 0.2;
+    var repulsionFactor = p['repulsionFactor'] ? p['repulsionFactor'] : 0.2;
+    var accelerationLimit = p['accelerationLimit'] ? p['accelerationLimit'] : 15;
+    var dampingConstant = p['dampingConstant'] ? p['dampingConstant'] : 0.3;
     
     // Place new nodes.
     while (this.toBePlacedNodes.length > 0) {
@@ -1538,10 +1534,10 @@ DefaultNodeRenderer.prototype.defaultStyles = {
     'leftIconSpacing': 0,
     'rightIconSpacing': 0,
     
-    'labelBgEnabled': true,
-    'labelBgFillColor': '#ffffff',
-    'labelBgLineColor': '#000000',
-    'labelBgCornerRadius': 5,
+    'labelBoxEnabled': true,
+    'labelBoxFillColor': '#ffffff',
+    'labelBoxLineColor': '#000000',
+    'labelBoxCornerRadius': 5,
     
     'labelPosition': 'center',
     
@@ -1703,7 +1699,7 @@ DefaultNodeRenderer.prototype.draw = function() {
     var horizontalPadding = 8, verticalPadding = 3;
     
     var labelBackground = jQuery(this.renderer.labelBackground);
-    if (this.getStyle('labelBgEnabled')
+    if (this.getStyle('labelBoxEnabled')
         && labelBounds.width > 0
         && labelBounds.height > 0) {
         labelBackground.css('display', 'inline');
@@ -1713,8 +1709,8 @@ DefaultNodeRenderer.prototype.draw = function() {
         labelBackground.attr('height', labelBounds.height + 2*verticalPadding);
 
         svg.change(this.renderer.labelBackground, {
-            'fill': this.getStyle('labelBgFillColor'),
-            'stroke': this.getStyle('labelBgLineColor')
+            'fill': this.getStyle('labelBoxFillColor'),
+            'stroke': this.getStyle('labelBoxLineColor')
         });
     
     }
