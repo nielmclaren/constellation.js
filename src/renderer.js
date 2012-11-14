@@ -115,10 +115,10 @@ DefaultNodeRenderer.prototype.defaultStyles = {
     'leftIconSpacing': 0,
     'rightIconSpacing': 0,
     
-    'labelBgEnabled': true,
-    'labelBgFillColor': '#ffffff',
-    'labelBgLineColor': '#000000',
-    'labelBgCornerRadius': 5,
+    'labelBoxEnabled': true,
+    'labelBoxFillColor': '#ffffff',
+    'labelBoxLineColor': '#000000',
+    'labelBoxCornerRadius': 5,
     
     'labelPosition': 'center',
     
@@ -280,7 +280,7 @@ DefaultNodeRenderer.prototype.draw = function() {
     var horizontalPadding = 8, verticalPadding = 3;
     
     var labelBackground = jQuery(this.renderer.labelBackground);
-    if (this.getStyle('labelBgEnabled')
+    if (this.getStyle('labelBoxEnabled')
         && labelBounds.width > 0
         && labelBounds.height > 0) {
         labelBackground.css('display', 'inline');
@@ -290,8 +290,8 @@ DefaultNodeRenderer.prototype.draw = function() {
         labelBackground.attr('height', labelBounds.height + 2*verticalPadding);
 
         svg.change(this.renderer.labelBackground, {
-            'fill': this.getStyle('labelBgFillColor'),
-            'stroke': this.getStyle('labelBgLineColor')
+            'fill': this.getStyle('labelBoxFillColor'),
+            'stroke': this.getStyle('labelBoxLineColor')
         });
     
     }
