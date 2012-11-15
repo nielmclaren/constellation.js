@@ -9,20 +9,11 @@
  */
 NodeRenderer = function(constellation, nodeId, data) {
     this['constellation'] = constellation;
+    this['classes'] = [];
 
     Node.call(this, nodeId, data);
-    
-    if (!this['data']['classes']) {
-        this['data']['classes'] = [];
-    }
+    this.dataChanged();
 
-    if (this['data']['class']) {
-        var classes = this['data']['class'].split(/\s/);
-        for (var i = 0; i < classes.length; i++) {
-            this.addClass(classes[i]);
-        }
-    }
-    
     // Initial node placement is performed by the GraphView.
     this['x'] = null;
     this['y'] = null;
@@ -40,29 +31,42 @@ NodeRenderer.prototype.constructor = NodeRenderer;
 NodeRenderer.prototype.defaultStyles = {};
 
 NodeRenderer.prototype.getStyle = function(propertyName) {
-    return this['constellation'].getStyle('node', this['data']['classes'], propertyName, this['data'], this.defaultStyles);
+    return this['constellation'].getStyle('node', this['classes'], propertyName, this['data'], this.defaultStyles);
 };
 NodeRenderer.prototype["getStyle"] = NodeRenderer.prototype.getStyle;
 
 NodeRenderer.prototype.addClass = function(className) {
-    if (jQuery.inArray(className, this['data']['classes']) < 0) {
-        this['data']['classes'].push(className);
+    if (jQuery.inArray(className, this['classes']) < 0) {
+        this['classes'].push(className);
     }
 };
 NodeRenderer.prototype["addClass"] = NodeRenderer.prototype.addClass;
 
 NodeRenderer.prototype.hasClass = function(className) {
-    return jQuery.inArray(className, this['data']['classes']) >= 0;
+    return jQuery.inArray(className, this['classes']) >= 0;
 };
 NodeRenderer.prototype["hasClass"] = NodeRenderer.prototype.hasClass;
 
 NodeRenderer.prototype.removeClass = function(className) {
     var index;
-    while ((index = jQuery.inArray(className, this['data']['classes'])) >= 0) {
-        this['data']['classes'].splice(index, 1);
+    while ((index = jQuery.inArray(className, this['classes'])) >= 0) {
+        this['classes'].splice(index, 1);
     }
 };
 NodeRenderer.prototype["removeClass"] = NodeRenderer.prototype.removeClass;
+
+NodeRenderer.prototype.dataChanged = function() {
+    Node.prototype.dataChanged.call(this);
+
+    if (this['data']['class']) {
+        this['classes'] = [];
+        var classes = this['data']['class'].split(/\s/);
+        for (var i = 0; i < classes.length; i++) {
+            this.addClass(classes[i]);
+        }
+    }
+};
+NodeRenderer.prototype["dataChanged"] = NodeRenderer.prototype.dataChanged;
 
 NodeRenderer.prototype.create = function() {};
 NodeRenderer.prototype["create"] = NodeRenderer.prototype.create;
@@ -492,19 +496,10 @@ GephiNodeRenderer.prototype["destroy"] = GephiNodeRenderer.prototype.destroy;
  */
 EdgeRenderer = function(constellation, edgeId, tailNodeRenderer, headNodeRenderer, data) {
     this['constellation'] = constellation;
+    this['classes'] = [];
     
     Edge.call(this, edgeId, tailNodeRenderer, headNodeRenderer, data);
-    
-    if (!this['data']['classes']) {
-        this['data']['classes'] = [];
-    }
-
-    if (this['data']['class']) {
-        var classes = this['data']['class'].split(/\s/);
-        for (var i = 0; i < classes.length; i++) {
-            this.addClass(classes[i]);
-        }
-    }
+    this.dataChanged();
 };
 window["EdgeRenderer"] = EdgeRenderer;
 
@@ -514,30 +509,43 @@ EdgeRenderer.prototype.constructor = EdgeRenderer;
 EdgeRenderer.prototype.defaultStyles = {};
 
 EdgeRenderer.prototype.getStyle = function(propertyName) {
-    return this['constellation'].getStyle('edge', this['data']['classes'], propertyName, this['data'], this.defaultStyles);
+    return this['constellation'].getStyle('edge', this['classes'], propertyName, this['data'], this.defaultStyles);
 };
 EdgeRenderer.prototype["getStyle"] = EdgeRenderer.prototype.getStyle;
 
 // FIXME: Duplicates NodeRenderer class methods. Factor this out.
 EdgeRenderer.prototype.addClass = function(className) {
-    if (jQuery.inArray(className, this['data']['classes']) < 0) {
-        this['data']['classes'].push(className);
+    if (jQuery.inArray(className, this['classes']) < 0) {
+        this['classes'].push(className);
     }
 };
 EdgeRenderer.prototype["addClass"] = EdgeRenderer.prototype.addClass;
 
 EdgeRenderer.prototype.hasClass = function(className) {
-    return jQuery.inArray(className, this['data']['classes']) >= 0;
+    return jQuery.inArray(className, this['classes']) >= 0;
 };
 EdgeRenderer.prototype["hasClass"] = EdgeRenderer.prototype.hasClass;
 
 EdgeRenderer.prototype.removeClass = function(className) {
     var index;
-    while ((index = jQuery.inArray(className, this['data']['classes'])) >= 0) {
-        this['data']['classes'].splice(index, 1);
+    while ((index = jQuery.inArray(className, this['classes'])) >= 0) {
+        this['classes'].splice(index, 1);
     }
 };
 EdgeRenderer.prototype["removeClass"] = EdgeRenderer.prototype.removeClass;
+
+EdgeRenderer.prototype.dataChanged = function() {
+    Edge.prototype.dataChanged.call(this);
+
+    if (this['data']['class']) {
+        this['classes'] = [];
+        var classes = this['data']['class'].split(/\s/);
+        for (var i = 0; i < classes.length; i++) {
+            this.addClass(classes[i]);
+        }
+    }
+};
+EdgeRenderer.prototype["dataChanged"] = EdgeRenderer.prototype.dataChanged;
 
 EdgeRenderer.prototype.create = function() {};
 EdgeRenderer.prototype["create"] = EdgeRenderer.prototype.create;

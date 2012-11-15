@@ -476,7 +476,7 @@ Constellation.prototype.addNode = function(nodeId, data){
         throw "Failed to add node. Node already exists. id=" + nodeId;
     }
 
-    var rendererClass = this.getStyle('node', data ? data['classes'] : [],
+    var rendererClass = this.getStyle('node', data ? data['class'].split(/\s/) : [],
             'rendererClass', data, {'rendererClass': DefaultNodeRenderer});
     
     var node = new rendererClass(this, nodeId, data);
@@ -585,7 +585,7 @@ Constellation.prototype.addEdge = function(edgeId, tailNodeId, headNodeId, data)
         throw "Failed to add edge. Head node does not exist. id=" + headNodeId;
     }
 
-    var rendererClass = this.getStyle('edge', data ? data['classes'] : [],
+    var rendererClass = this.getStyle('edge', data ? data['class'].split(/\s/) : [],
             'rendererClass', data, {'rendererClass': DefaultNodeRenderer});
     
     var edge = new rendererClass(this, edgeId, tailNode, headNode, data);
