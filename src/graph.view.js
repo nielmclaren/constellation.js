@@ -238,9 +238,13 @@ TreeGraphView.prototype["selectedNodeHandler"] = TreeGraphView.prototype.selecte
  */
 TreeGraphView.prototype.validate = function() {
     var i, index;
+
+    var startDepth = this['config']['startDepth'] ? this['config']['startDepth'] : 2;
+    var depth = this['config']['depth'] ? this['config']['depth'] : 3;
+    var delay = this['config']['delay'] ? this['config']['delay'] : 1000;
     
     if (this.selectedNodeChanged) {
-        this.currDepth = 2;
+        this.currDepth = startDepth;
     }
     
     var selectedNode = this['source'].getNode(this.selectedNodeId);
@@ -373,15 +377,14 @@ TreeGraphView.prototype.validate = function() {
     
     this.selectedNodeChanged = false;
     
-    // FIXME: Tree depth should be set in the config.
-    if (this.currDepth < 3) {
+    if (this.currDepth < depth) {
         // Need to increment the depth after a delay.
         clearTimeout(this.incrementDepthTimeoutId);
         
         var self = this;
         this.incrementDepthTimeoutId = setTimeout(function() {
             self.incrementDepth();
-        }, 1000);
+        }, delay);
     }
     
     return true;

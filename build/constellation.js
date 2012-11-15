@@ -875,9 +875,13 @@ TreeGraphView.prototype["selectedNodeHandler"] = TreeGraphView.prototype.selecte
  */
 TreeGraphView.prototype.validate = function() {
     var i, index;
+
+    var startDepth = this['config']['startDepth'] ? this['config']['startDepth'] : 2;
+    var depth = this['config']['depth'] ? this['config']['depth'] : 3;
+    var delay = this['config']['delay'] ? this['config']['delay'] : 1000;
     
     if (this.selectedNodeChanged) {
-        this.currDepth = 2;
+        this.currDepth = startDepth;
     }
     
     var selectedNode = this['source'].getNode(this.selectedNodeId);
@@ -956,6 +960,7 @@ TreeGraphView.prototype.validate = function() {
         if (index >= 0) {
             edge = this['result'].getEdge(resultEdges[i]['id']);
             edge['data'] = resultEdges[i]['data'];
+            edge.dataChanged();
             
             doomedEdgeIds.splice(index, 1);
             resultEdges.splice(i, 1);
@@ -967,6 +972,7 @@ TreeGraphView.prototype.validate = function() {
         if (index >= 0) {
             node = this['result'].getNode(resultNodes[i]['id']);
             node['data'] = resultNodes[i]['data'];
+            node.dataChanged();
             
             doomedNodeIds.splice(index, 1);
             resultNodes.splice(i, 1);
@@ -1008,15 +1014,14 @@ TreeGraphView.prototype.validate = function() {
     
     this.selectedNodeChanged = false;
     
-    // FIXME: Tree depth should be set in the config.
-    if (this.currDepth < 3) {
+    if (this.currDepth < depth) {
         // Need to increment the depth after a delay.
         clearTimeout(this.incrementDepthTimeoutId);
         
         var self = this;
         this.incrementDepthTimeoutId = setTimeout(function() {
             self.incrementDepth();
-        }, 1000);
+        }, delay);
     }
     
     return true;
@@ -1428,20 +1433,11 @@ RoamerLayout.prototype.getAveragePosition = function(nodes) {
  */
 NodeRenderer = function(constellation, nodeId, data) {
     this['constellation'] = constellation;
+    this['classes'] = [];
 
     Node.call(this, nodeId, data);
-    
-    if (!this['data']['classes']) {
-        this['data']['classes'] = [];
-    }
+    this.dataChanged();
 
-    if (this['data']['class']) {
-        var classes = this['data']['class'].split(/\s/);
-        for (var i = 0; i < classes.length; i++) {
-            this.addClass(classes[i]);
-        }
-    }
-    
     // Initial node placement is performed by the GraphView.
     this['x'] = null;
     this['y'] = null;
@@ -1459,29 +1455,42 @@ NodeRenderer.prototype.constructor = NodeRenderer;
 NodeRenderer.prototype.defaultStyles = {};
 
 NodeRenderer.prototype.getStyle = function(propertyName) {
-    return this['constellation'].getStyle('node', this['data']['classes'], propertyName, this['data'], this.defaultStyles);
+    return this['constellation'].getStyle('node', this['classes'], propertyName, this['data'], this.defaultStyles);
 };
 NodeRenderer.prototype["getStyle"] = NodeRenderer.prototype.getStyle;
 
 NodeRenderer.prototype.addClass = function(className) {
-    if (jQuery.inArray(className, this['data']['classes']) < 0) {
-        this['data']['classes'].push(className);
+    if (jQuery.inArray(className, this['classes']) < 0) {
+        this['classes'].push(className);
     }
 };
 NodeRenderer.prototype["addClass"] = NodeRenderer.prototype.addClass;
 
 NodeRenderer.prototype.hasClass = function(className) {
-    return jQuery.inArray(className, this['data']['classes']) >= 0;
+    return jQuery.inArray(className, this['classes']) >= 0;
 };
 NodeRenderer.prototype["hasClass"] = NodeRenderer.prototype.hasClass;
 
 NodeRenderer.prototype.removeClass = function(className) {
     var index;
-    while ((index = jQuery.inArray(className, this['data']['classes'])) >= 0) {
-        this['data']['classes'].splice(index, 1);
+    while ((index = jQuery.inArray(className, this['classes'])) >= 0) {
+        this['classes'].splice(index, 1);
     }
 };
 NodeRenderer.prototype["removeClass"] = NodeRenderer.prototype.removeClass;
+
+NodeRenderer.prototype.dataChanged = function() {
+    Node.prototype.dataChanged.call(this);
+
+    if (this['data']['class']) {
+        this['classes'] = [];
+        var classes = this['data']['class'].split(/\s/);
+        for (var i = 0; i < classes.length; i++) {
+            this.addClass(classes[i]);
+        }
+    }
+};
+NodeRenderer.prototype["dataChanged"] = NodeRenderer.prototype.dataChanged;
 
 NodeRenderer.prototype.create = function() {};
 NodeRenderer.prototype["create"] = NodeRenderer.prototype.create;
@@ -1692,11 +1701,37 @@ DefaultNodeRenderer.prototype.draw = function() {
         'fill': this.getStyle('labelFontColor')
     });
 
-    
-    // FIXME: Implement label positioning.
-    
-    var labelBounds = this.renderer.label.getBBox();
+    var labelMargin = 5;
     var horizontalPadding = 8, verticalPadding = 3;
+
+    var graphicBounds = this.renderer.graphic.getBBox();
+    var labelBounds = this.renderer.label.getBBox();
+
+    switch (this.getStyle('labelPosition')) {
+        case 'top':
+            labelPosition = {x: 0, y: -graphicBounds.height/2 - labelMargin - verticalPadding - labelBounds.height/2};
+            break;
+        
+        case 'right':
+            labelPosition = {x: graphicBounds.width/2 + labelMargin + labelBounds.width/2 + horizontalPadding, y: 0};
+            break;
+        
+        case 'bottom':
+            labelPosition = {x: 0, y: graphicBounds.height/2 + labelMargin + verticalPadding + labelBounds.height/2};
+            break;
+        
+        case 'left':
+            labelPosition = {x: -graphicBounds.width/2 - labelMargin - horizontalPadding - labelBounds.width/2, y: 0};
+            break;
+        
+        default:
+            // Leave an error message and then default to center.
+            this['constellation'].error('Unexpected value for node labelPosition property. value=' + this.getStyle('labelPosition'));
+        case 'center':
+            labelPosition = {x: 0, y: 0};
+    }
+    svg.change(this.renderer.label, labelPosition);
+    labelBounds = this.renderer.label.getBBox();
     
     var labelBackground = jQuery(this.renderer.labelBackground);
     if (this.getStyle('labelBoxEnabled')
@@ -1885,19 +1920,10 @@ GephiNodeRenderer.prototype["destroy"] = GephiNodeRenderer.prototype.destroy;
  */
 EdgeRenderer = function(constellation, edgeId, tailNodeRenderer, headNodeRenderer, data) {
     this['constellation'] = constellation;
+    this['classes'] = [];
     
     Edge.call(this, edgeId, tailNodeRenderer, headNodeRenderer, data);
-    
-    if (!this['data']['classes']) {
-        this['data']['classes'] = [];
-    }
-
-    if (this['data']['class']) {
-        var classes = this['data']['class'].split(/\s/);
-        for (var i = 0; i < classes.length; i++) {
-            this.addClass(classes[i]);
-        }
-    }
+    this.dataChanged();
 };
 window["EdgeRenderer"] = EdgeRenderer;
 
@@ -1907,30 +1933,43 @@ EdgeRenderer.prototype.constructor = EdgeRenderer;
 EdgeRenderer.prototype.defaultStyles = {};
 
 EdgeRenderer.prototype.getStyle = function(propertyName) {
-    return this['constellation'].getStyle('edge', this['data']['classes'], propertyName, this['data'], this.defaultStyles);
+    return this['constellation'].getStyle('edge', this['classes'], propertyName, this['data'], this.defaultStyles);
 };
 EdgeRenderer.prototype["getStyle"] = EdgeRenderer.prototype.getStyle;
 
 // FIXME: Duplicates NodeRenderer class methods. Factor this out.
 EdgeRenderer.prototype.addClass = function(className) {
-    if (jQuery.inArray(className, this['data']['classes']) < 0) {
-        this['data']['classes'].push(className);
+    if (jQuery.inArray(className, this['classes']) < 0) {
+        this['classes'].push(className);
     }
 };
 EdgeRenderer.prototype["addClass"] = EdgeRenderer.prototype.addClass;
 
 EdgeRenderer.prototype.hasClass = function(className) {
-    return jQuery.inArray(className, this['data']['classes']) >= 0;
+    return jQuery.inArray(className, this['classes']) >= 0;
 };
 EdgeRenderer.prototype["hasClass"] = EdgeRenderer.prototype.hasClass;
 
 EdgeRenderer.prototype.removeClass = function(className) {
     var index;
-    while ((index = jQuery.inArray(className, this['data']['classes'])) >= 0) {
-        this['data']['classes'].splice(index, 1);
+    while ((index = jQuery.inArray(className, this['classes'])) >= 0) {
+        this['classes'].splice(index, 1);
     }
 };
 EdgeRenderer.prototype["removeClass"] = EdgeRenderer.prototype.removeClass;
+
+EdgeRenderer.prototype.dataChanged = function() {
+    Edge.prototype.dataChanged.call(this);
+
+    if (this['data']['class']) {
+        this['classes'] = [];
+        var classes = this['data']['class'].split(/\s/);
+        for (var i = 0; i < classes.length; i++) {
+            this.addClass(classes[i]);
+        }
+    }
+};
+EdgeRenderer.prototype["dataChanged"] = EdgeRenderer.prototype.dataChanged;
 
 EdgeRenderer.prototype.create = function() {};
 EdgeRenderer.prototype["create"] = EdgeRenderer.prototype.create;
@@ -2499,7 +2538,7 @@ Constellation.prototype.addNode = function(nodeId, data){
         throw "Failed to add node. Node already exists. id=" + nodeId;
     }
 
-    var rendererClass = this.getStyle('node', data ? data['classes'] : [],
+    var rendererClass = this.getStyle('node', data ? data['class'].split(/\s/) : [],
             'rendererClass', data, {'rendererClass': DefaultNodeRenderer});
     
     var node = new rendererClass(this, nodeId, data);
@@ -2608,7 +2647,7 @@ Constellation.prototype.addEdge = function(edgeId, tailNodeId, headNodeId, data)
         throw "Failed to add edge. Head node does not exist. id=" + headNodeId;
     }
 
-    var rendererClass = this.getStyle('edge', data ? data['classes'] : [],
+    var rendererClass = this.getStyle('edge', data ? data['class'].split(/\s/) : [],
             'rendererClass', data, {'rendererClass': DefaultNodeRenderer});
     
     var edge = new rendererClass(this, edgeId, tailNode, headNode, data);
