@@ -273,11 +273,37 @@ DefaultNodeRenderer.prototype.draw = function() {
         'fill': this.getStyle('labelFontColor')
     });
 
-    
-    // FIXME: Implement label positioning.
-    
-    var labelBounds = this.renderer.label.getBBox();
+    var labelMargin = 5;
     var horizontalPadding = 8, verticalPadding = 3;
+
+    var graphicBounds = this.renderer.graphic.getBBox();
+    var labelBounds = this.renderer.label.getBBox();
+
+    switch (this.getStyle('labelPosition')) {
+        case 'top':
+            labelPosition = {x: 0, y: -graphicBounds.height/2 - labelMargin - verticalPadding - labelBounds.height/2};
+            break;
+        
+        case 'right':
+            labelPosition = {x: graphicBounds.width/2 + labelMargin + labelBounds.width/2 + horizontalPadding, y: 0};
+            break;
+        
+        case 'bottom':
+            labelPosition = {x: 0, y: graphicBounds.height/2 + labelMargin + verticalPadding + labelBounds.height/2};
+            break;
+        
+        case 'left':
+            labelPosition = {x: -graphicBounds.width/2 - labelMargin - horizontalPadding - labelBounds.width/2, y: 0};
+            break;
+        
+        default:
+            // Leave an error message and then default to center.
+            this['constellation'].error('Unexpected value for node labelPosition property. value=' + this.getStyle('labelPosition'));
+        case 'center':
+            labelPosition = {x: 0, y: 0};
+    }
+    svg.change(this.renderer.label, labelPosition);
+    labelBounds = this.renderer.label.getBBox();
     
     var labelBackground = jQuery(this.renderer.labelBackground);
     if (this.getStyle('labelBoxEnabled')
