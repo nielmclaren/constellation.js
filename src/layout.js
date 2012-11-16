@@ -195,8 +195,10 @@ RoamerLayout.prototype.step = function() {
     var dampingConstant = p['dampingConstant'] ? p['dampingConstant'] : 0.3;
     
     // Place new nodes.
-    this.setNodeInitialPositions(this.toBePlacedNodes);
-    this.toBePlacedNodes = [];
+    if (this.toBePlacedNodes.length > 0) {
+        this.setNodeInitialPositions(this.toBePlacedNodes);
+        this.toBePlacedNodes = [];
+    }
     
     // Figure out the bounds center.
     var bounds = this['constellation'].getRendererBounds();
