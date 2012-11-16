@@ -1241,9 +1241,8 @@ RoamerLayout.prototype.step = function() {
     var dampingConstant = p['dampingConstant'] ? p['dampingConstant'] : 0.3;
     
     // Place new nodes.
-    while (this.toBePlacedNodes.length > 0) {
-        this.setNodeInitialPosition(this.toBePlacedNodes.shift());
-    }
+    this.setNodeInitialPositions(this.toBePlacedNodes);
+    this.toBePlacedNodes = [];
     
     // Figure out the bounds center.
     var bounds = this['constellation'].getRendererBounds();
@@ -1335,6 +1334,8 @@ RoamerLayout.prototype.step = function() {
         node['x'] += node['vx'] + scrollX;
         node['y'] += node['vy'] + scrollY;
         
+        // Set acceleration back to zero so it can be recalculated during the next
+        // step. This also allows subclasses to adjust the acceleration before the step.
         node['ax'] = 0;
         node['ay'] = 0;
     }
@@ -1363,6 +1364,13 @@ RoamerLayout.prototype.step = function() {
         };
     }(this), 40);
 };
+
+RoamerLayout.prototype.setNodeInitialPositions = function(nodes) {
+    for (var i = 0; i < nodes.length; i++) {
+        this.setNodeInitialPosition(nodes[i]);
+    }
+};
+RoamerLayout.prototype["setNodeInitialPositions"] = RoamerLayout.prototype.setNodeInitialPositions;
 
 RoamerLayout.prototype.setNodeInitialPosition = function(node) {
     var x = 0, y = 0;
@@ -1403,6 +1411,7 @@ RoamerLayout.prototype.setNodeInitialPosition = function(node) {
     node['x'] = x + Math.random() - 0.5;
     node['y'] = y + Math.random() - 0.5;
 };
+RoamerLayout.prototype["setNodeInitialPosition"] = RoamerLayout.prototype.setNodeInitialPosition;
 
 RoamerLayout.prototype.filterPlacedNodes = function(node, index, array) {
     return node['x'] != null || node['y'] != null;
@@ -2538,7 +2547,7 @@ Constellation.prototype.addNode = function(nodeId, data){
         throw "Failed to add node. Node already exists. id=" + nodeId;
     }
 
-    var rendererClass = this.getStyle('node', data ? data['class'].split(/\s/) : [],
+    var rendererClass = this.getStyle('node', data && data['class'] ? data['class'].split(/\s/) : [],
             'rendererClass', data, {'rendererClass': DefaultNodeRenderer});
     
     var node = new rendererClass(this, nodeId, data);
@@ -2647,7 +2656,7 @@ Constellation.prototype.addEdge = function(edgeId, tailNodeId, headNodeId, data)
         throw "Failed to add edge. Head node does not exist. id=" + headNodeId;
     }
 
-    var rendererClass = this.getStyle('edge', data ? data['class'].split(/\s/) : [],
+    var rendererClass = this.getStyle('edge', data && data['class'] ? data['class'].split(/\s/) : [],
             'rendererClass', data, {'rendererClass': DefaultNodeRenderer});
     
     var edge = new rendererClass(this, edgeId, tailNode, headNode, data);
