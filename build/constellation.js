@@ -1242,7 +1242,7 @@ RoamerLayout.prototype.step = function() {
     
     // Place new nodes.
     if (this.toBePlacedNodes.length > 0) {
-        this.setNodeInitialPositions(this.toBePlacedNodes);
+        this['setNodeInitialPositions'](this.toBePlacedNodes);
         this.toBePlacedNodes = [];
     }
     
@@ -1369,7 +1369,7 @@ RoamerLayout.prototype.step = function() {
 
 RoamerLayout.prototype.setNodeInitialPositions = function(nodes) {
     for (var i = 0; i < nodes.length; i++) {
-        this.setNodeInitialPosition(nodes[i]);
+        this['setNodeInitialPosition'](nodes[i]);
     }
 };
 RoamerLayout.prototype["setNodeInitialPositions"] = RoamerLayout.prototype.setNodeInitialPositions;
