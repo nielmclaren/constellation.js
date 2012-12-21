@@ -319,6 +319,10 @@ DefaultNodeRenderer.prototype.draw = function() {
         labelBackground.attr('width', labelBounds.width + 2*horizontalPadding);
         labelBackground.attr('height', labelBounds.height + 2*verticalPadding);
 
+        var cornerRadius = this.getStyle('labelBoxCornerRadius');
+        labelBackground.attr('rx', cornerRadius);
+        labelBackground.attr('ry', cornerRadius);
+
         svg.change(this.renderer.labelBackground, {
             'fill': this.getStyle('labelBoxFillColor'),
             'stroke': this.getStyle('labelBoxLineColor')
