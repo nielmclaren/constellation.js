@@ -254,7 +254,7 @@ TreeGraphView.prototype.validate = function() {
         return;
     }
     
-    selectedNode.data.depth = 0;
+    selectedNode['data']['depth'] = 0;
     
     var doomedNodeIds = this['result'].getNodeIds();
     var doomedEdgeIds = this['result'].getEdgeIds();
@@ -295,7 +295,7 @@ TreeGraphView.prototype.validate = function() {
                     // The neighbor node has not been added yet
                     var neighborTreeDepth = currNodeMetadata.treeDepth - 1;
                     
-                    neighborNode.data.depth = currNodeMetadata.nodeDepth + 1;
+                    neighborNode['data']['depth'] = currNodeMetadata.nodeDepth + 1;
                     
                     resultNodes.push(neighborNode);
                     nodeQueue.push(neighborNode);
@@ -309,7 +309,7 @@ TreeGraphView.prototype.validate = function() {
                 
                 // Add edge if the neighbor exists.
                 if (jQuery.inArray(edge, resultEdges) < 0 && neighborNodeMetadata) {
-                    edge.data.depth = currNodeMetadata.nodeDepth;
+                    edge['data']['depth'] = currNodeMetadata.nodeDepth;
                     resultEdges.push(edge);
                 }
             }
