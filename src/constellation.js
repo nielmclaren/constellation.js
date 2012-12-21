@@ -825,6 +825,8 @@ Constellation.prototype.nodemouseoverHandler = function(event, node){
     event.stopPropagation();
     event.preventDefault();
 
+    this.arrangeNodeFront(node);
+
     jQuery(this).trigger('nodemouseover', node['id']);
 };
 Constellation.prototype['nodemouseoverHandler'] = Constellation.prototype.nodemouseoverHandler;
@@ -838,6 +840,8 @@ Constellation.prototype['nodemouseoutHandler'] = Constellation.prototype.nodemou
 Constellation.prototype.nodemousedownHandler = function(event, node){
     event.stopPropagation();
     event.preventDefault();
+
+    this.arrangeNodeFront(node);
 
     var touchMetadata = this.touchMetadata['_mouse'] = {
         isTouch: false,
@@ -878,6 +882,8 @@ Constellation.prototype['nodeclickHandler'] = Constellation.prototype.nodeclickH
 Constellation.prototype.nodetouchstartHandler = function(event, node){
     event.stopPropagation();
     event.preventDefault();
+
+    this.arrangeNodeFront(node);
 
     for (var i = 0; i < event['originalEvent']['changedTouches'].length; i++) {
         var touch = event['originalEvent']['changedTouches'][i];
@@ -1322,6 +1328,13 @@ Constellation.prototype.getStyle = function(itemType, itemClasses, propertyName,
 Constellation.prototype['getStyle'] = Constellation.prototype.getStyle;
 
 /// Misc
+
+Constellation.prototype.arrangeNodeFront = function(node) {
+    var topNodeSvg = jQuery(this.nodeContainer).children().last()[0];
+    if (topNodeSvg != node.renderer.group) {
+        jQuery(node.renderer.group).insertAfter(jQuery(this.nodeContainer).children().last());
+    }
+};
 
 Constellation.prototype.debug = function(message) {
     jQuery(this).trigger('log', ['debug'].concat(Array.prototype.slice.call(arguments)));
