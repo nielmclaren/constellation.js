@@ -107,6 +107,8 @@ DefaultNodeRenderer.prototype.constructor = DefaultNodeRenderer;
 
 DefaultNodeRenderer.prototype.defaultStyles = {
     'label': '',
+
+    'cursor': 'default',
     
     'graphicShape': 'circle',
     'graphicFillColor': '#ffffff',
@@ -332,6 +334,8 @@ DefaultNodeRenderer.prototype.draw = function() {
     else {
         labelBackground.css('display', 'none');
     }
+
+    jQuery(this.renderer.group).css('cursor', this.getStyle('cursor'));
 
     this.position();
 
@@ -582,6 +586,8 @@ DefaultEdgeRenderer.prototype.constructor = DefaultEdgeRenderer;
 DefaultEdgeRenderer.prototype.defaultStyles = {
     'edgeLineColor': '#000000',
     'edgeLineThickness': 1,
+
+    'cursor': 'default',
     
     'arrowhead': true,
     'bidirectional': false,
@@ -632,6 +638,7 @@ DefaultEdgeRenderer.prototype.draw = function() {
         .attr('y2', this['headNode']['y'])
         .css('stroke', this.getStyle('edgeLineColor'))
         .css('strokeWidth', this.getStyle('edgeLineThickness'))
+        .css('cursor', this.getStyle('cursor'))
         .css('display', 'inline');
 };
 DefaultEdgeRenderer.prototype["draw"] = DefaultEdgeRenderer.prototype.draw;
