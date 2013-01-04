@@ -1529,6 +1529,7 @@ DefaultNodeRenderer = function(constellation, nodeId, data) {
 
     // Keep track of state to optimize redraw.
     this.label = null;
+    this.tooltip = null;
     this.graphicShape = null;
     this.graphicSize = null;
     this.graphicImageUrl = null;
@@ -1542,6 +1543,7 @@ DefaultNodeRenderer.prototype.constructor = DefaultNodeRenderer;
 
 DefaultNodeRenderer.prototype.defaultStyles = {
     'label': '',
+    'tooltip': '',
 
     'cursor': 'default',
     
@@ -1597,7 +1599,8 @@ DefaultNodeRenderer.prototype.create = function(){
             // HACK: Better cross-browser compatibility with 'dy'
             //dominantBaseline: 'central'
             'dy': '.35em'
-        })
+        }),
+        tooltip: svg.title(group, '')
     };
     
     jQuery(this.renderer.group)
@@ -1637,6 +1640,7 @@ DefaultNodeRenderer.prototype.draw = function() {
     };
 
     var label = this.getStyle('label');
+    var tooltip = this.getStyle('tooltip');
     var graphicSize = this.getStyle('graphicSize');
     var graphicShape = this.getStyle('graphicShape');
     
@@ -1770,11 +1774,18 @@ DefaultNodeRenderer.prototype.draw = function() {
         labelBackground.css('display', 'none');
     }
 
+    if (this.tooltip != tooltip) {
+        jQuery(this.renderer.tooltip)
+            .contents().remove().end()
+            .append(tooltip);
+    }
+
     jQuery(this.renderer.group).css('cursor', this.getStyle('cursor'));
 
     this.position();
 
     this.label = label;
+    this.tooltip = tooltip;
     this.graphicSize = graphicSize;
     this.graphicShape = graphicShape;
     //this.prevLeftIconUrl = prevLeftIconUrl;
@@ -2012,6 +2023,9 @@ EdgeRenderer.prototype["destroy"] =EdgeRenderer.prototype.destroy;
  */
 DefaultEdgeRenderer = function(constellation, edgeId, tailNodeRenderer, headNodeRenderer, data) {
     EdgeRenderer.call(this, constellation, edgeId, tailNodeRenderer, headNodeRenderer, data);
+    
+    // Keep track of state to optimize redraw.
+    this.tooltip = null;
 };
 window["DefaultEdgeRenderer"] = DefaultEdgeRenderer;
 
@@ -2022,6 +2036,7 @@ DefaultEdgeRenderer.prototype.defaultStyles = {
     'edgeLineColor': '#000000',
     'edgeLineThickness': 1,
 
+    'tooltip': '',
     'cursor': 'default',
     
     'arrowhead': true,
@@ -2032,12 +2047,15 @@ DefaultEdgeRenderer.prototype.defaultStyles = {
 DefaultEdgeRenderer.prototype.create = function() {
     var svg = this['constellation']['svg'];
     var container = this['constellation'].getEdgeContainer();
+    var group = svg.group(container);
     this.renderer = {
-        line: svg.line(container, 0, 0, 10, 0, {
+        group: group,
+        line: svg.line(group, 0, 0, 10, 0, {
             'display': 'none',
             'stroke': this.getStyle('edgeLineColor'),
             'strokeWidth': this.getStyle('edgeLineThickness')
-        })
+        }),
+        tooltip: svg.title(group, '')
     };
     
     jQuery(this.renderer.line)
@@ -2075,6 +2093,15 @@ DefaultEdgeRenderer.prototype.draw = function() {
         .css('strokeWidth', this.getStyle('edgeLineThickness'))
         .css('cursor', this.getStyle('cursor'))
         .css('display', 'inline');
+
+    var tooltip = this.getStyle('tooltip');
+    if (this.tooltip != tooltip) {
+        jQuery(this.renderer.tooltip)
+            .contents().remove().end()
+            .append(tooltip);
+    }
+
+    this.tooltip = tooltip;
 };
 DefaultEdgeRenderer.prototype["draw"] = DefaultEdgeRenderer.prototype.draw;
 
