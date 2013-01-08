@@ -847,6 +847,8 @@ Constellation.prototype.nodemousedownHandler = function(event, node){
         isTouch: false,
         node: node,
         touch: event,
+        pageX: event.pageX,
+        pageY: event.pageY,
         timestamp: (new Date()).getTime()
     };
     
@@ -872,7 +874,7 @@ Constellation.prototype.nodeclickHandler = function(event, node){
     event.preventDefault();
 
     var touchMetadata = this.touchMetadata['_mouse'];
-    if (touchMetadata && (new Date()).getTime() - touchMetadata.timestamp < 300) {
+    if (touchMetadata && this.isClick(event, touchMetadata)) {
         jQuery(this).trigger('nodeclick', node['id']);
     }
 
@@ -897,6 +899,8 @@ Constellation.prototype.nodetouchstartHandler = function(event, node){
             nodeOffsetX: touchX - this.worldToViewportX(node['x'], node['y']),
             nodeOffsetY: touchY - this.worldToViewportY(node['x'], node['y']),
             touch: touch,
+            pageX: touch.pageX,
+            pageY: touch.pageY,
             timestamp: (new Date()).getTime()
         };
     }        
@@ -912,7 +916,7 @@ Constellation.prototype.nodetouchendHandler = function(event, node){
         var touch = event['originalEvent']['changedTouches'][i];
         var touchMetadata = this.touchMetadata['_' + touch['identifier']];
 
-        if (touchMetadata && (new Date()).getTime() - touchMetadata.timestamp < 300) {
+        if (touchMetadata && this.isClick(event, touchMetadata)) {
             jQuery(this).trigger('nodeclick', node['id']);
         }
 
@@ -945,7 +949,8 @@ Constellation.prototype.edgemousedownHandler = function(event, edge){
         edge: edge,
         isTouch: false,
         touch: event,
-        timestamp: (new Date()).getTime()
+        pageX: event.pageX,
+        pageY: event.pageY
     };
     
     // We don't care about edge offset because edges can't be dragged.
@@ -967,7 +972,7 @@ Constellation.prototype.edgeclickHandler = function(event, edge){
     event.preventDefault();
 
     var touchMetadata = this.touchMetadata['_mouse'];
-    if (touchMetadata && (new Date()).getTime() - touchMetadata.timestamp < 300) {
+    if (touchMetadata && this.isClick(event, touchMetadata)) {
         jQuery(this).trigger('edgeclick', edge['id']);
     }
 };
@@ -989,6 +994,8 @@ Constellation.prototype.edgetouchstartHandler = function(event, edge){
             //edgeOffsetY: ,
             isTouch: true,
             touch: touch,
+            pageX: touch.pageX,
+            pageY: touch.pageY,
             timestamp: (new Date()).getTime()
         };
     }
@@ -1015,7 +1022,8 @@ Constellation.prototype.mousedownHandler = function(event){
     var touchMetadata = this.touchMetadata['_mouse'] = {
         isTouch: false,
         touch: event,
-        timestamp: (new Date()).getTime()
+        pageX: event.pageX,
+        pageY: event.pageY
     };
     
     // Calculate world coordinates of the touch.
@@ -1038,7 +1046,7 @@ Constellation.prototype.mousemoveHandler = function(event){
     
     // We need to update the touch property with the new event to capture
     // the new page coordinates. If the mouse is not down there will be no metadata.
-    if (touchMetadata) 
+    if (touchMetadata)
         touchMetadata.touch = event;
     
     this.mouseX = this.pageToViewportX(event.pageX, event.pageY);
@@ -1055,7 +1063,7 @@ Constellation.prototype.mouseupHandler = function(event){
     if (touchMetadata) 
         touchMetadata.touch = event;
 
-    if (touchMetadata && (new Date()).getTime() - touchMetadata.timestamp < 300) {
+    if (touchMetadata && this.isClick(event, touchMetadata)) {
         jQuery(this).trigger('click');
     }
     
@@ -1101,6 +1109,8 @@ Constellation.prototype.touchstartHandler = function(event){
         var touchMetadata = this.touchMetadata['_' + touch['identifier']] = {
             isTouch: true,
             touch: touch,
+            pageX: touch.pageX,
+            pageY: touch.pageY,
             timestamp: (new Date()).getTime()
         };
         
@@ -1138,8 +1148,7 @@ Constellation.prototype.touchendHandler = function(event){
         var touch = event['originalEvent']['changedTouches'][i];
         var touchMetadata = this.touchMetadata['_' + touch['identifier']];
         
-        if (touchMetadata &&
-                (new Date()).getTime() - touchMetadata.timestamp < 300) {
+        if (touchMetadata && this.isClick(event, touchMetadata)) {
             // FIXME: React to taps.
         }
     }
@@ -1334,6 +1343,17 @@ Constellation.prototype.arrangeNodeFront = function(node) {
     if (topNodeSvg != node.renderer.group) {
         jQuery(node.renderer.group).insertAfter(jQuery(this.nodeContainer).children().last());
     }
+};
+
+/**
+ * Tests whether the given event should be considered a click based on
+ * information from the originating touchMetadata object.
+ */
+Constellation.prototype.isClick = function(event, touchMetadata) {
+    var dx = event.pageX - touchMetadata.pageX;
+    var dy = event.pageY - touchMetadata.pageY;
+    return Math.sqrt(dx * dx + dy * dy) < 5;
+    //return (new Date()).getTime() - touchMetadata.timestamp <= 300;
 };
 
 Constellation.prototype.debug = function(message) {
