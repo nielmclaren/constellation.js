@@ -9,8 +9,8 @@ Constellation = function(config, styles){
     // Extend the default configuration.
     this['config'] = jQuery.extend(true, this.defaultConfig, config);
     
-    // Replace the default styles.
-    this.styles = styles ? styles : this.defaultStyles;
+    // Extend the default styles.
+    this.styles = styles ? this.defaultStyles.concat(styles) : this.defaultStyles;
     
     this.nodes = [];
     this.edges = [];
@@ -248,7 +248,7 @@ Constellation.prototype.defaultConfig = {
     'graphLoaderClass': SimpleGraphLoader,
     'graphLoader': {
     },
-    'graphParserClass': GraphMlParser,
+    'graphParserClass': JsonGraphParser,
     'graphParser': {
     },
     'graphViewClass': DirectGraphView,
@@ -440,7 +440,7 @@ Constellation.prototype.setSelectedNodeId = function(v){
     if (this.selectedNodeId == v) 
         return;
     this.selectedNodeId = v;
-    jQuery(this).trigger('nodeselect');
+    jQuery(this).trigger('nodeselect', this.selectedNodeId);
 };
 Constellation.prototype['setSelectedNodeId'] = Constellation.prototype.setSelectedNodeId;
 
@@ -458,7 +458,7 @@ Constellation.prototype.setSelectedEdgeId = function(v){
     if (this.selectedEdgeId == v) 
         return;
     this.selectedEdgeId = v;
-    jQuery(this).trigger('edgeselect');
+    jQuery(this).trigger('edgeselect', this.selectedEdgeId);
 };
 Constellation.prototype['setSelectedEdgeId'] = Constellation.prototype.setSelectedEdgeId;
 

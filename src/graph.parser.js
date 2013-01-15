@@ -29,6 +29,50 @@ GraphParser.prototype.parse = function(data) {
 };
 GraphParser.prototype["parse"] = GraphParser.prototype.parse;
 
+
+/**
+ * Parses graph data from a JSON object.
+ * @param config
+ * @returns {JsonGraphParser}
+ * @constructor
+ */
+JsonGraphParser = function(config) {
+    // Constructor with no arguments is used for subclasses.
+    if (arguments.length <= 0) return;
+    
+    // Set the default separator to use for generating edge IDs.
+    if (!config['separator']) config['separator'] = '~~';
+
+    GraphParser.call(this, config);
+};
+window["JsonGraphParser"] = JsonGraphParser;
+
+JsonGraphParser.prototype = new GraphParser();
+JsonGraphParser.prototype.constructor = JsonGraphParser;
+
+JsonGraphParser.prototype.parse = function(data) {
+    if (typeof data == 'string') {
+        data = jQuery.parseJSON(data);
+    }
+    
+    var graph = this['graph'];
+    var separator = this['config']['separator'];
+
+    jQuery.each(data['nodes'], function (i, nodeJson) {
+        graph.addNode(nodeJson['id'], nodeJson['data']);
+    });
+
+    jQuery.each(data['edges'], function (i, edgeJson) {
+        // Generate a default edge ID if none is provided in the data.
+        var edgeId = edgeJson['id'] ? edgeJson['id'] : edgeJson['source'] + separator + edgeJson['target'];
+        graph.addEdge(edgeId, edgeJson['source'], edgeJson['target'], edgeJson['data']);
+    });
+    
+    jQuery(this).trigger('complete');
+};
+JsonGraphParser.prototype["parse"] = JsonGraphParser.prototype.parse;
+
+
 /**
  * 
  * @param config
