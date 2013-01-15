@@ -2362,7 +2362,7 @@ Constellation.prototype.defaultConfig = {
     'graphParserClass': GraphMlParser,
     'graphParser': {
     },
-    'graphViewClass': TreeGraphView,
+    'graphViewClass': DirectGraphView,
     'graphView': {
     },
     'layoutClass': RoamerLayout,
