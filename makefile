@@ -23,3 +23,5 @@ minify: clean concat
 	--externs utils/externs/jquery.ui.externs.js \
 	--externs utils/externs/jquery.mousewheel.externs.js \
 	--externs utils/externs/jquery.svg.externs.js
+	cp build/constellation.js release/libs/constellation.js
+	cp build/constellation.min.js release/libs/constellation.min.js
