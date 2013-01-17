@@ -713,6 +713,8 @@ Constellation.prototype.modelChanged = function(){
     if (this.graphView) {
         this.graphView.sourceChanged();
     }
+
+		jQuery(this).trigger('modelchanged');
 };
 Constellation.prototype['modelChanged'] = Constellation.prototype.modelChanged;
 
@@ -725,6 +727,8 @@ Constellation.prototype.viewChanged = function(){
     if (this.layout) {
         this.layout.viewChanged();
     }
+
+		jQuery(this).trigger('viewchanged');
 };
 Constellation.prototype['viewChanged'] = Constellation.prototype.viewChanged;
 

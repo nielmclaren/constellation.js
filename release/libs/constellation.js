@@ -507,6 +507,50 @@ GraphParser.prototype.parse = function(data) {
 };
 GraphParser.prototype["parse"] = GraphParser.prototype.parse;
 
+
+/**
+ * Parses graph data from a JSON object.
+ * @param config
+ * @returns {JsonGraphParser}
+ * @constructor
+ */
+JsonGraphParser = function(config) {
+    // Constructor with no arguments is used for subclasses.
+    if (arguments.length <= 0) return;
+    
+    // Set the default separator to use for generating edge IDs.
+    if (!config['separator']) config['separator'] = '~~';
+
+    GraphParser.call(this, config);
+};
+window["JsonGraphParser"] = JsonGraphParser;
+
+JsonGraphParser.prototype = new GraphParser();
+JsonGraphParser.prototype.constructor = JsonGraphParser;
+
+JsonGraphParser.prototype.parse = function(data) {
+    if (typeof data == 'string') {
+        data = jQuery.parseJSON(data);
+    }
+    
+    var graph = this['graph'];
+    var separator = this['config']['separator'];
+
+    jQuery.each(data['nodes'], function (i, nodeJson) {
+        graph.addNode(nodeJson['id'], nodeJson['data']);
+    });
+
+    jQuery.each(data['edges'], function (i, edgeJson) {
+        // Generate a default edge ID if none is provided in the data.
+        var edgeId = edgeJson['id'] ? edgeJson['id'] : edgeJson['source'] + separator + edgeJson['target'];
+        graph.addEdge(edgeId, edgeJson['source'], edgeJson['target'], edgeJson['data']);
+    });
+    
+    jQuery(this).trigger('complete');
+};
+JsonGraphParser.prototype["parse"] = JsonGraphParser.prototype.parse;
+
+
 /**
  * 
  * @param config
@@ -1721,7 +1765,7 @@ DefaultNodeRenderer.prototype.draw = function() {
     var labelMargin = 5;
     var horizontalPadding = 8, verticalPadding = 3;
 
-    var graphicBounds = this.renderer.graphic.getBBox();
+    var graphicBounds = this.renderer.graphic ? this.renderer.graphic.getBBox() : {width: 0, height: 0};
     var labelBounds = this.renderer.label.getBBox();
 
     switch (this.getStyle('labelPosition')) {
@@ -2120,8 +2164,8 @@ Constellation = function(config, styles){
     // Extend the default configuration.
     this['config'] = jQuery.extend(true, this.defaultConfig, config);
     
-    // Replace the default styles.
-    this.styles = styles ? styles : this.defaultStyles;
+    // Extend the default styles.
+    this.styles = styles ? this.defaultStyles.concat(styles) : this.defaultStyles;
     
     this.nodes = [];
     this.edges = [];
@@ -2359,7 +2403,7 @@ Constellation.prototype.defaultConfig = {
     'graphLoaderClass': SimpleGraphLoader,
     'graphLoader': {
     },
-    'graphParserClass': GraphMlParser,
+    'graphParserClass': JsonGraphParser,
     'graphParser': {
     },
     'graphViewClass': DirectGraphView,
@@ -2551,7 +2595,7 @@ Constellation.prototype.setSelectedNodeId = function(v){
     if (this.selectedNodeId == v) 
         return;
     this.selectedNodeId = v;
-    jQuery(this).trigger('nodeselect');
+    jQuery(this).trigger('nodeselect', this.selectedNodeId);
 };
 Constellation.prototype['setSelectedNodeId'] = Constellation.prototype.setSelectedNodeId;
 
@@ -2569,7 +2613,7 @@ Constellation.prototype.setSelectedEdgeId = function(v){
     if (this.selectedEdgeId == v) 
         return;
     this.selectedEdgeId = v;
-    jQuery(this).trigger('edgeselect');
+    jQuery(this).trigger('edgeselect', this.selectedEdgeId);
 };
 Constellation.prototype['setSelectedEdgeId'] = Constellation.prototype.setSelectedEdgeId;
 
@@ -2824,6 +2868,8 @@ Constellation.prototype.modelChanged = function(){
     if (this.graphView) {
         this.graphView.sourceChanged();
     }
+
+		jQuery(this).trigger('modelchanged');
 };
 Constellation.prototype['modelChanged'] = Constellation.prototype.modelChanged;
 
@@ -2836,6 +2882,8 @@ Constellation.prototype.viewChanged = function(){
     if (this.layout) {
         this.layout.viewChanged();
     }
+
+		jQuery(this).trigger('viewchanged');
 };
 Constellation.prototype['viewChanged'] = Constellation.prototype.viewChanged;
 

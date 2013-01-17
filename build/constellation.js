@@ -1765,7 +1765,7 @@ DefaultNodeRenderer.prototype.draw = function() {
     var labelMargin = 5;
     var horizontalPadding = 8, verticalPadding = 3;
 
-    var graphicBounds = this.renderer.graphic.getBBox();
+    var graphicBounds = this.renderer.graphic ? this.renderer.graphic.getBBox() : {width: 0, height: 0};
     var labelBounds = this.renderer.label.getBBox();
 
     switch (this.getStyle('labelPosition')) {
@@ -2868,6 +2868,8 @@ Constellation.prototype.modelChanged = function(){
     if (this.graphView) {
         this.graphView.sourceChanged();
     }
+
+		jQuery(this).trigger('modelchanged');
 };
 Constellation.prototype['modelChanged'] = Constellation.prototype.modelChanged;
 
@@ -2880,6 +2882,8 @@ Constellation.prototype.viewChanged = function(){
     if (this.layout) {
         this.layout.viewChanged();
     }
+
+		jQuery(this).trigger('viewchanged');
 };
 Constellation.prototype['viewChanged'] = Constellation.prototype.viewChanged;
 
