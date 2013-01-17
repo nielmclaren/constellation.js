@@ -286,7 +286,7 @@ DefaultNodeRenderer.prototype.draw = function() {
     var labelMargin = 5;
     var horizontalPadding = 8, verticalPadding = 3;
 
-    var graphicBounds = this.renderer.graphic.getBBox();
+    var graphicBounds = this.renderer.graphic ? this.renderer.graphic.getBBox() : {width: 0, height: 0};
     var labelBounds = this.renderer.label.getBBox();
 
     switch (this.getStyle('labelPosition')) {
