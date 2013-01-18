@@ -1,0 +1,113 @@
+{"nodes": [
+  {"id": "home", "data": {
+		"class": "home",
+		"label": "Constellation.js",
+		"tooltip": "A Javascript graph visualization library.",
+		"content": "<p>Welcome to the feature tour. Click a node to learn more.</p>",
+		"graphicFillColor": "#b6cc3d",
+		"graphicLineColor": "#85a422",
+		"graphicSize": 110,
+		"labelFontColor": "#444444",
+		"labelFontSize": 18,
+		"labelFontWeight": "bold"
+	}},
+  {"id": "tooltip", "data": {
+		"label": "Hover Tooltips",
+		"class": "feature",
+		"tooltip": "Additional information about nodes can be displayed in a tooltip.",
+		"content": "<p>Hover over this node to see a tooltip. You can quickly define tooltips using the 'tooltip' data property.</p>"
+	}},
+	{"id": "styles", "data": {
+		"label": "Node & Edge Styles",
+		"class": "feature",
+		"content": "<p>Nodes and edges support a variety of style properties by default. If that's not enough you can also create your own renderers!</p><p>Click the related nodes to see some of the ways that the appearance can be customized.</p>"
+	}},
+	{"id": "fonts", "data": {
+		"label": "Fonts",
+		"content": "<p>Constellation.js draws strings using your browser's SVG so text styling and foreign languages work automatically for enabled languages.</p>"
+	}},
+	{"id": "fonts01", "data": {"label": "Times Italic", "labelFontFamily": "'Times New Roman', Times, serif", "labelFontStyle": "italic", "labelFontSize": 16}},
+	{"id": "fonts02", "data": {"label": "Impact Bold", "labelFontFamily": "Impact, Charcoal, sans-serif", "labelFontWeight": "bold"}},
+	{"id": "fonts03", "data": {"label": "Monospace Type", "labelFontFamily": "'Lucida Console', Monaco, monospace", "labelFontSize": 16}},
+	{"id": "fonts04", "data": {"label": "Georgia Bold", "labelFontFamily": "Georgia, serif", "labelFontWeight": "bold", "labelFontSize": 24}},
+	{"id": "fonts05", "data": {"label": "كل سنة وانت طيب", "content": "<p>That's happy birthday in Arabic. Right-to-left text rendering in action!</p>"}},
+	{"id": "fonts06", "data": {"label": "おたんじょびおめでとう", "content": "<p>That's happy birthday in Japanese.</p>"}},
+	{"id": "shapes", "data": {
+		"label": "Shapes",
+		"content": "<p>Several shapes are supported and each can be sized using the 'graphicSize' style property.</p>"
+	}},
+	{"id": "shapesCircle", "data": {"label": "Circle", "graphicShape": "circle"}},
+	{"id": "shapesTriangle", "data": {"label": "Triangle", "graphicShape": "triangle"}},
+	{"id": "shapesSquare", "data": {"label": "Square", "graphicShape": "square"}},
+	{"id": "shapesPentagon", "data": {"label": "Pentagon", "graphicShape": "pentagon"}},
+	{"id": "labelPosition", "data": {
+		"label": "Label Position",
+		"content": "<p>Change the label position relative to the node graphic by simply specifying 'left', 'right', 'top', 'bottom', or 'center'.</p>"}},
+	{"id": "labelPositionBottom", "data": {"label": "Bottom", "labelPosition": "bottom", "graphicSize": 20}},
+	{"id": "labelPositionRight", "data": {"label": "Right", "labelPosition": "right", "graphicSize": 20}},
+	{"id": "labelPositionLeft", "data": {"label": "Left", "labelPosition": "left", "graphicSize": 20}},
+	{"id": "labelPositionTop", "data": {"label": "Top", "labelPosition": "top", "graphicSize": 20}},
+  {"id": "edgeStyles", "data": {
+		"label": "Edge Styles",
+		"content": "<p>Edge color and thickness can be changed and arrowheads can be displayed on one or both sides.</p>"
+	}},
+  {"id": "edgeStyles01", "data": {"label": "Thicker Blue", "class": "edgeStyles"}},
+  {"id": "edgeStyles02", "data": {"label": "Thick Green", "class": "edgeStyles"}},
+  {"id": "edgeStyles03", "data": {"label": "Thin Gray", "class": "edgeStyles"}},
+  {"id": "edgeStyles04", "data": {"label": "Bidirectional", "class": "edgeStyles"}},
+  {"id": "edgeStyles05", "data": {"label": "Reverse", "class": "edgeStyles"}},
+  {"id": "icons", "data": {
+		"label": "Icons",
+		"leftIconUrl": "images/orange_triangle_icon.png",
+		"rightIconUrl": "images/purple_triangle_icon.png",
+		"content": "<p>Icons can be added beside the label as additional indicators.</p>"}},
+  {"id": "iconsLeft", "data": {"label": "Left Icon", "leftIconUrl": "images/green_circle_icon.png"}},
+  {"id": "iconsRight", "data": {"label": "Right Icon", "rightIconUrl": "images/blue_square_icon.png"}},
+	{"id": "deepLinking", "data": {
+		"label": "Deep Linking",
+		"class": "feature",
+		"content": "<p>When Constellation.js is setup with deep-linking, users can click the back button to return to previously navigated nodes. You can also link directly to other parts of the graph:</p><ul><li><a href='#shapes'>Shapes</a></li><li><a href='#icons'>Icons</a></li><li><a href='#fonts'>Fonts</a></li></ul>"
+	}},
+	{"id": "cascadingStyles", "data": {
+		"label": "Cascading Styles",
+		"class": "feature",
+		"content": "<p>Nodes can be styled individually at the data level or they can be assigned style classes and have their appearance changed as a group. Same goes for styling edges.</p><p>You can also update styles and style classes after load; in this example, node styles change when they're selected and when they've been visited.</p>"
+	}},
+  {"id": "multitouch", "data": {
+		"label": "Multitouch",
+		"class": "feature",
+		"content": "<p>An intuitive tactile experience allowing you to drag nodes around and drag, pinch-zoom, and rotate the canvas.</p><p>You can even hold a node under your thumb while you manipulate the rest of the nodes using the background.</p><p>Try it out!</p>"}},
+  {"id": "stub", "data": {}}
+], "edges": [
+  {"source": "home", "target": "tooltip"},
+  {"source": "home", "target": "styles"},
+  {"source": "styles", "target": "shapes"},
+  {"source": "styles", "target": "labelPosition"},
+	{"source": "labelPosition", "target": "labelPositionBottom"},
+	{"source": "labelPosition", "target": "labelPositionRight"},
+	{"source": "labelPosition", "target": "labelPositionLeft"},
+	{"source": "labelPosition", "target": "labelPositionTop"},
+  {"source": "styles", "target": "edgeStyles"},
+  {"source": "styles", "target": "icons"},
+  {"source": "shapes", "target": "shapesCircle"},
+  {"source": "shapes", "target": "shapesTriangle"},
+  {"source": "shapes", "target": "shapesSquare"},
+  {"source": "shapes", "target": "shapesPentagon"},
+	{"source": "edgeStyles", "target": "edgeStyles01", "data": {"edgeLineColor": "#b6cc3d", "edgeLineThickness": 4, "arrowhead": true}},
+	{"source": "edgeStyles", "target": "edgeStyles02", "data": {"edgeLineColor": "#65a4cd", "edgeLineThickness": 8}},
+	{"source": "edgeStyles", "target": "edgeStyles03", "data": {"edgeLineColor": "#999999"}},
+	{"source": "edgeStyles", "target": "edgeStyles04", "data": {"arrowhead": true, "bidirectional": true}},
+	{"source": "edgeStyles", "target": "edgeStyles05", "data": {"arrowhead": true, "reverse": true}},
+	{"source": "icons", "target": "iconsLeft"},
+	{"source": "icons", "target": "iconsRight"},
+	{"source": "home", "target": "deepLinking"},
+	{"source": "styles", "target": "fonts"},
+	{"source": "fonts", "target": "fonts01"},
+	{"source": "fonts", "target": "fonts02"},
+	{"source": "fonts", "target": "fonts03"},
+	{"source": "fonts", "target": "fonts04"},
+	{"source": "fonts", "target": "fonts05"},
+	{"source": "fonts", "target": "fonts06"},
+	{"source": "home", "target": "cascadingStyles"},
+	{"source": "home", "target": "multitouch"}
+]}

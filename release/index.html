@@ -1,64 +1,198 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
-        <title>Constellation.js</title>
-        
-        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
-        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/jquery-ui.min.js"></script>
-        <script type="text/javascript" src="libs/jquery.mousewheel.js"></script>
-        <script type="text/javascript" src="libs/jquery.svg.js"></script>
-        
-        <script type="text/javascript" src="constellation.min.js"></script>
-        
-        <script type="text/javascript">
-            var constellation;
-            var config = {
-                id: 'container',
-                graphLoaderClass: SimpleGraphLoader,
-                graphLoader: {
-                    url: 'data.graphml'
-                },
-                graphParserClass: GraphMlParser,
-                graphViewClass: TreeGraphView,
-                layoutClass: RoamerLayout
-            };
-            var styles = [
-                ['node', {
-                    rendererClass: DefaultNodeRenderer
-                }],
-                ['edge', {
-                    rendererClass: DefaultEdgeRenderer
-                }]
-            ];
-                        
-            $(document).ready(function() {
-                constellation = new Constellation(config, styles);
-                constellation.init();
+	<head>
+		<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+		<title>Constellation.js</title>
+				
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/jquery-ui.min.js"></script>
+		<script type="text/javascript" src="libs/jquery.mousewheel.js"></script>
+		<script type="text/javascript" src="libs/jquery.svg.js"></script>
+				
+		<script type="text/javascript" src="libs/constellation.js"></script>
+		
+		<script type="text/javascript">
+			var constellation;
+			var prevSelectedNodeId;
 
-                constellation.setSelectedNodeId('1');
+			// Set some configuration parameters.
+			var config = {
+				// The ID of the element where the graph visualization will appear.
+				id: 'constellationPlaceholder',
 
-                $(constellation).bind('nodeclick', function(evt, nodeId) {
-                    constellation.setSelectedNodeId(nodeId);
-                });
-            });
-        </script>
-        
-        <link type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/themes/ui-lightness/jquery-ui.css" rel="stylesheet" />    
-        <style type="text/css">@import "libs/jquery.svg.css";</style>
-        <style type="text/css">
-            html, body, #container {
-                height: 100%;
-                margin: 0;
-                overflow: hidden;
-                padding: 0;
-                width: 100%;
-            }
-        </style>
-    </head>
+				// Pass parameters to the default graph loader, like the data source URL.
+				graphLoader: {
+					url: 'feature-tour.json'
+				},
 
-    <body>
-        <div id="container"></div>
-    </body>
+				// Use a tree graph view to navigate the graph.
+				graphViewClass: TreeGraphView,
+				// Pass parameters to the graph view.
+				graphView: {
+					// Display the selected node and its neighbours.
+					depth: 2
+				},
+
+				layoutClass: RoamerLayout,
+				layout: {
+					// Set the baseEdgeLength a little higher to space nodes out a little more.
+					baseEdgeLength: 150
+				}
+			};
+			
+			// Setup some node and edge styles using the default renderers.
+			var styles = [
+				['node', {
+					rendererClass: DefaultNodeRenderer,
+					graphicFillColor: '#65a4cd',
+					graphicLineColor: '#3161a3',
+					graphicSize: 50,
+					labelBoxLineColor: '#444444',
+					labelFontColor: '#333333',
+					labelFontSize: 14
+				}],
+				['node.visited', {
+					labelBoxFillColor: '#e6e6e6',
+					labelBoxLineColor: '#444444',
+					labelFontColor: '#555555'
+				}],
+				['node.selected', {
+					labelBoxFillColor: '#ffffff',
+					labelFontColor: '#222222',
+					labelFontWeight: 'bold'
+				}],
+				['node.feature', {
+					graphicFillColor: '#681d7a',
+					graphicLineColor: '#370b3e'
+				}],
+				['node.edgeStyles', {
+					graphicFillColor: '#5a186f',
+					graphicLineColor: '#2d0935',
+					graphicSize: 10,
+					labelBoxEnabled: false,
+					labelPosition: 'right'
+				}],
+				['edge', {
+					rendererClass: DefaultEdgeRenderer
+				}]
+			];
+
+			$(document).ready(function() {
+				constellation = new Constellation(config, styles);
+				constellation.init();
+
+				$(constellation)
+					.bind('nodeclick', function(evt, nodeId) {
+						// When a node is clicked, select it and update the URL fragment for deep linking.
+						constellation.setSelectedNodeId(nodeId);
+						window.location.hash = nodeId;
+					})
+					.bind('nodeselect', function(evt, nodeId) {
+						// Add the visited style class to the previously selected node.
+						var prevNr = constellation.getNode(prevSelectedNodeId);
+						if (prevNr) {
+							prevNr.addClass('visited');
+							prevNr.removeClass('selected');
+							prevNr.draw();
+
+							// Also need to update the class data property in the model so it persists.
+							var prevNode = constellation.getModel().getNode(prevSelectedNodeId);
+							if (prevNode) {
+								var classes = prevNode.data['class'] ? prevNode.data['class'].split() : [];
+								if (classes.indexOf('visited') < 0) {
+									classes.push('visited');
+									prevNode.data['class'] = classes.join(' ');
+								}
+							}
+						}
+
+						// Get node information from the model and show it in the info panel.
+						var node = constellation.getModel().getNode(nodeId);
+						if (node) {
+							$('#infoPanel h1').text(node.data.label);
+							$('#infoContent').html(node.data.content ? node.data.content : '');
+						}
+
+						// Add the selected style class to the selected node.
+						var nr = constellation.getNode(nodeId);
+						if (nr) {
+							nr.addClass('selected');
+							nr.draw();
+						}
+
+						prevSelectedNodeId = nodeId;
+					});
+
+				$(constellation.getGraphParser()).bind('complete', function(evt) {
+					$(constellation.getGraphParser()).unbind('complete');
+
+					var fragment = String(location.hash);
+					if (fragment && fragment.length > 0) {
+						if (fragment.charAt(0) == '#') {
+							fragment = fragment.substring(1);
+						}
+						// If there's a URL fragment, jump to that node.
+						constellation.setSelectedNodeId(fragment);
+					}
+					else {
+						// Otherwise start at the home node.
+						constellation.setSelectedNodeId('home');
+					}
+
+					// Manually trigger the nodeselect event after the view updates and the node renderers are added.
+					$(constellation).bind('viewchanged', function(evt) {
+						$(constellation).trigger('nodeselect', constellation.getSelectedNodeId());
+					});
+				});
+
+				// If the URL fragment changes, jump to that node.
+				$(window).bind('hashchange', function(event) {
+					var fragment = String(location.hash);
+					if (fragment && fragment.length > 0) {
+						if (fragment.charAt(0) == '#') {
+							fragment = fragment.substring(1);
+						}
+						constellation.setSelectedNodeId(fragment);
+					}
+				});
+			});
+		</script>
+		
+		<link type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/themes/ui-lightness/jquery-ui.css" rel="stylesheet" />		
+		<style type="text/css">@import "libs/jquery.svg.css";</style>
+		<style type="text/css">
+			html, body {
+				font-family: Arial, sans-serif;
+				font-size: 10pt;
+				height: 100%;
+				margin: 0;
+				overflow: hidden;
+				padding: 0;
+			}
+			#infoPanel {
+				background: #f3f3f3;
+				border-right: 2px solid #e6e6e6;
+				height: 100%;
+				padding: 1em;
+				position: absolute;
+				width: 250px;
+				z-index: 2;
+			}
+			#constellationPlaceholder {
+				height: 100%;
+				position: absolute;
+				width: 100%;
+				z-index: 1;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div id="infoPanel">
+			<h1></h1>
+			<div id="infoContent"></div>
+		</div>
+		<div id="constellationPlaceholder"></div>
+	</body>
 </html>
 
