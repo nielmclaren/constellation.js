@@ -20,6 +20,7 @@
 	{"id": "styles", "data": {
 		"label": "Node & Edge Styles",
 		"class": "feature",
+		"graphicSize": 80,
 		"content": "<p>Nodes and edges support a variety of style properties by default. If that's not enough you can also create your own renderers!</p><p>Click the related nodes to see some of the ways that the appearance can be customized.</p>"
 	}},
 	{"id": "fonts", "data": {
