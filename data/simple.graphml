@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+<key attr.name="label" attr.type="string" for="node" id="label"/>
+	<graph edgedefault="directed">
+		<node id="1">
+			<data key="label">Node One</data>
+		</node>
+		<node id="2">
+			<data key="label">Node Two</data>
+		</node>
+		<edge source="1" target="2"></edge>
+	</graph>
+</graphml>
