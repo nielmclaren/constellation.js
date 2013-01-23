@@ -28,10 +28,10 @@ window["NodeRenderer"] = NodeRenderer;
 NodeRenderer.prototype = new Node();
 NodeRenderer.prototype.constructor = NodeRenderer;
 
-NodeRenderer.prototype.defaultStyles = {};
+NodeRenderer.prototype['defaultStyles'] = {};
 
 NodeRenderer.prototype.getStyle = function(propertyName) {
-	return this['constellation'].getStyle('node', this['classes'], propertyName, this['data'], this.defaultStyles);
+	return this['constellation'].getStyle('node', this['classes'], propertyName, this['data'], this['defaultStyles']);
 };
 NodeRenderer.prototype["getStyle"] = NodeRenderer.prototype.getStyle;
 
@@ -106,7 +106,7 @@ window["DefaultNodeRenderer"] = DefaultNodeRenderer;
 DefaultNodeRenderer.prototype = new NodeRenderer();
 DefaultNodeRenderer.prototype.constructor = DefaultNodeRenderer;
 
-DefaultNodeRenderer.prototype.defaultStyles = {
+DefaultNodeRenderer.prototype['defaultStyles'] = {
 	'label': '',
 	'tooltip': '',
 
@@ -465,7 +465,7 @@ window["GephiNodeRenderer"] = GephiNodeRenderer;
 GephiNodeRenderer.prototype = new NodeRenderer();
 GephiNodeRenderer.prototype.constructor = GephiNodeRenderer;
 
-GephiNodeRenderer.prototype.defaultStyles = {
+GephiNodeRenderer.prototype['defaultStyles'] = {
 	'label': '',
 	'r': 255,
 	'g': 255,
@@ -597,10 +597,10 @@ window["EdgeRenderer"] = EdgeRenderer;
 EdgeRenderer.prototype = new Edge();
 EdgeRenderer.prototype.constructor = EdgeRenderer;
 
-EdgeRenderer.prototype.defaultStyles = {};
+EdgeRenderer.prototype['defaultStyles'] = {};
 
 EdgeRenderer.prototype.getStyle = function(propertyName) {
-	return this['constellation'].getStyle('edge', this['classes'], propertyName, this['data'], this.defaultStyles);
+	return this['constellation'].getStyle('edge', this['classes'], propertyName, this['data'], this['defaultStyles']);
 };
 EdgeRenderer.prototype["getStyle"] = EdgeRenderer.prototype.getStyle;
 
@@ -669,7 +669,7 @@ window["DefaultEdgeRenderer"] = DefaultEdgeRenderer;
 DefaultEdgeRenderer.prototype = new EdgeRenderer();
 DefaultEdgeRenderer.prototype.constructor = DefaultEdgeRenderer;
 
-DefaultEdgeRenderer.prototype.defaultStyles = {
+DefaultEdgeRenderer.prototype['defaultStyles'] = {
 	'edgeLineColor': '#000000',
 	'edgeLineThickness': 1,
 
