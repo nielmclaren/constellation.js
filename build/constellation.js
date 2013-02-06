@@ -2376,6 +2376,14 @@ Constellation.prototype.init = function(){
 Constellation.prototype['init'] = Constellation.prototype.init;
 
 Constellation.prototype.initZoomControls = function(){
+	var p = this['config']['zoomSlider'];
+
+	if (!this.container.button || !this.container.slider) {
+		this.warn('Missing jQuery UI so skipping zoom controls initialization.');
+		this.setZoomScale(p.value);
+		return;
+	}
+
 	this.container.append('<div class="zoomControls">' +
 	//'<button class="zoomToFitButton">Zoom to fit</button>' +
 	'<button class="zoomInButton">Zoom in</button>' +
@@ -2392,7 +2400,6 @@ Constellation.prototype.initZoomControls = function(){
 	'#' + id + ' .zoomSlider { left: 3px; height: 225px; margin: 11px 0 } ' +
 	'</style>');
 	
-	var p = this['config']['zoomSlider'];
 	/*
 	jQuery('#' + id + ' .zoomToFitButton').button({
 		'icons': {

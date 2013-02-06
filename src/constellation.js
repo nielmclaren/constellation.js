@@ -151,7 +151,7 @@ Constellation.prototype['init'] = Constellation.prototype.init;
 Constellation.prototype.initZoomControls = function(){
 	var p = this['config']['zoomSlider'];
 
-	if (!jQuery.button || !jQuery.slider) {
+	if (!this.container.button || !this.container.slider) {
 		this.warn('Missing jQuery UI so skipping zoom controls initialization.');
 		this.setZoomScale(p.value);
 		return;
