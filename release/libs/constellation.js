@@ -3001,8 +3001,11 @@ Constellation.prototype.refreshViewportSize = function(){
 };
 
 Constellation.prototype.refreshZui = function(){
-	var id = this['config']['id'];
-	jQuery('#' + id + ' .zoomSlider').slider('option', 'value', this.zoomScale);
+	if (this.container.button && this.container.slider) {
+		var id = this['config']['id'];
+		jQuery('#' + id + ' .zoomSlider').slider('option', 'value', this.zoomScale);
+	}
+
 	jQuery(this.zuiContainer).attr('transform',
 			'translate(' + (this.viewportWidth / 2 - this.scrollOffsetX) + ',' +
 				(this.viewportHeight / 2 - this.scrollOffsetY) + ')' +
