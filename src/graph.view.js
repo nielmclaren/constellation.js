@@ -86,10 +86,12 @@ GraphView.prototype["invalidate"] = GraphView.prototype.invalidate;
  * @private
  */
 GraphView.prototype.validateDispatcher = function(){
-	var changed = this['validate']();
-	this.valid = true;
-	if (changed) {
-		jQuery(this).trigger('change');
+	if (this['constellation'] && this['source'] && this['result']) {
+		var changed = this['validate']();
+		this.valid = true;
+		if (changed) {
+			jQuery(this).trigger('change');
+		}
 	}
 };
 
@@ -193,7 +195,6 @@ TreeGraphView = function(config){
 	
 	GraphView.call(this, config);
 	
-	this.prevSelectedNodeId = null;
 	this.selectedNodeId = null;
 	
 	this.selectedNodeChanged = false;
@@ -210,6 +211,9 @@ TreeGraphView.prototype.setConstellation = function(constellation){
 	}
 	
 	GraphView.prototype.setConstellation.call(this, constellation);
+	var prevSelectedNodeId = this.selectedNodeId;	
+	this.selectedNodeId = constellation.getSelectedNodeId();
+	this.selectedNodeChanged = this.selectedNodeId != prevSelectedNodeId;
 	
 	if (this['constellation']) {
 		jQuery(this['constellation']).bind('nodeselect', {context: this}, function(event){
