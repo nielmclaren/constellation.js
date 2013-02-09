@@ -761,7 +761,7 @@ Constellation.prototype.draw = function(){
 	var edges = this.edges;
 	for (i = 0; i < edges.length; i++) {
 		var edge = edges[i];
-		edge['draw']();
+		edge['position']();
 	}
 };
 

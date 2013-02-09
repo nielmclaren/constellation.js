@@ -2123,6 +2123,9 @@ EdgeRenderer.prototype["create"] = EdgeRenderer.prototype.create;
 EdgeRenderer.prototype.draw = function() {};
 EdgeRenderer.prototype["draw"] = EdgeRenderer.prototype.draw;
 
+EdgeRenderer.prototype.position = function() {};
+EdgeRenderer.prototype["position"] = EdgeRenderer.prototype.position;
+
 EdgeRenderer.prototype.destroy = function() {};
 EdgeRenderer.prototype["destroy"] =EdgeRenderer.prototype.destroy;
 
@@ -2201,10 +2204,6 @@ DefaultEdgeRenderer.prototype["create"] = DefaultEdgeRenderer.prototype.create;
 
 DefaultEdgeRenderer.prototype.draw = function() {
 	jQuery(this.renderer.line)
-		.attr('x1', this['tailNode']['x'])
-		.attr('y1', this['tailNode']['y'])
-		.attr('x2', this['headNode']['x'])
-		.attr('y2', this['headNode']['y'])
 		.css('stroke', this.getStyle('edgeLineColor'))
 		.css('strokeWidth', this.getStyle('edgeLineThickness'))
 		.css('cursor', this.getStyle('cursor'))
@@ -2220,6 +2219,16 @@ DefaultEdgeRenderer.prototype.draw = function() {
 	this.tooltip = tooltip;
 };
 DefaultEdgeRenderer.prototype["draw"] = DefaultEdgeRenderer.prototype.draw;
+
+DefaultEdgeRenderer.prototype.position = function() {
+	jQuery(this.renderer.line)
+		.attr('x1', this['tailNode']['x'])
+		.attr('y1', this['tailNode']['y'])
+		.attr('x2', this['headNode']['x'])
+		.attr('y2', this['headNode']['y'])
+		.css('display', 'inline');
+};
+DefaultEdgeRenderer.prototype["position"] = DefaultEdgeRenderer.prototype.position;
 
 DefaultEdgeRenderer.prototype.destroy = function() {
 	jQuery(this.renderer.line).remove();
@@ -2988,7 +2997,7 @@ Constellation.prototype.draw = function(){
 	var edges = this.edges;
 	for (i = 0; i < edges.length; i++) {
 		var edge = edges[i];
-		edge['draw']();
+		edge['position']();
 	}
 };
 
