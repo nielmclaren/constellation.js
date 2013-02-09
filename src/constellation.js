@@ -153,7 +153,7 @@ Constellation.prototype.initZoomControls = function(){
 
 	if (!this.container.button || !this.container.slider) {
 		this.warn('Missing jQuery UI so skipping zoom controls initialization.');
-		this.setZoomScale(p.value);
+		this.setZoomScale(p['value']);
 		return;
 	}
 
@@ -194,7 +194,7 @@ Constellation.prototype.initZoomControls = function(){
 		'context': this
 	}, function(event, ui){
 		var constellation = event.data.context;
-		constellation.setZoomScale(Math.min(p.max, constellation.getZoomScale() + p.step));
+		constellation.setZoomScale(Math.min(p['max'], constellation.getZoomScale() + p['step']));
 	});
 	jQuery('#' + id + ' .zoomOutButton').button({
 		'icons': {
@@ -205,7 +205,7 @@ Constellation.prototype.initZoomControls = function(){
 		'context': this
 	}, function(event, ui){
 		var constellation = event.data.context;
-		constellation.setZoomScale(Math.max(p.min, constellation.getZoomScale() - p.step));
+		constellation.setZoomScale(Math.max(p['min'], constellation.getZoomScale() - p['step']));
 	});
 	jQuery('#' + id + ' .zoomSlider').slider(p).bind('slide', {
 		'context': this
@@ -232,7 +232,7 @@ Constellation.prototype.initZoomControls = function(){
 	}
 	
 	// Set initial zoom scale.
-	this.setZoomScale(p.value);
+	this.setZoomScale(p['value']);
 };
 Constellation.prototype['initZoomControls'] = Constellation.prototype.initZoomControls;
 
@@ -1354,8 +1354,8 @@ Constellation.prototype['getStyle'] = Constellation.prototype.getStyle;
 
 Constellation.prototype.arrangeNodeFront = function(node) {
 	var topNodeSvg = jQuery(this.nodeContainer).children().last()[0];
-	if (topNodeSvg != node.renderer.group) {
-		jQuery(node.renderer.group).insertAfter(jQuery(this.nodeContainer).children().last());
+	if (topNodeSvg != node['renderer']['group']) {
+		jQuery(node['renderer']['group']).insertAfter(jQuery(this.nodeContainer).children().last());
 	}
 };
 
