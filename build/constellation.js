@@ -2959,7 +2959,7 @@ Constellation.prototype.viewChanged = function(){
 	this.debug('View changed');
 	
 	if (this.layout) {
-		this.layout.viewChanged();
+		this.layout['viewChanged']();
 	}
 
 		jQuery(this).trigger('viewchanged');
