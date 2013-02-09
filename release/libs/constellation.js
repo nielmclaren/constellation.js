@@ -3585,6 +3585,15 @@ Constellation.prototype.arrangeNodeFront = function(node) {
 		jQuery(node['renderer']['group']).insertAfter(jQuery(this.nodeContainer).children().last());
 	}
 };
+Constellation.prototype['arrangeNodeFront'] = Constellation.prototype.arrangeNodeFront;
+
+Constellation.prototype.arrangeEdgeFront = function(edge) {
+	var topEdgeSvg = jQuery(this.edgeContainer).children().last()[0];
+	if (topEdgeSvg != edge['renderer']['group']) {
+		jQuery(edge['renderer']['group']).insertAfter(jQuery(this.edgeContainer).children().last());
+	}
+};
+Constellation.prototype['arrangeEdgeFront'] = Constellation.prototype.arrangeEdgeFront;
 
 /**
  * Tests whether the given event should be considered a click based on
