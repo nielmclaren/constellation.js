@@ -207,15 +207,17 @@ TreeGraphView.prototype.constructor = TreeGraphView;
 
 TreeGraphView.prototype.setConstellation = function(constellation){
 	if (this['constellation']) {
+		// FIXME: This is unbinding *all* nodeselect listeners. Need to just unbind our listener.
 		jQuery(this['constellation']).unbind('nodeselect');
 	}
 	
 	GraphView.prototype.setConstellation.call(this, constellation);
-	var prevSelectedNodeId = this.selectedNodeId;	
-	this.selectedNodeId = constellation.getSelectedNodeId();
-	this.selectedNodeChanged = this.selectedNodeId != prevSelectedNodeId;
 	
 	if (this['constellation']) {
+		var prevSelectedNodeId = this.selectedNodeId;	
+		this.selectedNodeId = this['constellation'].getSelectedNodeId();
+		this.selectedNodeChanged = this.selectedNodeId != prevSelectedNodeId;
+
 		jQuery(this['constellation']).bind('nodeselect', {context: this}, function(event){
 			event.data.context.selectedNodeHandler();
 		});

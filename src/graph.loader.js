@@ -50,6 +50,7 @@ SimpleGraphLoader.prototype.constructor = SimpleGraphLoader;
 
 SimpleGraphLoader.prototype.setConstellation = function(constellation) {
 	if (this['constellation']) {
+		// FIXME: This is unbinding *all* nodeselect listeners. Need to just unbind our listener.
 		jQuery(this['constellation']).unbind('initialized');
 	}
 	

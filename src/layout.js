@@ -54,6 +54,7 @@ StaticLayout.prototype.constructor = StaticLayout;
 
 StaticLayout.prototype.setConstellation = function(constellation) {
 	if (this['constellation']) {
+		// FIXME: This is unbinding *all* nodeselect listeners. Need to just unbind our listener.
 		jQuery(this['constellation'])
 			.unbind('nodemousedown')
 			.unbind('mouseup');
@@ -154,6 +155,7 @@ RoamerLayout.prototype.constructor = RoamerLayout;
 
 RoamerLayout.prototype.setConstellation = function(constellation) {
 	if (this['constellation']) {
+		// FIXME: This is unbinding *all* nodeselect listeners. Need to just unbind our listener.
 		jQuery(this['constellation']).unbind('nodeAdded');
 		
 		if (this.timeoutId) clearTimeout(this.timeoutId);

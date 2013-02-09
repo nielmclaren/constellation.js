@@ -320,6 +320,7 @@ Constellation.prototype.setGraphView = function(graphView) {
 		this.graphView['setConstellation'](null);
 		this.graphView['setSource'](null);
 		this.graphView['setResult'](null);
+		// FIXME: This is unbinding *all* nodeselect listeners. Need to just unbind our listener.
 		jQuery(this.graphView).unbind('change');
 	}
 	
@@ -377,6 +378,7 @@ Constellation.prototype.setGraphParser = function(graphParser) {
 		}
 		this.graphParser['setGraph'](null);
 		
+		// FIXME: This is unbinding *all* nodeselect listeners. Need to just unbind our listener.
 		jQuery(this.graphParser).unbind('complete');
 	}
 	
@@ -406,6 +408,7 @@ Constellation.prototype.setLayout = function(layout) {
 	if (this.layout) {
 		this.layout['setConstellation'](null);
 
+		// FIXME: This is unbinding *all* nodeselect listeners. Need to just unbind our listener.
 		jQuery(this.layout).unbind('change');
 	}
 	
