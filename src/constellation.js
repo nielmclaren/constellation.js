@@ -771,6 +771,7 @@ Constellation.prototype.refreshViewportSize = function(){
 	this.viewportWidth = this.container.width();
 	this.viewportHeight = this.container.height();
 	this.refreshZui();
+	jQuery(this).trigger('viewportchange');
 };
 
 Constellation.prototype.refreshZui = function(){
@@ -794,6 +795,7 @@ Constellation.prototype['getZoomScale'] = Constellation.prototype.getZoomScale;
 Constellation.prototype.setZoomScale = function(zoomScale){
 	this.zoomScale = zoomScale;
 	this.refreshZui();
+	jQuery(this).trigger('viewportchange');
 };
 Constellation.prototype['setZoomScale'] = Constellation.prototype.setZoomScale;
 
@@ -1255,11 +1257,11 @@ Constellation.prototype.containerDrag = function(){
 			this.zoomScale = this.zoomScale * d1 / d0;
 			this.rotation = this.rotation + dr;
 			this.scrollOffsetX = this.scrollOffsetX +
-			this.worldToViewportX(m0.x, m0.y) -
-			this.pageToViewportX(m0.touch.pageX, m0.touch.pageY);
+				this.worldToViewportX(m0.x, m0.y) -
+				this.pageToViewportX(m0.touch.pageX, m0.touch.pageY);
 			this.scrollOffsetY = this.scrollOffsetY +
-			this.worldToViewportY(m0.x, m0.y) -
-			this.pageToViewportY(m0.touch.pageX, m0.touch.pageY);
+				this.worldToViewportY(m0.x, m0.y) -
+				this.pageToViewportY(m0.touch.pageX, m0.touch.pageY);
 
 			if (dr != 0) {
 				// Have to redraw the nodes to update their rotation.
@@ -1269,14 +1271,15 @@ Constellation.prototype.containerDrag = function(){
 		else {
 			// Container is being drag-panned.
 			this.scrollOffsetX = this.scrollOffsetX +
-			this.worldToViewportX(m0.x, m0.y) -
-			this.pageToViewportX(m0.touch.pageX, m0.touch.pageY);
+				this.worldToViewportX(m0.x, m0.y) -
+				this.pageToViewportX(m0.touch.pageX, m0.touch.pageY);
 			this.scrollOffsetY = this.scrollOffsetY +
-			this.worldToViewportY(m0.x, m0.y) -
-			this.pageToViewportY(m0.touch.pageX, m0.touch.pageY);
+				this.worldToViewportY(m0.x, m0.y) -
+				this.pageToViewportY(m0.touch.pageX, m0.touch.pageY);
 		}
 		
 		this.refreshZui();
+		jQuery(this).trigger('viewportchange');
 	}
 };
 
