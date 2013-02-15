@@ -153,7 +153,7 @@ DefaultNodeRenderer.prototype.create = function(){
 		group: group,
 		graphicContainer: svg.group(group),
 		graphic: null,
-		labelBackground: svg.rect(group, 0, 0, 0, 0, 2, 2, {
+		labelBox: svg.rect(group, 0, 0, 0, 0, 2, 2, {
 					'preserveAspectRatio': 'none',
 			'fill': '#ffffcc',
 			'stroke': '#333333',
@@ -166,13 +166,10 @@ DefaultNodeRenderer.prototype.create = function(){
 			'fontWeight': 'bold',
 			'fill': '#441111',
 			'textAnchor': 'middle',
-			
-			// HACK: Better cross-browser compatibility with 'dy'
-			//dominantBaseline: 'central'
 			'dy': '.35em'
 		}),
-				leftIcon: null,
-				rightIcon: null,
+		leftIcon: null,
+		rightIcon: null,
 		tooltip: svg.title(group, '')
 	};
 	
@@ -292,125 +289,134 @@ DefaultNodeRenderer.prototype.draw = function() {
 	});
 
 	var labelMargin = 5;
-	var horizontalPadding = 8, verticalPadding = 3;
+	var horizontalPadding = 8, verticalPadding = 3, iconPadding = 5;
 
 	var graphicBounds = this.renderer.graphic ? this.renderer.graphic.getBBox() : {width: 0, height: 0};
 	var labelBounds = this.renderer.label.getBBox();
 
+	var leftIconUrl = this.getStyle('leftIconUrl');
+	var leftIconBounds = {
+		width: this.getStyle('leftIconWidth'),
+		height: this.getStyle('leftIconHeight')
+	};
+
+	var rightIconUrl = this.getStyle('rightIconUrl');
+	var rightIconBounds = {
+		width: this.getStyle('rightIconWidth'),
+		height: this.getStyle('rightIconHeight')
+	};
+
+	// The smallest rectangle containing the label and icons. Padding not included.
+	var contentBounds = {
+		width: (leftIconUrl ? leftIconBounds.width + iconPadding : 0)
+			+ labelBounds.width
+			+ (rightIconUrl ? iconPadding + rightIconBounds.width : 0),
+		height: Math.max(
+			leftIconUrl ? leftIconBounds.height : 0,
+			labelBounds.height,
+			rightIconUrl ? rightIconBounds.height : 0)
+	};
+
 	switch (this.getStyle('labelPosition')) {
 		case 'top':
-			labelPosition = {x: 0, y: -graphicBounds.height/2 - labelMargin - verticalPadding - labelBounds.height/2};
+			contentBounds.x = -contentBounds.width/2;
+			contentBounds.y = -graphicBounds.height/2 - labelMargin - verticalPadding - contentBounds.height;
 			break;
 		
 		case 'right':
-			labelPosition = {x: graphicBounds.width/2 + labelMargin + labelBounds.width/2 + horizontalPadding, y: 0};
+			contentBounds.x = graphicBounds.width/2 + labelMargin + horizontalPadding;
+			contentBounds.y = -contentBounds.height/2;
 			break;
 		
 		case 'bottom':
-			labelPosition = {x: 0, y: graphicBounds.height/2 + labelMargin + verticalPadding + labelBounds.height/2};
+			contentBounds.x = -contentBounds.width/2;
+			contentBounds.y = graphicBounds.height/2 + labelMargin + verticalPadding;
 			break;
 		
 		case 'left':
-			labelPosition = {x: -graphicBounds.width/2 - labelMargin - horizontalPadding - labelBounds.width/2, y: 0};
+			contentBounds.x = -graphicBounds.width/2 - labelMargin - horizontalPadding - contentBounds.width;
+			contentBounds.y = -contentBounds.height/2;
 			break;
 		
 		default:
 			// Leave an error message and then default to center.
 			this['constellation'].error('Unexpected value for node labelPosition property. value=' + this.getStyle('labelPosition'));
 		case 'center':
-			labelPosition = {x: 0, y: 0};
+			contentBounds.x = -contentBounds.width/2;
+			contentBounds.y = -contentBounds.height/2;
 	}
-	svg.change(this.renderer.label, labelPosition);
-	labelBounds = this.renderer.label.getBBox();
 
-		var iconPadding = 5;
+	labelBounds.x = contentBounds.x + (leftIconUrl ? leftIconBounds.width + iconPadding : 0);
+	labelBounds.y = contentBounds.y + (contentBounds.height - labelBounds.height) / 2;
 
-		var leftIconWidth = this.getStyle('leftIconWidth');
-		var leftIconHeight = this.getStyle('leftIconHeight');
-		var leftIconX = labelBounds.x - iconPadding - leftIconWidth;
-		var leftIconY = labelBounds.y + labelBounds.height/2 - leftIconHeight/2;
-		var leftIconUrl = this.getStyle('leftIconUrl');
-		if (leftIconUrl != this.leftIconUrl) {
-			if (this.leftIconUrl == null) {
-				this.renderer.leftIcon = svg.image(this.renderer.group, leftIconX, leftIconY, leftIconWidth, leftIconHeight, leftIconUrl);
-			}
-			else {
-				if (leftIconUrl == null) {
-					svg.remove(this.renderer.leftIcon);
-					this.renderer.leftIcon = null;
-				}
-				else {
-					svg.change(this.renderer.leftIcon, {'xlink:href': leftIconUrl, 'x': leftIconX, 'y': leftIconY, 'width': leftIconWidth, 'height': leftIconHeight});
-				}
-			}
-
-			this.leftIconUrl = leftIconUrl;
-		}
-		else {
-			svg.change(this.renderer.leftIcon, {'x': leftIconX, 'y': leftIconY, 'width': leftIconWidth, 'height': leftIconHeight});
-		}
-	
-		var rightIconWidth = this.getStyle('rightIconWidth');
-		var rightIconHeight = this.getStyle('rightIconHeight');
-		var rightIconX = labelBounds.x + labelBounds.width + iconPadding;
-		var rightIconY = labelBounds.y + labelBounds.height/2 - rightIconHeight/2;
-		var rightIconUrl = this.getStyle('rightIconUrl');
-		if (rightIconUrl != this.rightIconUrl) {
-			if (this.rightIconUrl == null) {
-				this.renderer.rightIcon = svg.image(this.renderer.group, rightIconX, rightIconY, rightIconWidth, rightIconHeight, rightIconUrl);
-			}
-			else {
-				if (rightIconUrl == null) {
-					svg.remove(this.renderer.rightIcon);
-					this.renderer.rightIcon = null;
-				}
-				else {
-					svg.change(this.renderer.rightIcon, {'xlink:href': rightIconUrl, 'x': rightIconX, 'y': rightIconY, 'width': rightIconWidth, 'height': rightIconHeight});
-				}
-			}
-
-			this.rightIconUrl = rightIconUrl;
-		}
-		else {
-			svg.change(this.renderer.rightIcon, {'x': rightIconX, 'y': rightIconY, 'width': rightIconWidth, 'height': rightIconHeight});
-		}
-	
-	var labelBackground = jQuery(this.renderer.labelBackground);
 	if (this.getStyle('labelBoxEnabled')
 		&& labelBounds.width > 0
 		&& labelBounds.height > 0) {
 
-				var labelBackgroundY = labelBounds.y;
-				if (this.renderer.leftIcon && leftIconY < labelBackgroundY) labelBackgroundY = leftIconY;
-				if (this.renderer.rightIcon && rightIconY < labelBackgroundY) labelBackgroundY = rightIconY;
-
-				var labelBackgroundHeight = labelBounds.height;
-				if (this.renderer.leftIcon && leftIconHeight > labelBackgroundHeight) labelBackgroundHeight = leftIconHeight;
-				if (this.renderer.rightIcon && rightIconHeight > labelBackgroundHeight) labelBackgroundHeight = rightIconHeight;
-
-		labelBackground.css('display', 'inline');
-		labelBackground.attr('x', labelBounds.x - (this.renderer.leftIcon ? leftIconWidth + iconPadding : 0) - horizontalPadding);
-		labelBackground.attr('y', labelBackgroundY - verticalPadding);
-		labelBackground.attr('width', labelBounds.width
-					+ (this.renderer.leftIcon ? leftIconWidth + iconPadding : 0)
-					+ (this.renderer.rightIcon ? rightIconWidth + iconPadding : 0)
-					+ 2*horizontalPadding);
-		labelBackground.attr('height', labelBackgroundHeight + 2*verticalPadding);
-
 		var cornerRadius = this.getStyle('labelBoxCornerRadius');
-		labelBackground.attr('rx', cornerRadius);
-		labelBackground.attr('ry', cornerRadius);
 
-		svg.change(this.renderer.labelBackground, {
+		jQuery(this.renderer.labelBox)
+			.css('display', 'inline')
+			.attr('x', contentBounds.x - horizontalPadding)
+			.attr('y', contentBounds.y - verticalPadding)
+			.attr('width', contentBounds.width + horizontalPadding * 2)
+			.attr('height', contentBounds.height + verticalPadding * 2)
+			.attr('rx', cornerRadius)
+			.attr('ry', cornerRadius);
+
+		svg.change(this.renderer.labelBox, {
 			'fill': this.getStyle('labelBoxFillColor'),
 			'stroke': this.getStyle('labelBoxLineColor')
 		});
-	
 	}
 	else {
-		labelBackground.css('display', 'none');
+		jQuery(this.renderer.labelBox).css('display', 'none');
 	}
 
+	svg.change(this.renderer.label, {x: labelBounds.x + labelBounds.width/2, y: labelBounds.y + labelBounds.height/2});
+
+	leftIconBounds.x = contentBounds.x;
+	leftIconBounds.y = contentBounds.y + (contentBounds.height - leftIconBounds.height) / 2;
+	if (leftIconUrl != this.leftIconUrl) {
+		if (this.leftIconUrl == null) {
+			this.renderer.leftIcon = svg.image(
+				this.renderer.group, leftIconBounds.x, leftIconBounds.y, leftIconBounds.width, leftIconBounds.height, leftIconUrl);
+		}
+		else {
+			if (leftIconUrl == null) {
+				svg.remove(this.renderer.leftIcon);
+				this.renderer.leftIcon = null;
+			}
+			else {
+				svg.change(this.renderer.leftIcon, jQuery.extend(leftIconBounds, {'xlink:href': leftIconUrl}));
+			}
+		}
+	}
+	else {
+		svg.change(this.renderer.leftIcon, leftIconBounds);
+	}
+
+	rightIconBounds.x = contentBounds.x + contentBounds.width - rightIconBounds.width;
+	rightIconBounds.y = contentBounds.y + (contentBounds.height - rightIconBounds.height) / 2;
+	if (rightIconUrl != this.rightIconUrl) {
+		if (this.rightIconUrl == null) {
+			this.renderer.rightIcon = svg.image(
+				this.renderer.group, rightIconBounds.x, rightIconBounds.y, rightIconBounds.width, rightIconBounds.height, rightIconUrl);
+		}
+		else {
+			if (rightIconUrl == null) {
+				svg.remove(this.renderer.rightIcon);
+				this.renderer.rightIcon = null;
+			}
+			else {
+				svg.change(this.renderer.rightIcon, jQuery.extend(rightIconBounds, {'xlink:href': rightIconUrl}));
+			}
+		}
+	}
+	else {
+		svg.change(this.renderer.rightIcon, rightIconBounds);
+	}
+	
 	if (this.tooltip != tooltip) {
 		jQuery(this.renderer.tooltip)
 			.contents().remove().end()
@@ -425,8 +431,8 @@ DefaultNodeRenderer.prototype.draw = function() {
 	this.tooltip = tooltip;
 	this.graphicSize = graphicSize;
 	this.graphicShape = graphicShape;
-	//this.prevLeftIconUrl = prevLeftIconUrl;
-	//this.prevRightIconUrl = prevRightIconUrl;
+	this.leftIconUrl = leftIconUrl;
+	this.rightIconUrl = rightIconUrl;
 };
 DefaultNodeRenderer.prototype["draw"] = DefaultNodeRenderer.prototype.draw;
 
