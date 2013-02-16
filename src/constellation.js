@@ -935,7 +935,7 @@ Constellation.prototype.nodetouchendHandler = function(event, node){
 		var touch = event['originalEvent']['changedTouches'][i];
 		var touchMetadata = this.touchMetadata['_' + touch['identifier']];
 
-		if (touchMetadata && this.isClick(event, touchMetadata)) {
+		if (touchMetadata && this.isClick(touch, touchMetadata)) {
 			jQuery(this).trigger('nodeclick', node['id']);
 		}
 
@@ -1167,7 +1167,7 @@ Constellation.prototype.touchendHandler = function(event){
 		var touch = event['originalEvent']['changedTouches'][i];
 		var touchMetadata = this.touchMetadata['_' + touch['identifier']];
 		
-		if (touchMetadata && this.isClick(event, touchMetadata)) {
+		if (touchMetadata && this.isClick(touch, touchMetadata)) {
 			// FIXME: React to taps.
 		}
 	}
