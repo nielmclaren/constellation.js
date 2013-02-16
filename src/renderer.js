@@ -118,12 +118,12 @@ DefaultNodeRenderer.prototype['defaultStyles'] = {
 	'graphicSize': 40,
 	
 	'leftIconUrl': '',
-		'leftIconWidth': 16,
-		'leftIconHeight': 16,
+	'leftIconWidth': 16,
+	'leftIconHeight': 16,
 
 	'rightIconUrl': '',
-		'rightIconWidth': 16,
-		'rightIconHeight': 16,
+	'rightIconWidth': 16,
+	'rightIconHeight': 16,
 	
 	'leftIconSpacing': 0,
 	'rightIconSpacing': 0,
@@ -154,7 +154,7 @@ DefaultNodeRenderer.prototype.create = function(){
 		graphicContainer: svg.group(group),
 		graphic: null,
 		labelBox: svg.rect(group, 0, 0, 0, 0, 2, 2, {
-					'preserveAspectRatio': 'none',
+			'preserveAspectRatio': 'none',
 			'fill': '#ffffcc',
 			'stroke': '#333333',
 			'strokeWidth': 1
@@ -295,12 +295,14 @@ DefaultNodeRenderer.prototype.draw = function() {
 	var labelBounds = this.renderer.label.getBBox();
 
 	var leftIconUrl = this.getStyle('leftIconUrl');
+	if (leftIconUrl == '') leftIconUrl = null;
 	var leftIconBounds = {
 		width: this.getStyle('leftIconWidth'),
 		height: this.getStyle('leftIconHeight')
 	};
 
 	var rightIconUrl = this.getStyle('rightIconUrl');
+	if (rightIconUrl == '') rightIconUrl = null;
 	var rightIconBounds = {
 		width: this.getStyle('rightIconWidth'),
 		height: this.getStyle('rightIconHeight')
@@ -399,7 +401,7 @@ DefaultNodeRenderer.prototype.draw = function() {
 	rightIconBounds.x = contentBounds.x + contentBounds.width - rightIconBounds.width;
 	rightIconBounds.y = contentBounds.y + (contentBounds.height - rightIconBounds.height) / 2;
 	if (rightIconUrl != this.rightIconUrl) {
-		if (this.rightIconUrl == null) {
+		if (this.rightIconUrl == 0) {
 			this.renderer.rightIcon = svg.image(
 				this.renderer.group, rightIconBounds.x, rightIconBounds.y, rightIconBounds.width, rightIconBounds.height, rightIconUrl);
 		}
