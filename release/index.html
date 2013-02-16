@@ -140,9 +140,12 @@
 					}
 
 					// Manually trigger the nodeselect event after the view updates and the node renderers are added.
-					$(constellation).bind('viewchanged', function(evt) {
-						$(constellation).trigger('nodeselect', constellation.getSelectedNodeId());
-					});
+					var handler = function(evt) {
+						$(constellation)
+							.unbind('viewchanged', this.handler)
+							.trigger('nodeselect', constellation.getSelectedNodeId());
+					}
+					$(constellation).bind('viewchanged', {handler: handler}, handler);
 				});
 
 				// If the URL fragment changes, jump to that node.
