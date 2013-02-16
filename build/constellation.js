@@ -1605,11 +1605,11 @@ DefaultNodeRenderer.prototype['defaultStyles'] = {
 	'graphicLineColor': '#000000',
 	'graphicSize': 40,
 	
-	'leftIconUrl': '',
+	'leftIconUrl': null,
 	'leftIconWidth': 16,
 	'leftIconHeight': 16,
 
-	'rightIconUrl': '',
+	'rightIconUrl': null,
 	'rightIconWidth': 16,
 	'rightIconHeight': 16,
 	
@@ -1889,7 +1889,7 @@ DefaultNodeRenderer.prototype.draw = function() {
 	rightIconBounds.x = contentBounds.x + contentBounds.width - rightIconBounds.width;
 	rightIconBounds.y = contentBounds.y + (contentBounds.height - rightIconBounds.height) / 2;
 	if (rightIconUrl != this.rightIconUrl) {
-		if (this.rightIconUrl == 0) {
+		if (this.rightIconUrl == null) {
 			this.renderer.rightIcon = svg.image(
 				this.renderer.group, rightIconBounds.x, rightIconBounds.y, rightIconBounds.width, rightIconBounds.height, rightIconUrl);
 		}
