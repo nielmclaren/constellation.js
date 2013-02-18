@@ -57,7 +57,11 @@ StaticLayout.prototype.setConstellation = function(constellation) {
 		// FIXME: This is unbinding *all* nodeselect listeners. Need to just unbind our listener.
 		jQuery(this['constellation'])
 			.unbind('nodemousedown')
-			.unbind('mouseup');
+			.unbind('nodemouseup')
+			.unbind('mouseup')
+			.unbind('nodetouchstart')
+			.unbind('nodetouchend')
+			.unbind('touchend');
 	}
 	
 	Layout.prototype.setConstellation.call(this, constellation);
@@ -66,8 +70,12 @@ StaticLayout.prototype.setConstellation = function(constellation) {
 		jQuery(this['constellation'])
 			.bind('nodemousedown', {context: this}, function(event) {
 				event.data.context.nodemousedownHandler(event); })
-			.bind('mouseup', {context: this}, function(event) {
-				event.data.context.mouseupHandler(event); });
+			.bind('nodemouseup mouseup', {context: this}, function(event) {
+				event.data.context.mouseupHandler(event); })
+			.bind('nodetouchstart', {context: this}, function(event) {
+				event.data.context.nodetouchstartHandler(event); })
+			.bind('nodetouchend touchend', {context: this}, function(event) {
+				event.data.context.touchendHandler(event); });
 	}
 };
 StaticLayout.prototype["setConstellation"] = StaticLayout.prototype.setConstellation;
@@ -105,6 +113,14 @@ StaticLayout.prototype.nodemousedownHandler = function(event) {
 };
 
 StaticLayout.prototype.mouseupHandler = function(event) {
+	if (this.timeoutId) clearInterval(this.timeoutId);
+};
+
+StaticLayout.prototype.nodetouchstartHandler = function(event) {
+	this.step();
+};
+
+StaticLayout.prototype.touchendHandler = function(event) {
 	if (this.timeoutId) clearInterval(this.timeoutId);
 };
 

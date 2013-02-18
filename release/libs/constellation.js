@@ -1154,7 +1154,11 @@ StaticLayout.prototype.setConstellation = function(constellation) {
 		// FIXME: This is unbinding *all* nodeselect listeners. Need to just unbind our listener.
 		jQuery(this['constellation'])
 			.unbind('nodemousedown')
-			.unbind('mouseup');
+			.unbind('nodemouseup')
+			.unbind('mouseup')
+			.unbind('nodetouchstart')
+			.unbind('nodetouchend')
+			.unbind('touchend');
 	}
 	
 	Layout.prototype.setConstellation.call(this, constellation);
@@ -1163,8 +1167,12 @@ StaticLayout.prototype.setConstellation = function(constellation) {
 		jQuery(this['constellation'])
 			.bind('nodemousedown', {context: this}, function(event) {
 				event.data.context.nodemousedownHandler(event); })
-			.bind('mouseup', {context: this}, function(event) {
-				event.data.context.mouseupHandler(event); });
+			.bind('nodemouseup mouseup', {context: this}, function(event) {
+				event.data.context.mouseupHandler(event); })
+			.bind('nodetouchstart', {context: this}, function(event) {
+				event.data.context.nodetouchstartHandler(event); })
+			.bind('nodetouchend touchend', {context: this}, function(event) {
+				event.data.context.touchendHandler(event); });
 	}
 };
 StaticLayout.prototype["setConstellation"] = StaticLayout.prototype.setConstellation;
@@ -1202,6 +1210,14 @@ StaticLayout.prototype.nodemousedownHandler = function(event) {
 };
 
 StaticLayout.prototype.mouseupHandler = function(event) {
+	if (this.timeoutId) clearInterval(this.timeoutId);
+};
+
+StaticLayout.prototype.nodetouchstartHandler = function(event) {
+	this.step();
+};
+
+StaticLayout.prototype.touchendHandler = function(event) {
 	if (this.timeoutId) clearInterval(this.timeoutId);
 };
 
@@ -2538,30 +2554,34 @@ Constellation.prototype.init = function(){
 	// is the Constellation Canvas instance.
 	if ('createTouch' in document) {
 		// Touch events are supported.
-		this.container.bind('touchstart', {'context': this}, function(event){
-			event.data.context.touchstartHandler(event);
-		}).bind('touchmove', {'context': this}, function(event){
-			event.data.context.touchmoveHandler(event);
-		}).bind('touchend', {'context': this}, function(event){
-			event.data.context.touchendHandler(event);
-		}).bind('touchcancel', {'context': this}, function(event){
-			event.data.context.touchcancelHandler(event);
-		});
+		this.container.find('svg')
+			.bind('touchstart', {'context': this}, function(event){
+				event.data.context.touchstartHandler(event);
+			}).bind('touchmove', {'context': this}, function(event){
+				event.data.context.touchmoveHandler(event);
+			});
+			
+		jQuery(document)
+			.bind('touchend', {'context': this}, function(event){
+				event.data.context.touchendHandler(event);
+			}).bind('touchcancel', {'context': this}, function(event){
+				event.data.context.touchcancelHandler(event);
+			});
 	}
 	else {
 		// Use mouse events.
-		jQuery(document).mousemove({'context': this}, function(event){
-			event.data.context.mousemoveHandler(event);
-		}).mouseup({'context': this}, function(event){
-			event.data.context.mouseupHandler(event);
-		});
-		
 		this.container.find('svg')
 			.mousedown({'context': this}, function(event){
 				event.data.context.mousedownHandler(event);
 			})
 			.click({'context': this}, function(event){
 				event.data.context.clickHandler(event);
+			});
+		
+		jQuery(document).mousemove({'context': this}, function(event){
+				event.data.context.mousemoveHandler(event);
+			}).mouseup({'context': this}, function(event){
+				event.data.context.mouseupHandler(event);
 			});
 		
 		// Uses the jQuery Mousewheel Plugin
