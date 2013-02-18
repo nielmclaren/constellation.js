@@ -52,11 +52,12 @@
 		"label": "Edge Styles",
 		"content": "<p>Edge color and thickness can be changed and arrowheads can be displayed on one or both sides.</p>"
 	}},
-  {"id": "edgeStyles01", "data": {"label": "Thicker Blue", "class": "edgeStyles"}},
-  {"id": "edgeStyles02", "data": {"label": "Thick Green", "class": "edgeStyles"}},
+  {"id": "edgeStyles01", "data": {"label": "Thick Green", "class": "edgeStyles"}},
+  {"id": "edgeStyles02", "data": {"label": "Thicker Blue", "class": "edgeStyles"}},
   {"id": "edgeStyles03", "data": {"label": "Thin Gray", "class": "edgeStyles"}},
   {"id": "edgeStyles04", "data": {"label": "Bidirectional", "class": "edgeStyles"}},
   {"id": "edgeStyles05", "data": {"label": "Reverse", "class": "edgeStyles"}},
+  {"id": "edgeStyles06", "data": {"label": "Arrowhead", "class": "edgeStyles"}},
   {"id": "icons", "data": {
 		"label": "Icons",
 		"leftIconUrl": "images/orange_triangle_icon.png",
@@ -99,6 +100,7 @@
 	{"source": "edgeStyles", "target": "edgeStyles03", "data": {"edgeLineColor": "#999999"}},
 	{"source": "edgeStyles", "target": "edgeStyles04", "data": {"arrowhead": true, "bidirectional": true}},
 	{"source": "edgeStyles", "target": "edgeStyles05", "data": {"arrowhead": true, "reverse": true}},
+	{"source": "edgeStyles", "target": "edgeStyles06", "data": {"arrowhead": true}},
 	{"source": "icons", "target": "iconsLeft"},
 	{"source": "icons", "target": "iconsRight"},
 	{"source": "home", "target": "deepLinking"},

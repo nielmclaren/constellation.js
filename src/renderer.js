@@ -451,6 +451,32 @@ DefaultNodeRenderer.prototype.destroy = function() {
 };
 DefaultNodeRenderer.prototype["destroy"] = DefaultNodeRenderer.prototype.destroy;
 
+DefaultNodeRenderer.prototype.getCenterToEdgeVector = function(angle) {
+	// FIXME: Implement for other shapes.
+	var graphicVector;
+	switch (this.graphicShape) {
+		case 'circle':
+			graphicVector = {x: Math.cos(angle) * this.graphicSize/2, y: Math.sin(angle) * this.graphicSize/2};
+			break;
+		default:
+			graphicVector = {x: 0, y: 0};
+	}
+	graphicVector.length = Math.sqrt(graphicVector.x * graphicVector.x   +   graphicVector.y * graphicVector.y);
+
+	var labelBoxVector = {x: 0, y: 0};
+	if (this.getStyle('labelPosition') == 'center'
+		&& this.getStyle('labelBoxEnabled')) {
+		var labelBoxBounds = this.renderer.labelBox.getBBox();
+		var len = Math.min(
+			Math.abs(labelBoxBounds.width / 2 / Math.cos(angle)),
+		  Math.abs(labelBoxBounds.height / 2 / Math.sin(angle)));
+		labelBoxVector = {x: len * Math.cos(angle), y: len * Math.sin(angle)};
+	}
+	labelBoxVector.length = Math.sqrt(labelBoxVector.x * labelBoxVector.x   +   labelBoxVector.y * labelBoxVector.y);
+
+	return labelBoxVector.length > graphicVector.length ? labelBoxVector : graphicVector;
+};
+
 /**
  * Node renderer based on Gephi.
  * FIXME: Finish implementing the GephiNodeRenderer.
@@ -687,7 +713,7 @@ DefaultEdgeRenderer.prototype['defaultStyles'] = {
 	'tooltip': '',
 	'cursor': 'default',
 	
-	'arrowhead': true,
+	'arrowhead': false,
 	'bidirectional': false,
 	'reverse': false
 };
@@ -695,14 +721,16 @@ DefaultEdgeRenderer.prototype['defaultStyles'] = {
 DefaultEdgeRenderer.prototype.create = function() {
 	var svg = this['constellation']['svg'];
 	var container = this['constellation'].getEdgeContainer();
+
 	var group = svg.group(container);
 	this.renderer = {
 		group: group,
 		line: svg.line(group, 0, 0, 10, 0, {
-			'display': 'none',
 			'stroke': this.getStyle('edgeLineColor'),
 			'strokeWidth': this.getStyle('edgeLineThickness')
 		}),
+		arrowhead: null,
+		reverseArrowhead: null,
 		tooltip: svg.title(group, '')
 	};
 	
@@ -732,11 +760,145 @@ DefaultEdgeRenderer.prototype.create = function() {
 DefaultEdgeRenderer.prototype["create"] = DefaultEdgeRenderer.prototype.create;
 
 DefaultEdgeRenderer.prototype.draw = function() {
-	jQuery(this.renderer.line)
-		.css('stroke', this.getStyle('edgeLineColor'))
-		.css('strokeWidth', this.getStyle('edgeLineThickness'))
-		.css('cursor', this.getStyle('cursor'))
-		.css('display', 'inline');
+	var svg = this['constellation']['svg'];
+
+	var lineColor = this.getStyle('edgeLineColor');
+	var thickness = this.getStyle('edgeLineThickness');
+	var arrowhead = this.getStyle('arrowhead');
+	var reverse = this.getStyle('reverse');
+	var bidirectional = this.getStyle('bidirectional');
+
+	var tx = this['tailNode']['x'];
+	var ty = this['tailNode']['y'];
+	var hx = this['headNode']['x'];
+	var hy = this['headNode']['y'];
+
+	// Delta.
+	var dx = hx - tx;
+	var dy = hy - ty;
+	var d = Math.sqrt(dx * dx   +   dy * dy);
+
+	if (d == 0) {
+		jQuery(this.renderer.group).css('display', 'none');
+
+		if (this.renderer.arrowhead) {
+			this.renderer.arrowhead.remove();
+			this.renderer.arrowhead = null;
+		}
+		if (this.renderer.reverseArrowhead) {
+			this.renderer.reverseArrowhead.remove();
+			this.renderer.reverseArrowhead = null;
+		}
+	}
+	else {
+		// Normal.
+		var nx = dx / d;
+		var ny = dy / d;
+
+		// Midpoint.
+		var mx = tx + dx/2;
+		var my = ty + dy/2;
+
+		var a = Math.atan2(dy, dx);
+
+		var tCenterToEdge = this['tailNode']['getCenterToEdgeVector'] ?
+			this['tailNode']['getCenterToEdgeVector'](a) : {x: 0, y: 0};
+		tCenterToEdge.length = Math.sqrt(tCenterToEdge.x * tCenterToEdge.x   +   tCenterToEdge.y * tCenterToEdge.y);
+		var hCenterToEdge = this['headNode']['getCenterToEdgeVector']
+			? this['headNode']['getCenterToEdgeVector'](a + Math.PI) : {x: 0, y: 0};
+		hCenterToEdge.length = Math.sqrt(hCenterToEdge.x * hCenterToEdge.x   +   hCenterToEdge.y * hCenterToEdge.y);
+
+		// The endpoints of the edge at each node.
+		var tailEnd = {x: tx, y: ty};
+		var headEnd = {x: hx, y: hy};
+
+		if (d < tCenterToEdge.length + hCenterToEdge.length) {
+			// Nodes are overlapping so don't draw the edge.
+			jQuery(this.renderer.group).css('display', 'none');
+
+			if (this.renderer.arrowhead) {
+				this.renderer.arrowhead.remove();
+				this.renderer.arrowhead = null;
+			}
+			if (this.renderer.reverseArrowhead) {
+				this.renderer.reverseArrowhead.remove();
+				this.renderer.reverseArrowhead = null;
+			}
+		}
+		else {
+			var edgeLength = d - tCenterToEdge.length - hCenterToEdge.length;
+			var arrowLength = Math.min(Math.max(15, thickness * 6), 0.4 * edgeLength);
+			var arrowWidth = 0.4 * arrowLength;
+
+			if (arrowhead) {
+				if (bidirectional || !reverse) {
+					// Tail to head arrowhead.
+					headEnd.x += hCenterToEdge.x - nx * arrowLength;
+					headEnd.y += hCenterToEdge.y - ny * arrowLength;
+
+					if (!this.renderer.arrowhead) {
+						this.renderer.arrowhead = svg.polygon(this.renderer.group, [[0,0]], {'strokeWidth': 0});
+					}
+
+					jQuery(this.renderer.arrowhead)
+						.attr('points', this.getPointsString(
+							[headEnd.x - ny * arrowWidth/2, headEnd.y + nx * arrowWidth/2],
+							[headEnd.x + nx * arrowLength, headEnd.y + ny * arrowLength],
+							[headEnd.x + ny * arrowWidth/2, headEnd.y - nx * arrowWidth/2]
+						))
+						.css('fill', lineColor);
+				}
+				else if (this.renderer.arrowhead) {
+					this.renderer.arrowhead.remove();
+					this.renderer.arrowhead = null;
+				}
+
+				if (bidirectional || reverse) {
+					// Head to tail arrowhead.
+					tailEnd.x += tCenterToEdge.x + nx * arrowLength;
+					tailEnd.y += tCenterToEdge.y + ny * arrowLength;
+
+					if (!this.renderer.reverseArrowhead) {
+						this.renderer.reverseArrowhead = svg.polygon(this.renderer.group, [[0,0]], {'strokeWidth': 0});
+					}
+
+					jQuery(this.renderer.reverseArrowhead)
+						.attr('points', this.getPointsString(
+							[tailEnd.x - ny * arrowWidth/2, tailEnd.y + nx * arrowWidth/2],
+							[tailEnd.x - nx * arrowLength, tailEnd.y - ny * arrowLength],
+							[tailEnd.x + ny * arrowWidth/2, tailEnd.y - nx * arrowWidth/2]
+						))
+						.css('fill', lineColor);
+				}
+				else if (this.renderer.reverseArrowhead) {
+					this.renderer.reverseArrowhead.remove();
+					this.renderer.reverseArrowhead = null;
+				}
+			}
+			else {
+				if (this.renderer.arrowhead) {
+					this.renderer.arrowhead.remove();
+					this.renderer.arrowhead = null;
+				}
+				if (this.renderer.reverseArrowhead) {
+					this.renderer.reverseArrowhead.remove();
+					this.renderer.reverseArrowhead = null;
+				}
+			}
+
+			jQuery(this.renderer.group)
+				.css('display', 'inline');
+
+			jQuery(this.renderer.line)
+				.css('stroke', lineColor)
+				.css('strokeWidth', thickness)
+				.css('cursor', this.getStyle('cursor'))
+				.attr('x1', tailEnd.x)
+				.attr('y1', tailEnd.y)
+				.attr('x2', headEnd.x)
+				.attr('y2', headEnd.y);
+		}
+	}
 
 	var tooltip = this.getStyle('tooltip');
 	if (this.tooltip != tooltip) {
@@ -750,16 +912,30 @@ DefaultEdgeRenderer.prototype.draw = function() {
 DefaultEdgeRenderer.prototype["draw"] = DefaultEdgeRenderer.prototype.draw;
 
 DefaultEdgeRenderer.prototype.position = function() {
-	jQuery(this.renderer.line)
-		.attr('x1', this['tailNode']['x'])
-		.attr('y1', this['tailNode']['y'])
-		.attr('x2', this['headNode']['x'])
-		.attr('y2', this['headNode']['y'])
-		.css('display', 'inline');
+	// FIXME: Try to factor out unnecessary draw code.
+	this.draw();
 };
 DefaultEdgeRenderer.prototype["position"] = DefaultEdgeRenderer.prototype.position;
 
 DefaultEdgeRenderer.prototype.destroy = function() {
 	jQuery(this.renderer.line).remove();
+
+	if (this.renderer.arrowhead) {
+		this.renderer.arrowhead.remove();
+	}
+	if (this.renderer.reverseArrowhead) {
+		this.renderer.reverseArrowhead.remove();
+	}
 };
 DefaultEdgeRenderer.prototype["destroy"] = DefaultEdgeRenderer.prototype.destroy;
+
+DefaultEdgeRenderer.prototype.getPointsString = function() {
+	var result = '';
+	while (arguments.length > 0) {
+		var p = Array.prototype.shift.call(arguments);
+		result += ' ' + p[0] + ',' + p[1];
+	}
+	return result;
+};
+DefaultEdgeRenderer.prototype['getPointsString'] = DefaultEdgeRenderer.prototype.getPointsString;
+
