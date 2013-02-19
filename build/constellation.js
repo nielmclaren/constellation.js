@@ -1943,9 +1943,11 @@ DefaultNodeRenderer.prototype.draw = function() {
 DefaultNodeRenderer.prototype["draw"] = DefaultNodeRenderer.prototype.draw;
 
 DefaultNodeRenderer.prototype.position = function() {
-	jQuery(this.renderer.group)
-		.attr('transform', 'translate(' + this['x'] + ',' + this['y'] + ')' + 
-			'rotate(' + (-this['constellation'].rotation * 180/Math.PI) + ')');
+	if (this['x'] != null && this['y'] != null) {
+		jQuery(this.renderer.group)
+			.attr('transform', 'translate(' + this['x'] + ',' + this['y'] + ')' + 
+				'rotate(' + (-this['constellation'].rotation * 180/Math.PI) + ')');
+	}
 };
 DefaultNodeRenderer.prototype["position"] = DefaultNodeRenderer.prototype.position;
 
@@ -1968,8 +1970,8 @@ DefaultNodeRenderer.prototype.getCenterToEdgeVector = function(angle) {
 	graphicVector.length = Math.sqrt(graphicVector.x * graphicVector.x   +   graphicVector.y * graphicVector.y);
 
 	var labelBoxVector = {x: 0, y: 0};
-	if (this.getStyle('labelPosition') == 'center'
-		&& this.getStyle('labelBoxEnabled')) {
+	if (jQuery(this.renderer.labelBox).css('display') == 'inline'
+		&& this.getStyle('labelPosition') == 'center') {
 		var labelBoxBounds = this.renderer.labelBox.getBBox();
 		var len = Math.min(
 			Math.abs(labelBoxBounds.width / 2 / Math.cos(angle)),
@@ -2282,15 +2284,15 @@ DefaultEdgeRenderer.prototype.draw = function() {
 	var dy = hy - ty;
 	var d = Math.sqrt(dx * dx   +   dy * dy);
 
-	if (d == 0) {
+	if (tx == null || ty == null || hx == null || hy == null || d == 0) {
 		jQuery(this.renderer.group).css('display', 'none');
 
 		if (this.renderer.arrowhead) {
-			this.renderer.arrowhead.remove();
+			jQuery(this.renderer.arrowhead).remove();
 			this.renderer.arrowhead = null;
 		}
 		if (this.renderer.reverseArrowhead) {
-			this.renderer.reverseArrowhead.remove();
+			jQuery(this.renderer.reverseArrowhead).remove();
 			this.renderer.reverseArrowhead = null;
 		}
 	}
@@ -2321,11 +2323,11 @@ DefaultEdgeRenderer.prototype.draw = function() {
 			jQuery(this.renderer.group).css('display', 'none');
 
 			if (this.renderer.arrowhead) {
-				this.renderer.arrowhead.remove();
+				jQuery(this.renderer.arrowhead).remove();
 				this.renderer.arrowhead = null;
 			}
 			if (this.renderer.reverseArrowhead) {
-				this.renderer.reverseArrowhead.remove();
+				jQuery(this.renderer.reverseArrowhead).remove();
 				this.renderer.reverseArrowhead = null;
 			}
 		}
@@ -2353,7 +2355,7 @@ DefaultEdgeRenderer.prototype.draw = function() {
 						.css('fill', lineColor);
 				}
 				else if (this.renderer.arrowhead) {
-					this.renderer.arrowhead.remove();
+					jQuery(this.renderer.arrowhead).remove();
 					this.renderer.arrowhead = null;
 				}
 
@@ -2375,17 +2377,17 @@ DefaultEdgeRenderer.prototype.draw = function() {
 						.css('fill', lineColor);
 				}
 				else if (this.renderer.reverseArrowhead) {
-					this.renderer.reverseArrowhead.remove();
+					jQuery(this.renderer.reverseArrowhead).remove();
 					this.renderer.reverseArrowhead = null;
 				}
 			}
 			else {
 				if (this.renderer.arrowhead) {
-					this.renderer.arrowhead.remove();
+					jQuery(this.renderer.arrowhead).remove();
 					this.renderer.arrowhead = null;
 				}
 				if (this.renderer.reverseArrowhead) {
-					this.renderer.reverseArrowhead.remove();
+					jQuery(this.renderer.reverseArrowhead).remove();
 					this.renderer.reverseArrowhead = null;
 				}
 			}
