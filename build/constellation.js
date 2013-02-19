@@ -2427,10 +2427,10 @@ DefaultEdgeRenderer.prototype.destroy = function() {
 	jQuery(this.renderer.line).remove();
 
 	if (this.renderer.arrowhead) {
-		this.renderer.arrowhead.remove();
+		jQuery(this.renderer.arrowhead).remove();
 	}
 	if (this.renderer.reverseArrowhead) {
-		this.renderer.reverseArrowhead.remove();
+		jQuery(this.renderer.reverseArrowhead).remove();
 	}
 };
 DefaultEdgeRenderer.prototype["destroy"] = DefaultEdgeRenderer.prototype.destroy;
@@ -2578,6 +2578,11 @@ Constellation.prototype.init = function(){
 			})
 			.click({'context': this}, function(event){
 				event.data.context.clickHandler(event);
+			})
+			// Uses the jQuery Mousewheel Plugin.
+			// @see https://github.com/brandonaaron/jquery-mousewheel
+			.bind('mousewheel', {'context': this}, function(event, delta, deltaX, deltaY){
+				event.data.context.mousewheelHandler(event, delta);
 			});
 		
 		jQuery(document).mousemove({'context': this}, function(event){
@@ -2585,12 +2590,6 @@ Constellation.prototype.init = function(){
 			}).mouseup({'context': this}, function(event){
 				event.data.context.mouseupHandler(event);
 			});
-		
-		// Uses the jQuery Mousewheel Plugin
-		// @see https://github.com/danielgm/jquery-mousewheel
-		jQuery(this.canvas).mousewheel({'context': this}, function(event, delta){
-			event.data.context.mousewheelHandler(event, delta);
-		});
 	}
 	
 	this.refreshViewportSize();
@@ -3559,7 +3558,8 @@ Constellation.prototype.clickHandler = function(event){
 
 Constellation.prototype.mousewheelHandler = function(event, delta){
 	event.preventDefault();
-	this.setZoomScale(this.getZoomScale() + delta * 0.1);
+	var p = this['config']['zoomSlider'];
+	this.setZoomScale(Math.max(p['min'], Math.min(p['max'], this.getZoomScale() + delta * 0.05)));
 	
 	// FIXME: The zoom should center around the mouse!
 
