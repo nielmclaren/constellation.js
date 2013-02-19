@@ -1364,8 +1364,9 @@ Constellation.prototype['getStyle'] = Constellation.prototype.getStyle;
 
 Constellation.prototype.arrangeNodeFront = function(node) {
 	var topNodeSvg = jQuery(this.nodeContainer).children().last()[0];
-	if (topNodeSvg != node['renderer']['group']) {
-		jQuery(node['renderer']['group']).insertAfter(jQuery(this.nodeContainer).children().last());
+	var nodeSvg = node.getSvg();
+	if (topNodeSvg != nodeSvg) {
+		jQuery(nodeSvg).insertAfter(jQuery(this.nodeContainer).children().last());
 	}
 };
 Constellation.prototype['arrangeNodeFront'] = Constellation.prototype.arrangeNodeFront;

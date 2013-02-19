@@ -80,6 +80,9 @@ NodeRenderer.prototype["position"] = NodeRenderer.prototype.position;
 NodeRenderer.prototype.destroy = function() {};
 NodeRenderer.prototype["destroy"] = NodeRenderer.prototype.destroy;
 
+NodeRenderer.prototype.getSvg = function() {};
+NodeRenderer.prototype["getSvg"] = NodeRenderer.prototype.getSvg;
+
 
 /**
  * 
@@ -478,6 +481,11 @@ DefaultNodeRenderer.prototype.getCenterToEdgeVector = function(angle) {
 	return labelBoxVector.length > graphicVector.length ? labelBoxVector : graphicVector;
 };
 
+DefaultNodeRenderer.prototype.getSvg = function() {
+	return this.renderer.group;
+};
+
+
 /**
  * Node renderer based on Gephi.
  * FIXME: Finish implementing the GephiNodeRenderer.
@@ -684,6 +692,9 @@ EdgeRenderer.prototype["position"] = EdgeRenderer.prototype.position;
 
 EdgeRenderer.prototype.destroy = function() {};
 EdgeRenderer.prototype["destroy"] =EdgeRenderer.prototype.destroy;
+
+EdgeRenderer.prototype.getSvg = function() {};
+EdgeRenderer.prototype["getSvg"] = EdgeRenderer.prototype.getSvg;
 
 
 /**
@@ -929,6 +940,10 @@ DefaultEdgeRenderer.prototype.destroy = function() {
 	}
 };
 DefaultEdgeRenderer.prototype["destroy"] = DefaultEdgeRenderer.prototype.destroy;
+
+DefaultEdgeRenderer.prototype.getSvg = function() {
+	return this.renderer.group;
+};
 
 DefaultEdgeRenderer.prototype.getPointsString = function() {
 	var result = '';
