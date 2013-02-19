@@ -923,10 +923,10 @@ DefaultEdgeRenderer.prototype.destroy = function() {
 	jQuery(this.renderer.line).remove();
 
 	if (this.renderer.arrowhead) {
-		this.renderer.arrowhead.remove();
+		jQuery(this.renderer.arrowhead).remove();
 	}
 	if (this.renderer.reverseArrowhead) {
-		this.renderer.reverseArrowhead.remove();
+		jQuery(this.renderer.reverseArrowhead).remove();
 	}
 };
 DefaultEdgeRenderer.prototype["destroy"] = DefaultEdgeRenderer.prototype.destroy;
