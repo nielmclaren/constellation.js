@@ -142,8 +142,6 @@ DefaultNodeRenderer.prototype['defaultStyles'] = {
 	'labelFontSize': 12
 };
 
-// FIXME: Implement graphic image in node renderers.
-// FIXME: Implement left and right icons.
 DefaultNodeRenderer.prototype.create = function(){
 	var svg = this['constellation']['svg'];
 	var container = this['constellation'].getNodeContainer();
@@ -348,8 +346,9 @@ DefaultNodeRenderer.prototype.draw = function() {
 			contentBounds.y = -contentBounds.height/2;
 	}
 
-	labelBounds.x = contentBounds.x + (leftIconUrl ? leftIconBounds.width + iconPadding : 0);
-	labelBounds.y = contentBounds.y + (contentBounds.height - labelBounds.height) / 2;
+	// Would modify labelBounds object but IE doesn't like you modifying the getBBox() object.
+	var labelBoundsX = contentBounds.x + (leftIconUrl ? leftIconBounds.width + iconPadding : 0);
+	var labelBoundsY = contentBounds.y + (contentBounds.height - labelBounds.height) / 2;
 
 	if (this.getStyle('labelBoxEnabled')
 		&& labelBounds.width > 0
@@ -375,7 +374,7 @@ DefaultNodeRenderer.prototype.draw = function() {
 		jQuery(this.renderer.labelBox).css('display', 'none');
 	}
 
-	svg.change(this.renderer.label, {x: labelBounds.x + labelBounds.width/2, y: labelBounds.y + labelBounds.height/2});
+	svg.change(this.renderer.label, {x: labelBoundsX + labelBounds.width/2, y: labelBoundsY + labelBounds.height/2});
 
 	leftIconBounds.x = contentBounds.x;
 	leftIconBounds.y = contentBounds.y + (contentBounds.height - leftIconBounds.height) / 2;
