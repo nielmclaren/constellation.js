@@ -1584,6 +1584,9 @@ NodeRenderer.prototype["position"] = NodeRenderer.prototype.position;
 NodeRenderer.prototype.destroy = function() {};
 NodeRenderer.prototype["destroy"] = NodeRenderer.prototype.destroy;
 
+NodeRenderer.prototype.getSvg = function() {};
+NodeRenderer.prototype["getSvg"] = NodeRenderer.prototype.getSvg;
+
 
 /**
  * 
@@ -1650,18 +1653,18 @@ DefaultNodeRenderer.prototype.create = function(){
 	var svg = this['constellation']['svg'];
 	var container = this['constellation'].getNodeContainer();
 	
-	var group = svg.group(container, {'display': 'none'});
+	var group = svg['group'](container, {'display': 'none'});
 	this.renderer = {
 		group: group,
-		graphicContainer: svg.group(group),
+		graphicContainer: svg['group'](group),
 		graphic: null,
-		labelBox: svg.rect(group, 0, 0, 0, 0, 2, 2, {
+		labelBox: svg['rect'](group, 0, 0, 0, 0, 2, 2, {
 			'preserveAspectRatio': 'none',
 			'fill': '#ffffcc',
 			'stroke': '#333333',
 			'strokeWidth': 1
 		}),
-		label: svg.text(group, 0, 0, '', {
+		label: svg['text'](group, 0, 0, '', {
 			'style': '-webkit-user-select: none;-khtml-user-select: none;-moz-user-select: none;-o-user-select: none;user-select: none;',
 			'fontFamily': 'Verdana',
 			'fontSize': 15,
@@ -1672,7 +1675,7 @@ DefaultNodeRenderer.prototype.create = function(){
 		}),
 		leftIcon: null,
 		rightIcon: null,
-		tooltip: svg.title(group, '')
+		tooltip: svg['title'](group, '')
 	};
 	
 	jQuery(this.renderer.group)
@@ -1728,7 +1731,7 @@ DefaultNodeRenderer.prototype.draw = function() {
 				// FIXME: Support pentagon node graphic shape.
 				break;
 			case 'square':
-				this.renderer.graphic = svg.rect(this.renderer.graphicContainer,
+				this.renderer.graphic = svg['rect'](this.renderer.graphicContainer,
 					-graphicSize/2, -graphicSize/2, graphicSize, graphicSize, graphicSettings);
 				break;
 			case 'diamond':
@@ -1738,7 +1741,7 @@ DefaultNodeRenderer.prototype.draw = function() {
 				// FIXME: Support triangle node graphic shape.
 				break;
 			case 'circle':
-				this.renderer.graphic = svg.circle(this.renderer.graphicContainer,
+				this.renderer.graphic = svg['circle'](this.renderer.graphicContainer,
 					0, 0, graphicSize/2, graphicSettings);
 				break;
 			default:
@@ -1769,11 +1772,11 @@ DefaultNodeRenderer.prototype.draw = function() {
 			default:
 				throw "Failed to draw node graphic. Unknown shape. shape='" + graphicShape + "'";
 		}
-		svg.change(this.renderer.graphic, graphicSettings);
+		svg['change'](this.renderer.graphic, graphicSettings);
 	}
 	else {
 		// No shape or size change but we still need to update other settings.
-		svg.change(this.renderer.graphic, graphicSettings);
+		svg['change'](this.renderer.graphic, graphicSettings);
 	}
 	
 	if (this.label != label) {
@@ -1782,7 +1785,7 @@ DefaultNodeRenderer.prototype.draw = function() {
 			.append(label);
 	}
 
-	svg.change(this.renderer.label, {
+	svg['change'](this.renderer.label, {
 		'fontFamily': this.getStyle('labelFontFamily'),
 		'fontSize': this.getStyle('labelFontSize'),
 		'fontStyle': this.getStyle('labelFontStyle'),
@@ -1869,7 +1872,7 @@ DefaultNodeRenderer.prototype.draw = function() {
 			.attr('rx', cornerRadius)
 			.attr('ry', cornerRadius);
 
-		svg.change(this.renderer.labelBox, {
+		svg['change'](this.renderer.labelBox, {
 			'fill': this.getStyle('labelBoxFillColor'),
 			'stroke': this.getStyle('labelBoxLineColor')
 		});
@@ -1878,48 +1881,48 @@ DefaultNodeRenderer.prototype.draw = function() {
 		jQuery(this.renderer.labelBox).css('display', 'none');
 	}
 
-	svg.change(this.renderer.label, {x: labelBoundsX + labelBounds.width/2, y: labelBoundsY + labelBounds.height/2});
+	svg['change'](this.renderer.label, {x: labelBoundsX + labelBounds.width/2, y: labelBoundsY + labelBounds.height/2});
 
 	leftIconBounds.x = contentBounds.x;
 	leftIconBounds.y = contentBounds.y + (contentBounds.height - leftIconBounds.height) / 2;
 	if (leftIconUrl != this.leftIconUrl) {
 		if (this.leftIconUrl == null) {
-			this.renderer.leftIcon = svg.image(
+			this.renderer.leftIcon = svg['image'](
 				this.renderer.group, leftIconBounds.x, leftIconBounds.y, leftIconBounds.width, leftIconBounds.height, leftIconUrl);
 		}
 		else {
 			if (leftIconUrl == null) {
-				svg.remove(this.renderer.leftIcon);
+				svg['remove'](this.renderer.leftIcon);
 				this.renderer.leftIcon = null;
 			}
 			else {
-				svg.change(this.renderer.leftIcon, jQuery.extend(leftIconBounds, {'xlink:href': leftIconUrl}));
+				svg['change'](this.renderer.leftIcon, jQuery.extend(leftIconBounds, {'xlink:href': leftIconUrl}));
 			}
 		}
 	}
 	else {
-		svg.change(this.renderer.leftIcon, leftIconBounds);
+		svg['change'](this.renderer.leftIcon, leftIconBounds);
 	}
 
 	rightIconBounds.x = contentBounds.x + contentBounds.width - rightIconBounds.width;
 	rightIconBounds.y = contentBounds.y + (contentBounds.height - rightIconBounds.height) / 2;
 	if (rightIconUrl != this.rightIconUrl) {
 		if (this.rightIconUrl == null) {
-			this.renderer.rightIcon = svg.image(
+			this.renderer.rightIcon = svg['image'](
 				this.renderer.group, rightIconBounds.x, rightIconBounds.y, rightIconBounds.width, rightIconBounds.height, rightIconUrl);
 		}
 		else {
 			if (rightIconUrl == null) {
-				svg.remove(this.renderer.rightIcon);
+				svg['remove'](this.renderer.rightIcon);
 				this.renderer.rightIcon = null;
 			}
 			else {
-				svg.change(this.renderer.rightIcon, jQuery.extend(rightIconBounds, {'xlink:href': rightIconUrl}));
+				svg['change'](this.renderer.rightIcon, jQuery.extend(rightIconBounds, {'xlink:href': rightIconUrl}));
 			}
 		}
 	}
 	else {
-		svg.change(this.renderer.rightIcon, rightIconBounds);
+		svg['change'](this.renderer.rightIcon, rightIconBounds);
 	}
 	
 	if (this.tooltip != tooltip) {
@@ -1982,6 +1985,11 @@ DefaultNodeRenderer.prototype.getCenterToEdgeVector = function(angle) {
 	return labelBoxVector.length > graphicVector.length ? labelBoxVector : graphicVector;
 };
 
+DefaultNodeRenderer.prototype.getSvg = function() {
+	return this.renderer.group;
+};
+
+
 /**
  * Node renderer based on Gephi.
  * FIXME: Finish implementing the GephiNodeRenderer.
@@ -2016,13 +2024,13 @@ GephiNodeRenderer.prototype.create = function(){
 	var svg = this['constellation']['svg'];
 	var container = this['constellation'].getNodeContainer();
 	
-	var group = svg.group(container, {'display': 'none'});
-	var graphicContainer = svg.group(group);
+	var group = svg['group'](container, {'display': 'none'});
+	var graphicContainer = svg['group'](group);
 	this.renderer = {
 		group: group,
 		graphicContainer: graphicContainer,
-		graphic: svg.circle(graphicContainer, 0, 0, this.size/2, {'strokeWidth': 3}),
-		label: svg.text(group, 0, 0, '', {
+		graphic: svg['circle'](graphicContainer, 0, 0, this.size/2, {'strokeWidth': 3}),
+		label: svg['text'](group, 0, 0, '', {
 			'style': '-webkit-user-select: none;-khtml-user-select: none;-moz-user-select: none;-o-user-select: none;user-select: none;',
 			'fontFamily': 'Verdana',
 			'fontSize': 12,
@@ -2078,13 +2086,13 @@ GephiNodeRenderer.prototype.draw = function() {
 	if (this.size != size) {
 		// Size changed so we need to adjust the graphic position and dimensions.
 		graphicSettings['r'] = size/2;
-		svg.change(this.renderer.graphic, graphicSettings);
+		svg['change'](this.renderer.graphic, graphicSettings);
 		
-		svg.change(this.renderer.label, {'x': size/2 + 10});
+		svg['change'](this.renderer.label, {'x': size/2 + 10});
 	}
 	else {
 		// No size change but we still need to update other settings.
-		svg.change(this.renderer.graphic, graphicSettings);
+		svg['change'](this.renderer.graphic, graphicSettings);
 	}
 	
 	if (this.label != label) {
@@ -2189,6 +2197,9 @@ EdgeRenderer.prototype["position"] = EdgeRenderer.prototype.position;
 EdgeRenderer.prototype.destroy = function() {};
 EdgeRenderer.prototype["destroy"] =EdgeRenderer.prototype.destroy;
 
+EdgeRenderer.prototype.getSvg = function() {};
+EdgeRenderer.prototype["getSvg"] = EdgeRenderer.prototype.getSvg;
+
 
 /**
  * 
@@ -2227,16 +2238,16 @@ DefaultEdgeRenderer.prototype.create = function() {
 	var svg = this['constellation']['svg'];
 	var container = this['constellation'].getEdgeContainer();
 
-	var group = svg.group(container);
+	var group = svg['group'](container);
 	this.renderer = {
 		group: group,
-		line: svg.line(group, 0, 0, 10, 0, {
+		line: svg['line'](group, 0, 0, 10, 0, {
 			'stroke': this.getStyle('edgeLineColor'),
 			'strokeWidth': this.getStyle('edgeLineThickness')
 		}),
 		arrowhead: null,
 		reverseArrowhead: null,
-		tooltip: svg.title(group, '')
+		tooltip: svg['title'](group, '')
 	};
 	
 	jQuery(this.renderer.line)
@@ -2342,7 +2353,7 @@ DefaultEdgeRenderer.prototype.draw = function() {
 					headEnd.y += hCenterToEdge.y - ny * arrowLength;
 
 					if (!this.renderer.arrowhead) {
-						this.renderer.arrowhead = svg.polygon(this.renderer.group, [[0,0]], {'strokeWidth': 0});
+						this.renderer.arrowhead = svg['polygon'](this.renderer.group, [[0,0]], {'strokeWidth': 0});
 					}
 
 					jQuery(this.renderer.arrowhead)
@@ -2364,7 +2375,7 @@ DefaultEdgeRenderer.prototype.draw = function() {
 					tailEnd.y += tCenterToEdge.y + ny * arrowLength;
 
 					if (!this.renderer.reverseArrowhead) {
-						this.renderer.reverseArrowhead = svg.polygon(this.renderer.group, [[0,0]], {'strokeWidth': 0});
+						this.renderer.reverseArrowhead = svg['polygon'](this.renderer.group, [[0,0]], {'strokeWidth': 0});
 					}
 
 					jQuery(this.renderer.reverseArrowhead)
@@ -2433,6 +2444,10 @@ DefaultEdgeRenderer.prototype.destroy = function() {
 	}
 };
 DefaultEdgeRenderer.prototype["destroy"] = DefaultEdgeRenderer.prototype.destroy;
+
+DefaultEdgeRenderer.prototype.getSvg = function() {
+	return this.renderer.group;
+};
 
 DefaultEdgeRenderer.prototype.getPointsString = function() {
 	var result = '';
@@ -3810,8 +3825,9 @@ Constellation.prototype['getStyle'] = Constellation.prototype.getStyle;
 
 Constellation.prototype.arrangeNodeFront = function(node) {
 	var topNodeSvg = jQuery(this.nodeContainer).children().last()[0];
-	if (topNodeSvg != node['renderer']['group']) {
-		jQuery(node['renderer']['group']).insertAfter(jQuery(this.nodeContainer).children().last());
+	var nodeSvg = node.getSvg();
+	if (topNodeSvg != nodeSvg) {
+		jQuery(nodeSvg).insertAfter(jQuery(this.nodeContainer).children().last());
 	}
 };
 Constellation.prototype['arrangeNodeFront'] = Constellation.prototype.arrangeNodeFront;
