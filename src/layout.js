@@ -205,12 +205,12 @@ RoamerLayout.prototype.nodeAddedHandler = function(event, node) {
 RoamerLayout.prototype.step = function() {
 	var p = this['config'];
 	
-	var scrollRate = p['scrollRate'] ? p['scrollRate'] : 0.1;
-	var baseEdgeLength = p['baseEdgeLength'] ? p['baseEdgeLength'] : 100;
-	var attractionFactor = p['attractionFactor'] ? p['attractionFactor'] : 0.2;
-	var repulsionFactor = p['repulsionFactor'] ? p['repulsionFactor'] : 0.2;
-	var accelerationLimit = p['accelerationLimit'] ? p['accelerationLimit'] : 15;
-	var dampingConstant = p['dampingConstant'] ? p['dampingConstant'] : 0.3;
+	var scrollRate = p['scrollRate'] != null ? p['scrollRate'] : 0.1;
+	var baseEdgeLength = p['baseEdgeLength'] != null ? p['baseEdgeLength'] : 100;
+	var attractionFactor = p['attractionFactor'] != null ? p['attractionFactor'] : 0.2;
+	var repulsionFactor = p['repulsionFactor'] != null ? p['repulsionFactor'] : 0.2;
+	var accelerationLimit = p['accelerationLimit'] != null ? p['accelerationLimit'] : 15;
+	var dampingConstant = p['dampingConstant'] != null ? p['dampingConstant'] : 0.3;
 	
 	// Place new nodes.
 	if (this.toBePlacedNodes.length > 0) {
