@@ -1302,12 +1302,12 @@ RoamerLayout.prototype.nodeAddedHandler = function(event, node) {
 RoamerLayout.prototype.step = function() {
 	var p = this['config'];
 	
-	var scrollRate = p['scrollRate'] ? p['scrollRate'] : 0.1;
-	var baseEdgeLength = p['baseEdgeLength'] ? p['baseEdgeLength'] : 100;
-	var attractionFactor = p['attractionFactor'] ? p['attractionFactor'] : 0.2;
-	var repulsionFactor = p['repulsionFactor'] ? p['repulsionFactor'] : 0.2;
-	var accelerationLimit = p['accelerationLimit'] ? p['accelerationLimit'] : 15;
-	var dampingConstant = p['dampingConstant'] ? p['dampingConstant'] : 0.3;
+	var scrollRate = p['scrollRate'] != null ? p['scrollRate'] : 0.1;
+	var baseEdgeLength = p['baseEdgeLength'] != null ? p['baseEdgeLength'] : 100;
+	var attractionFactor = p['attractionFactor'] != null ? p['attractionFactor'] : 0.2;
+	var repulsionFactor = p['repulsionFactor'] != null ? p['repulsionFactor'] : 0.2;
+	var accelerationLimit = p['accelerationLimit'] != null ? p['accelerationLimit'] : 15;
+	var dampingConstant = p['dampingConstant'] != null ? p['dampingConstant'] : 0.3;
 	
 	// Place new nodes.
 	if (this.toBePlacedNodes.length > 0) {
@@ -1948,7 +1948,7 @@ DefaultNodeRenderer.prototype.position = function() {
 	if (this['x'] != null && this['y'] != null) {
 		jQuery(this.renderer.group)
 			.attr('transform', 'translate(' + this['x'] + ',' + this['y'] + ')' + 
-				'rotate(' + (-this['constellation'].rotation * 180/Math.PI) + ')');
+				'rotate(' + (-this['constellation'].getRotation() * 180/Math.PI) + ')');
 	}
 };
 DefaultNodeRenderer.prototype["position"] = DefaultNodeRenderer.prototype.position;
@@ -1960,6 +1960,8 @@ DefaultNodeRenderer.prototype.destroy = function() {
 DefaultNodeRenderer.prototype["destroy"] = DefaultNodeRenderer.prototype.destroy;
 
 DefaultNodeRenderer.prototype.getCenterToEdgeVector = function(angle) {
+	var rotatedAngle = angle + this['constellation'].getRotation();
+
 	// FIXME: Implement for other shapes.
 	var graphicVector;
 	switch (this.graphicShape) {
@@ -1976,8 +1978,8 @@ DefaultNodeRenderer.prototype.getCenterToEdgeVector = function(angle) {
 		&& this.getStyle('labelPosition') == 'center') {
 		var labelBoxBounds = this.renderer.labelBox.getBBox();
 		var len = Math.min(
-			Math.abs(labelBoxBounds.width / 2 / Math.cos(angle)),
-		  Math.abs(labelBoxBounds.height / 2 / Math.sin(angle)));
+			Math.abs(labelBoxBounds.width / 2 / Math.cos(rotatedAngle)),
+		  Math.abs(labelBoxBounds.height / 2 / Math.sin(rotatedAngle)));
 		labelBoxVector = {x: len * Math.cos(angle), y: len * Math.sin(angle)};
 	}
 	labelBoxVector.length = Math.sqrt(labelBoxVector.x * labelBoxVector.x   +   labelBoxVector.y * labelBoxVector.y);
@@ -2111,7 +2113,7 @@ GephiNodeRenderer.prototype["draw"] = GephiNodeRenderer.prototype.draw;
 GephiNodeRenderer.prototype.position = function() {
 	jQuery(this.renderer.group)
 		.attr('transform', 'translate(' + this['x'] + ',' + this['y'] + ')' + 
-			'rotate(' + (-this['constellation'].rotation * 180/Math.PI) + ')');
+			'rotate(' + (-this['constellation'].getRotation() * 180/Math.PI) + ')');
 };
 GephiNodeRenderer.prototype["position"] = GephiNodeRenderer.prototype.position;
 
@@ -3265,6 +3267,18 @@ Constellation.prototype.setZoomScale = function(zoomScale){
 	jQuery(this).trigger('viewportchange');
 };
 Constellation.prototype['setZoomScale'] = Constellation.prototype.setZoomScale;
+
+Constellation.prototype.getRotation = function(){
+	return this.rotation;
+};
+Constellation.prototype['getRotation'] = Constellation.prototype.getRotation;
+
+Constellation.prototype.setRotation = function(rotation) {
+	this.rotation = rotation;
+	this.refreshZui();
+	jQuery(this).trigger('viewportchange');
+};
+Constellation.prototype['setRotation'] = Constellation.prototype.setRotation;
 
 Constellation.prototype.viewportToWorldX = function(x, y){
 	var x0 = (x - this.viewportWidth/2 + this.scrollOffsetX) / this.zoomScale;

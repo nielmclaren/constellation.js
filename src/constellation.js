@@ -805,6 +805,18 @@ Constellation.prototype.setZoomScale = function(zoomScale){
 };
 Constellation.prototype['setZoomScale'] = Constellation.prototype.setZoomScale;
 
+Constellation.prototype.getRotation = function(){
+	return this.rotation;
+};
+Constellation.prototype['getRotation'] = Constellation.prototype.getRotation;
+
+Constellation.prototype.setRotation = function(rotation) {
+	this.rotation = rotation;
+	this.refreshZui();
+	jQuery(this).trigger('viewportchange');
+};
+Constellation.prototype['setRotation'] = Constellation.prototype.setRotation;
+
 Constellation.prototype.viewportToWorldX = function(x, y){
 	var x0 = (x - this.viewportWidth/2 + this.scrollOffsetX) / this.zoomScale;
 	var y0 = (y - this.viewportHeight/2 + this.scrollOffsetY) / this.zoomScale;

@@ -444,7 +444,7 @@ DefaultNodeRenderer.prototype.position = function() {
 	if (this['x'] != null && this['y'] != null) {
 		jQuery(this.renderer.group)
 			.attr('transform', 'translate(' + this['x'] + ',' + this['y'] + ')' + 
-				'rotate(' + (-this['constellation'].rotation * 180/Math.PI) + ')');
+				'rotate(' + (-this['constellation'].getRotation() * 180/Math.PI) + ')');
 	}
 };
 DefaultNodeRenderer.prototype["position"] = DefaultNodeRenderer.prototype.position;
@@ -456,6 +456,8 @@ DefaultNodeRenderer.prototype.destroy = function() {
 DefaultNodeRenderer.prototype["destroy"] = DefaultNodeRenderer.prototype.destroy;
 
 DefaultNodeRenderer.prototype.getCenterToEdgeVector = function(angle) {
+	var rotatedAngle = angle + this['constellation'].getRotation();
+
 	// FIXME: Implement for other shapes.
 	var graphicVector;
 	switch (this.graphicShape) {
@@ -472,8 +474,8 @@ DefaultNodeRenderer.prototype.getCenterToEdgeVector = function(angle) {
 		&& this.getStyle('labelPosition') == 'center') {
 		var labelBoxBounds = this.renderer.labelBox.getBBox();
 		var len = Math.min(
-			Math.abs(labelBoxBounds.width / 2 / Math.cos(angle)),
-		  Math.abs(labelBoxBounds.height / 2 / Math.sin(angle)));
+			Math.abs(labelBoxBounds.width / 2 / Math.cos(rotatedAngle)),
+		  Math.abs(labelBoxBounds.height / 2 / Math.sin(rotatedAngle)));
 		labelBoxVector = {x: len * Math.cos(angle), y: len * Math.sin(angle)};
 	}
 	labelBoxVector.length = Math.sqrt(labelBoxVector.x * labelBoxVector.x   +   labelBoxVector.y * labelBoxVector.y);
@@ -607,7 +609,7 @@ GephiNodeRenderer.prototype["draw"] = GephiNodeRenderer.prototype.draw;
 GephiNodeRenderer.prototype.position = function() {
 	jQuery(this.renderer.group)
 		.attr('transform', 'translate(' + this['x'] + ',' + this['y'] + ')' + 
-			'rotate(' + (-this['constellation'].rotation * 180/Math.PI) + ')');
+			'rotate(' + (-this['constellation'].getRotation() * 180/Math.PI) + ')');
 };
 GephiNodeRenderer.prototype["position"] = GephiNodeRenderer.prototype.position;
 
