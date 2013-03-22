@@ -88,18 +88,18 @@ StaticLayout.prototype.viewChanged = function(){
 	for (var i = 0; i < nodes.length; i++) {
 		var node = nodes[i];
 		if (node['x'] == null || node['y'] == null) {
-			if (node['data']['x'] == null) {
+			if (isNaN(node['data']['x'])) {
 				node['x'] = (Math.random() - 0.5) * this['constellation'].viewportWidth;
 			}
 			else {
-				node['x'] = node['data']['x'];
+				node['x'] = Number(node['data']['x']);
 			}
 			
-			if (node['data']['y'] == null) {
+			if (isNaN(node['data']['y'])) {
 				node['y'] = (Math.random() - 0.5) * this['constellation'].viewportHeight;
 			}
 			else {
-				node['y'] = node['data']['y'];
+				node['y'] = Number(node['data']['y']);
 			}
 		}
 	}
