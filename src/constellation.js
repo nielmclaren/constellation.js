@@ -141,7 +141,7 @@ Constellation.prototype.init = function(){
 		jQuery(document).mousemove({'context': this}, function(event){
 				event.data.context.mousemoveHandler(event);
 			}).mouseup({'context': this}, function(event){
-				event.data.context.mouseupHandler(event);
+				event.data.context.mouseupHandler(event, true);
 			});
 	}
 	
@@ -900,6 +900,8 @@ Constellation.prototype.nodemouseupHandler = function(event, node){
 	event.stopPropagation();
 	event.preventDefault();
 
+	this.mouseupHandler(event, false);
+
 	jQuery(this).trigger('nodemouseup', node['id']);
 };
 Constellation.prototype['nodemouseupHandler'] = Constellation.prototype.nodemouseupHandler;
@@ -998,6 +1000,8 @@ Constellation.prototype.edgemouseupHandler = function(event, edge){
 	event.stopPropagation();
 	event.preventDefault();
 
+	this.mouseupHandler(event, false);
+
 	jQuery(this).trigger('edgemouseup', edge['id']);
 };
 Constellation.prototype['edgemouseupHandler'] = Constellation.prototype.edgemouseupHandler;
@@ -1089,7 +1093,7 @@ Constellation.prototype.mousemoveHandler = function(event){
 	this.containerDrag();
 };
 
-Constellation.prototype.mouseupHandler = function(event){
+Constellation.prototype.mouseupHandler = function(event, hitBackground){
 	var touchMetadata = this.touchMetadata['_mouse'];
 	
 	// We need to update the touch property with the new event to capture
@@ -1097,11 +1101,13 @@ Constellation.prototype.mouseupHandler = function(event){
 	if (touchMetadata) 
 		touchMetadata.touch = event;
 
-	if (touchMetadata && this.isClick(event, touchMetadata)) {
-		jQuery(this).trigger('click');
+	if (hitBackground) {
+		if (touchMetadata && this.isClick(event, touchMetadata)) {
+			jQuery(this).trigger('click');
+		}
+		
+		this.containerDrag();
 	}
-	
-	this.containerDrag();
 	
 	delete this.touchMetadata['_mouse'];
 	
@@ -1113,7 +1119,9 @@ Constellation.prototype.mouseupHandler = function(event){
 		this.containerTouchMetadata1 = null;
 	}
 
-	jQuery(this).trigger('mouseup');
+	if (hitBackground) {
+		jQuery(this).trigger('mouseup');
+	}
 };
 
 Constellation.prototype.clickHandler = function(event){

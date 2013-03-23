@@ -1185,18 +1185,18 @@ StaticLayout.prototype.viewChanged = function(){
 	for (var i = 0; i < nodes.length; i++) {
 		var node = nodes[i];
 		if (node['x'] == null || node['y'] == null) {
-			if (node['data']['x'] == null) {
+			if (isNaN(node['data']['x'])) {
 				node['x'] = (Math.random() - 0.5) * this['constellation'].viewportWidth;
 			}
 			else {
-				node['x'] = node['data']['x'];
+				node['x'] = Number(node['data']['x']);
 			}
 			
-			if (node['data']['y'] == null) {
+			if (isNaN(node['data']['y'])) {
 				node['y'] = (Math.random() - 0.5) * this['constellation'].viewportHeight;
 			}
 			else {
-				node['y'] = node['data']['y'];
+				node['y'] = Number(node['data']['y']);
 			}
 		}
 	}
@@ -1258,7 +1258,13 @@ RoamerLayout = function(config) {
 	Layout.call(this, config);
 	
 	this.timeoutId = null;
-	
+
+	this.playing = false;
+	this.stepCount = 0;
+
+	this.coolingDelay = 150; // Steps.
+	this.coolingDuration = 100; // Steps.
+
 	this.toBePlacedNodes = [];
 };
 window["RoamerLayout"] = RoamerLayout;
@@ -1277,11 +1283,15 @@ RoamerLayout.prototype.setConstellation = function(constellation) {
 	Layout.prototype.setConstellation.call(this, constellation);
 
 	if (this['constellation']) {
-		jQuery(this['constellation']).bind('nodeAdded', {context: this}, function(event, node) {
-			event.data.context.nodeAddedHandler(event, node);
-		});
+		jQuery(this['constellation'])
+			.bind('nodeAdded', {context: this}, function(event, node) {
+				event.data.context.nodeAddedHandler(event, node);
+			})
+			.bind('nodemousedown', {context: this}, function(event, node) {
+				event.data.context.nodemousedownHandler(event, node);
+			});
 		
-		this.step();
+		this.start();
 	}
 };
 RoamerLayout.prototype["setConstellation"] = RoamerLayout.prototype.setConstellation;
@@ -1299,6 +1309,23 @@ RoamerLayout.prototype.nodeAddedHandler = function(event, node) {
 	this.toBePlacedNodes.push(node);
 };
 
+RoamerLayout.prototype.nodemousedownHandler = function(event, node) {
+	this.start();
+};
+
+RoamerLayout.prototype.start = function() {
+	this.stepCount = 0;
+	if (!this.playing) {
+		this.playing = true;
+		this.step();
+	}
+};
+
+RoamerLayout.prototype.stop = function() {
+	if (this.timeoutId) clearTimeout(this.timeoutId);
+	this.playing = false;
+};
+
 RoamerLayout.prototype.step = function() {
 	var p = this['config'];
 	
@@ -1308,7 +1335,18 @@ RoamerLayout.prototype.step = function() {
 	var repulsionFactor = p['repulsionFactor'] != null ? p['repulsionFactor'] : 0.2;
 	var accelerationLimit = p['accelerationLimit'] != null ? p['accelerationLimit'] : 15;
 	var dampingConstant = p['dampingConstant'] != null ? p['dampingConstant'] : 0.3;
-	
+
+	var forceFactor;
+	if (this.stepCount < this.coolingDelay) {
+		forceFactor = 1;
+	}
+	else if (this.stepCount < this.coolingDelay + this.coolingDuration) {
+		forceFactor = 1 - (this.stepCount - this.coolingDelay) / this.coolingDuration;
+	}
+	else {
+		forceFactor = 0;
+	}
+
 	// Place new nodes.
 	if (this.toBePlacedNodes.length > 0) {
 		this['setNodeInitialPositions'](this.toBePlacedNodes);
@@ -1356,12 +1394,12 @@ RoamerLayout.prototype.step = function() {
 			}
 			
 			if (hasEdge && distance > preferredDistance) {
-				fx = deltaX * attractionFactor;
-				fy = deltaY * attractionFactor;
+				fx = deltaX * attractionFactor * forceFactor;
+				fy = deltaY * attractionFactor * forceFactor;
 			}
 			else if (distance < preferredDistance) {
-				fx = deltaX * repulsionFactor;
-				fy = deltaY * repulsionFactor;
+				fx = deltaX * repulsionFactor * forceFactor;
+				fy = deltaY * repulsionFactor * forceFactor;
 			}
 			
 			var modifier;
@@ -1427,13 +1465,20 @@ RoamerLayout.prototype.step = function() {
 	}
 	
 	jQuery(this).trigger('change');
-	
-	if (this.timeoutId) clearTimeout(this.timeoutId);
-	this.timeoutId = setTimeout(function(constellation) {
-		return function() {
-			constellation.step();
-		};
-	}(this), 40);
+
+	if (forceFactor == 0) {
+		this.stop();
+	}
+	else if (this.playing) {
+		if (this.timeoutId) clearTimeout(this.timeoutId);
+		this.timeoutId = setTimeout(function(constellation) {
+			return function() {
+				constellation.step();
+			};
+		}(this), 40);
+	}
+
+	this.stepCount++;
 };
 
 RoamerLayout.prototype.setNodeInitialPositions = function(nodes) {
@@ -1665,7 +1710,7 @@ DefaultNodeRenderer.prototype.create = function(){
 			'strokeWidth': 1
 		}),
 		label: svg['text'](group, 0, 0, '', {
-			'style': '-webkit-user-select: none;-khtml-user-select: none;-moz-user-select: none;-o-user-select: none;user-select: none;',
+			'style': '-webkit-user-select: none;-khtml-user-select: none;-moz-user-select: none;-ms-user-select: none;-o-user-select: none;user-select: none;',
 			'fontFamily': 'Verdana',
 			'fontSize': 15,
 			'fontWeight': 'bold',
@@ -2604,7 +2649,7 @@ Constellation.prototype.init = function(){
 		jQuery(document).mousemove({'context': this}, function(event){
 				event.data.context.mousemoveHandler(event);
 			}).mouseup({'context': this}, function(event){
-				event.data.context.mouseupHandler(event);
+				event.data.context.mouseupHandler(event, true);
 			});
 	}
 	
@@ -3363,6 +3408,8 @@ Constellation.prototype.nodemouseupHandler = function(event, node){
 	event.stopPropagation();
 	event.preventDefault();
 
+	this.mouseupHandler(event, false);
+
 	jQuery(this).trigger('nodemouseup', node['id']);
 };
 Constellation.prototype['nodemouseupHandler'] = Constellation.prototype.nodemouseupHandler;
@@ -3461,6 +3508,8 @@ Constellation.prototype.edgemouseupHandler = function(event, edge){
 	event.stopPropagation();
 	event.preventDefault();
 
+	this.mouseupHandler(event, false);
+
 	jQuery(this).trigger('edgemouseup', edge['id']);
 };
 Constellation.prototype['edgemouseupHandler'] = Constellation.prototype.edgemouseupHandler;
@@ -3552,7 +3601,7 @@ Constellation.prototype.mousemoveHandler = function(event){
 	this.containerDrag();
 };
 
-Constellation.prototype.mouseupHandler = function(event){
+Constellation.prototype.mouseupHandler = function(event, hitBackground){
 	var touchMetadata = this.touchMetadata['_mouse'];
 	
 	// We need to update the touch property with the new event to capture
@@ -3560,11 +3609,13 @@ Constellation.prototype.mouseupHandler = function(event){
 	if (touchMetadata) 
 		touchMetadata.touch = event;
 
-	if (touchMetadata && this.isClick(event, touchMetadata)) {
-		jQuery(this).trigger('click');
+	if (hitBackground) {
+		if (touchMetadata && this.isClick(event, touchMetadata)) {
+			jQuery(this).trigger('click');
+		}
+		
+		this.containerDrag();
 	}
-	
-	this.containerDrag();
 	
 	delete this.touchMetadata['_mouse'];
 	
@@ -3576,7 +3627,9 @@ Constellation.prototype.mouseupHandler = function(event){
 		this.containerTouchMetadata1 = null;
 	}
 
-	jQuery(this).trigger('mouseup');
+	if (hitBackground) {
+		jQuery(this).trigger('mouseup');
+	}
 };
 
 Constellation.prototype.clickHandler = function(event){
