@@ -161,7 +161,13 @@ RoamerLayout = function(config) {
 	Layout.call(this, config);
 	
 	this.timeoutId = null;
-	
+
+	this.playing = false;
+	this.stepCount = 0;
+
+	this.coolingDelay = 150; // Steps.
+	this.coolingDuration = 100; // Steps.
+
 	this.toBePlacedNodes = [];
 };
 window["RoamerLayout"] = RoamerLayout;
@@ -180,11 +186,15 @@ RoamerLayout.prototype.setConstellation = function(constellation) {
 	Layout.prototype.setConstellation.call(this, constellation);
 
 	if (this['constellation']) {
-		jQuery(this['constellation']).bind('nodeAdded', {context: this}, function(event, node) {
-			event.data.context.nodeAddedHandler(event, node);
-		});
+		jQuery(this['constellation'])
+			.bind('nodeAdded', {context: this}, function(event, node) {
+				event.data.context.nodeAddedHandler(event, node);
+			})
+			.bind('nodemousedown', {context: this}, function(event, node) {
+				event.data.context.nodemousedownHandler(event, node);
+			});
 		
-		this.step();
+		this.start();
 	}
 };
 RoamerLayout.prototype["setConstellation"] = RoamerLayout.prototype.setConstellation;
@@ -202,6 +212,23 @@ RoamerLayout.prototype.nodeAddedHandler = function(event, node) {
 	this.toBePlacedNodes.push(node);
 };
 
+RoamerLayout.prototype.nodemousedownHandler = function(event, node) {
+	this.start();
+};
+
+RoamerLayout.prototype.start = function() {
+	this.stepCount = 0;
+	if (!this.playing) {
+		this.playing = true;
+		this.step();
+	}
+};
+
+RoamerLayout.prototype.stop = function() {
+	if (this.timeoutId) clearTimeout(this.timeoutId);
+	this.playing = false;
+};
+
 RoamerLayout.prototype.step = function() {
 	var p = this['config'];
 	
@@ -211,7 +238,18 @@ RoamerLayout.prototype.step = function() {
 	var repulsionFactor = p['repulsionFactor'] != null ? p['repulsionFactor'] : 0.2;
 	var accelerationLimit = p['accelerationLimit'] != null ? p['accelerationLimit'] : 15;
 	var dampingConstant = p['dampingConstant'] != null ? p['dampingConstant'] : 0.3;
-	
+
+	var forceFactor;
+	if (this.stepCount < this.coolingDelay) {
+		forceFactor = 1;
+	}
+	else if (this.stepCount < this.coolingDelay + this.coolingDuration) {
+		forceFactor = 1 - (this.stepCount - this.coolingDelay) / this.coolingDuration;
+	}
+	else {
+		forceFactor = 0;
+	}
+
 	// Place new nodes.
 	if (this.toBePlacedNodes.length > 0) {
 		this['setNodeInitialPositions'](this.toBePlacedNodes);
@@ -259,12 +297,12 @@ RoamerLayout.prototype.step = function() {
 			}
 			
 			if (hasEdge && distance > preferredDistance) {
-				fx = deltaX * attractionFactor;
-				fy = deltaY * attractionFactor;
+				fx = deltaX * attractionFactor * forceFactor;
+				fy = deltaY * attractionFactor * forceFactor;
 			}
 			else if (distance < preferredDistance) {
-				fx = deltaX * repulsionFactor;
-				fy = deltaY * repulsionFactor;
+				fx = deltaX * repulsionFactor * forceFactor;
+				fy = deltaY * repulsionFactor * forceFactor;
 			}
 			
 			var modifier;
@@ -330,13 +368,20 @@ RoamerLayout.prototype.step = function() {
 	}
 	
 	jQuery(this).trigger('change');
-	
-	if (this.timeoutId) clearTimeout(this.timeoutId);
-	this.timeoutId = setTimeout(function(constellation) {
-		return function() {
-			constellation.step();
-		};
-	}(this), 40);
+
+	if (forceFactor == 0) {
+		this.stop();
+	}
+	else if (this.playing) {
+		if (this.timeoutId) clearTimeout(this.timeoutId);
+		this.timeoutId = setTimeout(function(constellation) {
+			return function() {
+				constellation.step();
+			};
+		}(this), 40);
+	}
+
+	this.stepCount++;
 };
 
 RoamerLayout.prototype.setNodeInitialPositions = function(nodes) {
