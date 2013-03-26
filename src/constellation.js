@@ -900,23 +900,16 @@ Constellation.prototype.nodemouseupHandler = function(event, node){
 	event.stopPropagation();
 	event.preventDefault();
 
-	this.mouseupHandler(event, false);
-
-	jQuery(this).trigger('nodemouseup', node['id']);
-};
-Constellation.prototype['nodemouseupHandler'] = Constellation.prototype.nodemouseupHandler;
-Constellation.prototype.nodeclickHandler = function(event, node){
-	event.stopPropagation();
-	event.preventDefault();
-
 	var touchMetadata = this.touchMetadata['_mouse'];
 	if (touchMetadata && this.isClick(event, touchMetadata)) {
 		jQuery(this).trigger('nodeclick', node['id']);
 	}
 
-	delete this.touchMetadata['_mouse'];
+	this.mouseupHandler(event, false);
+
+	jQuery(this).trigger('nodemouseup', node['id']);
 };
-Constellation.prototype['nodeclickHandler'] = Constellation.prototype.nodeclickHandler;
+Constellation.prototype['nodemouseupHandler'] = Constellation.prototype.nodemouseupHandler;
 Constellation.prototype.nodetouchstartHandler = function(event, node){
 	event.stopPropagation();
 	event.preventDefault();
@@ -1000,21 +993,16 @@ Constellation.prototype.edgemouseupHandler = function(event, edge){
 	event.stopPropagation();
 	event.preventDefault();
 
+	var touchMetadata = this.touchMetadata['_mouse'];
+	if (touchMetadata && this.isClick(event, touchMetadata)) {
+		jQuery(this).trigger('edgeclick', edge['id']);
+	}
+
 	this.mouseupHandler(event, false);
 
 	jQuery(this).trigger('edgemouseup', edge['id']);
 };
 Constellation.prototype['edgemouseupHandler'] = Constellation.prototype.edgemouseupHandler;
-Constellation.prototype.edgeclickHandler = function(event, edge){
-	event.stopPropagation();
-	event.preventDefault();
-
-	var touchMetadata = this.touchMetadata['_mouse'];
-	if (touchMetadata && this.isClick(event, touchMetadata)) {
-		jQuery(this).trigger('edgeclick', edge['id']);
-	}
-};
-Constellation.prototype['edgeclickHandler'] = Constellation.prototype.edgeclickHandler;
 Constellation.prototype.edgetouchstartHandler = function(event, edge){
 	event.stopPropagation();
 	event.preventDefault();

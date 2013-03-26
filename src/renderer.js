@@ -187,9 +187,6 @@ DefaultNodeRenderer.prototype.create = function(){
 		.bind('mouseup', {'context':this}, function(event) {
 			event.data.context['constellation']['nodemouseupHandler'](event, event.data.context);
 		})
-		.bind('click', {'context':this}, function(event) {
-			event.data.context['constellation']['nodeclickHandler'](event, event.data.context);
-		})
 		.bind('touchstart', {'context':this}, function(event) {
 			event.data.context['constellation']['nodetouchstartHandler'](event, event.data.context);
 		})
@@ -555,9 +552,6 @@ GephiNodeRenderer.prototype.create = function(){
 		.bind('mouseup', {'context':this}, function(event) {
 			event.data.context['constellation']['nodemouseupHandler'](event, event.data.context);
 		})
-		.bind('click', {'context':this}, function(event) {
-			event.data.context['constellation']['nodeclickHandler'](event, event.data.context);
-		})
 		.bind('touchstart', {'context':this}, function(event) {
 			event.data.context['constellation']['nodetouchstartHandler'](event, event.data.context);
 		})
@@ -760,9 +754,6 @@ DefaultEdgeRenderer.prototype.create = function() {
 		})
 		.bind('mouseup', {'context':this}, function(event) {
 			event.data.context['constellation']['edgemouseupHandler'](event, event.data.context);
-		})
-		.bind('click', {'context':this}, function(event) {
-			event.data.context['constellation']['edgeclickHandler'](event, event.data.context);
 		})
 		.bind('touchstart', {'context':this}, function(event) {
 			event.data.context['constellation']['edgetouchstartHandler'](event, event.data.context);
