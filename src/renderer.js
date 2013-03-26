@@ -742,7 +742,7 @@ DefaultEdgeRenderer.prototype.create = function() {
 		tooltip: svg['title'](group, '')
 	};
 	
-	jQuery(this.renderer.line)
+	jQuery(this.renderer.group)
 		.bind('mouseover', {'context':this}, function(event) {
 			event.data.context['constellation']['edgemouseoverHandler'](event, event.data.context);
 		})
