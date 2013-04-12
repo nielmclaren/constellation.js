@@ -192,7 +192,10 @@ RoamerLayout.prototype.setConstellation = function(constellation) {
 			})
 			.bind('nodemousedown', {context: this}, function(event, node) {
 				event.data.context.nodemousedownHandler(event, node);
-			});
+			})
+			.bind('nodetouchstart', {context: this}, function(event, node) {
+				event.data.context.nodetouchstartHandler(event, node);
+			})
 		
 		this.start();
 	}
@@ -203,7 +206,7 @@ RoamerLayout.prototype["setConstellation"] = RoamerLayout.prototype.setConstella
  * Called by Constellation when the view changes.
  */
 RoamerLayout.prototype.viewChanged = function() {
-	
+	this.start();
 };
 RoamerLayout.prototype["viewChanged"] = RoamerLayout.prototype.viewChanged;
 
@@ -213,6 +216,10 @@ RoamerLayout.prototype.nodeAddedHandler = function(event, node) {
 };
 
 RoamerLayout.prototype.nodemousedownHandler = function(event, node) {
+	this.start();
+};
+
+RoamerLayout.prototype.nodetouchstartHandler = function(event, node) {
 	this.start();
 };
 
