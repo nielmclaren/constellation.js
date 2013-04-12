@@ -161,34 +161,20 @@ Constellation.prototype.initZoomControls = function(){
 	}
 
 	this.container.append('<div class="zoomControls">' +
-	//'<button class="zoomToFitButton">Zoom to fit</button>' +
-	'<button class="zoomInButton">Zoom in</button>' +
-	'<div class="zoomSlider"></div>' +
-	'<button class="zoomOutButton">Zoom out</button>' +
-	'</div>');
+		'<button class="zoomInButton">Zoom in</button>' +
+		'<div class="zoomSlider"></div>' +
+		'<button class="zoomOutButton">Zoom out</button>' +
+		'</div>');
 	
 	var id = this['config']['id'];
 	
-	// FIXME: Put this in an external stylesheet.
 	jQuery('head').append('<style type="text/css">' +
-	'#' + id + ' .zoomControls { position: absolute; right: 20px; top: 20px; width: 20px; z-index: 1 } ' +
-	'#' + id + ' .zoomControls .ui-button { height: 20px; margin: 1px 0; width: 20px } ' +
-	'#' + id + ' .zoomSlider { left: 3px; height: 225px; margin: 11px 0 } ' +
-	'</style>');
+		selector + ' .zoomControls { position: absolute; right: 20px; top: 20px; width: 20px; z-index: 1 } ' +
+		selector + ' .zoomControls .ui-button { height: 20px; margin: 1px 0; width: 20px } ' +
+		selector + ' .zoomSlider { left: 3px; height: 225px; margin: 11px 0 } ' +
+		'</style>');
 	
-	/*
-	jQuery('#' + id + ' .zoomToFitButton').button({
-		'icons': {
-			'primary': 'ui-icon-arrow-4-diag'
-		},
-		'text': false
-	}).bind('click', {
-		'context': this
-	}, function(event, ui){
-		event.data.context.zoomToFit();
-	});
-	*/
-	jQuery('#' + id + ' .zoomInButton').button({
+	jQuery(selector + ' .zoomInButton').button({
 		'icons': {
 			'primary': 'ui-icon-plus'
 		},
