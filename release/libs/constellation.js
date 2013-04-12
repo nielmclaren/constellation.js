@@ -206,6 +206,10 @@ Graph.prototype['getNodeLength'] = Graph.prototype.getNodeLength;
 Graph.prototype.removeNode = function(nodeId) {
 	for (var i = 0; i < this.nodes.length; i++) {
 		if (this.nodes[i]['id'] == nodeId) {
+			while (this.nodes[i]['edges'].length > 0) {
+				this.removeEdge(this.nodes[i]['edges'][0].id);
+			}
+
 			this.nodes.splice(i, 1);
 			return;
 		}
@@ -1289,7 +1293,10 @@ RoamerLayout.prototype.setConstellation = function(constellation) {
 			})
 			.bind('nodemousedown', {context: this}, function(event, node) {
 				event.data.context.nodemousedownHandler(event, node);
-			});
+			})
+			.bind('nodetouchstart', {context: this}, function(event, node) {
+				event.data.context.nodetouchstartHandler(event, node);
+			})
 		
 		this.start();
 	}
@@ -1300,7 +1307,7 @@ RoamerLayout.prototype["setConstellation"] = RoamerLayout.prototype.setConstella
  * Called by Constellation when the view changes.
  */
 RoamerLayout.prototype.viewChanged = function() {
-	
+	this.start();
 };
 RoamerLayout.prototype["viewChanged"] = RoamerLayout.prototype.viewChanged;
 
@@ -1310,6 +1317,10 @@ RoamerLayout.prototype.nodeAddedHandler = function(event, node) {
 };
 
 RoamerLayout.prototype.nodemousedownHandler = function(event, node) {
+	this.start();
+};
+
+RoamerLayout.prototype.nodetouchstartHandler = function(event, node) {
 	this.start();
 };
 
@@ -2567,10 +2578,10 @@ Constellation.prototype.init = function(){
 		throw "Failed to initialize Constellation. SVG not supported.";
 	}
 	
-	var containerId = '#' + this['config']['id'];
-	var placeholder = jQuery(containerId);
+	var selector = this['config']['selector'];
+	var placeholder = jQuery(selector);
 	if (placeholder.length <= 0) {
-		throw "Failed to initialize Constellation. Container does not exist. id=" + containerId;
+		throw "Failed to initialize Constellation. Container does not exist. selector=" + selector;
 	}
 	
 	placeholder.html('<div style="position:relative;width:100%;height:100%">' +
@@ -2660,34 +2671,20 @@ Constellation.prototype.initZoomControls = function(){
 	}
 
 	this.container.append('<div class="zoomControls">' +
-	//'<button class="zoomToFitButton">Zoom to fit</button>' +
-	'<button class="zoomInButton">Zoom in</button>' +
-	'<div class="zoomSlider"></div>' +
-	'<button class="zoomOutButton">Zoom out</button>' +
-	'</div>');
+		'<button class="zoomInButton">Zoom in</button>' +
+		'<div class="zoomSlider"></div>' +
+		'<button class="zoomOutButton">Zoom out</button>' +
+		'</div>');
 	
-	var id = this['config']['id'];
+	var selector = this['config']['selector'];
 	
-	// FIXME: Put this in an external stylesheet.
 	jQuery('head').append('<style type="text/css">' +
-	'#' + id + ' .zoomControls { position: absolute; right: 20px; top: 20px; width: 20px; z-index: 1 } ' +
-	'#' + id + ' .zoomControls .ui-button { height: 20px; margin: 1px 0; width: 20px } ' +
-	'#' + id + ' .zoomSlider { left: 3px; height: 225px; margin: 11px 0 } ' +
-	'</style>');
+		selector + ' .zoomControls { position: absolute; right: 20px; top: 20px; width: 20px; z-index: 1 } ' +
+		selector + ' .zoomControls .ui-button { height: 20px; margin: 1px 0; width: 20px } ' +
+		selector + ' .zoomSlider { left: 3px; height: 225px; margin: 11px 0 } ' +
+		'</style>');
 	
-	/*
-	jQuery('#' + id + ' .zoomToFitButton').button({
-		'icons': {
-			'primary': 'ui-icon-arrow-4-diag'
-		},
-		'text': false
-	}).bind('click', {
-		'context': this
-	}, function(event, ui){
-		event.data.context.zoomToFit();
-	});
-	*/
-	jQuery('#' + id + ' .zoomInButton').button({
+	jQuery(selector + ' .zoomInButton').button({
 		'icons': {
 			'primary': 'ui-icon-plus'
 		},
@@ -2698,7 +2695,7 @@ Constellation.prototype.initZoomControls = function(){
 		var constellation = event.data.context;
 		constellation.setZoomScale(Math.min(p['max'], constellation.getZoomScale() + p['step']));
 	});
-	jQuery('#' + id + ' .zoomOutButton').button({
+	jQuery(selector + ' .zoomOutButton').button({
 		'icons': {
 			'primary': 'ui-icon-minus'
 		},
@@ -2709,7 +2706,7 @@ Constellation.prototype.initZoomControls = function(){
 		var constellation = event.data.context;
 		constellation.setZoomScale(Math.max(p['min'], constellation.getZoomScale() - p['step']));
 	});
-	jQuery('#' + id + ' .zoomSlider').slider(p).bind('slide', {
+	jQuery(selector + ' .zoomSlider').slider(p).bind('slide', {
 		'context': this
 	}, function(event, ui){
 		event.data.context.setZoomScale(ui.value);
@@ -2725,12 +2722,12 @@ Constellation.prototype.initZoomControls = function(){
 
 		case 'auto':
 			if ('createTouch' in document) {
-				jQuery('#' + id + ' .zoomControls').hide();
+				jQuery(selector + ' .zoomControls').hide();
 			}
 			break;
 
 		default:
-			jQuery('#' + id + ' .zoomControls').hide();
+			jQuery(selector + ' .zoomControls').hide();
 	}
 	
 	// Set initial zoom scale.
@@ -2753,7 +2750,7 @@ Constellation.prototype.svgLoadHandler = function(){
  * Default configuration values.
  */
 Constellation.prototype.defaultConfig = {
-	'id': 'constellation',
+	'selector': '#constellation',
 	'graphLoaderClass': SimpleGraphLoader,
 	'graphLoader': {
 	},
@@ -3032,10 +3029,14 @@ Constellation.prototype['getNodeLength'] = Constellation.prototype.getNodeLength
 
 Constellation.prototype.removeNode = function(nodeId){
 	this.debug('Remove node:', nodeId);
-	
+
 	for (var i = 0; i < this.nodes.length; i++) {
 		var node = this.nodes[i];
 		if (node['id'] == nodeId) {
+			while (node['edges'].length > 0) {
+				this.removeEdge(node['edges'][0].id);
+			}
+
 			node['destroy'](node);
 			this.nodes.splice(i, 1);
 			
@@ -3084,17 +3085,17 @@ Constellation.prototype.addEdge = function(edgeId, tailNodeId, headNodeId, data)
 	this.debug('Add edge:', edgeId);
 	
 	if (this.getEdge(edgeId)) {
-		throw "Failed to add edge. Edge already exists. id=" + edgeId;
+		throw "Failed to add edge. Edge already exists. edge_id=" + edgeId;
 	}
 	
 	var tailNode = this.getNode(tailNodeId);
 	if (!tailNode) {
-		throw "Failed to add edge. Tail node does not exist. id=" + tailNodeId;
+		throw "Failed to add edge. Tail node does not exist. edge_id=" + edgeId + ", tail_node_id=" + tailNodeId;
 	}
 	
 	var headNode = this.getNode(headNodeId);
 	if (!headNode) {
-		throw "Failed to add edge. Head node does not exist. id=" + headNodeId;
+		throw "Failed to add edge. Head node does not exist. edge_id=" + edgeId + ", head_node_id=" + headNodeId;
 	}
 
 	var rendererClass = this.getStyle('edge', data && data['class'] ? data['class'].split(/\s/) : [],
@@ -3226,7 +3227,7 @@ Constellation.prototype.modelChanged = function(){
 		this.graphView.sourceChanged();
 	}
 
-		jQuery(this).trigger('modelchanged');
+	jQuery(this).trigger('modelchanged');
 };
 Constellation.prototype['modelChanged'] = Constellation.prototype.modelChanged;
 
@@ -3240,7 +3241,7 @@ Constellation.prototype.viewChanged = function(){
 		this.layout['viewChanged']();
 	}
 
-		jQuery(this).trigger('viewchanged');
+	jQuery(this).trigger('viewchanged');
 };
 Constellation.prototype['viewChanged'] = Constellation.prototype.viewChanged;
 
@@ -3281,8 +3282,8 @@ Constellation.prototype.refreshViewportSize = function(){
 
 Constellation.prototype.refreshZui = function(){
 	if (this.container.button && this.container.slider) {
-		var id = this['config']['id'];
-		jQuery('#' + id + ' .zoomSlider').slider('option', 'value', this.zoomScale);
+		var selector = this['config']['selector'];
+		jQuery(selector + ' .zoomSlider').slider('option', 'value', this.zoomScale);
 	}
 
 	jQuery(this.zuiContainer).attr('transform',
@@ -3619,7 +3620,9 @@ Constellation.prototype.clickHandler = function(event){
 Constellation.prototype.mousewheelHandler = function(event, delta){
 	event.preventDefault();
 	var p = this['config']['zoomSlider'];
-	this.setZoomScale(Math.max(p['min'], Math.min(p['max'], this.getZoomScale() + delta * 0.05)));
+	if (!isNaN) {
+		this.setZoomScale(Math.max(p['min'], Math.min(p['max'], this.getZoomScale() + delta * 0.05)));
+	}
 	
 	// FIXME: The zoom should center around the mouse!
 

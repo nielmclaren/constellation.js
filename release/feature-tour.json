@@ -38,9 +38,7 @@
 		"content": "<p>Several shapes are supported and each can be sized using the 'graphicSize' style property.</p>"
 	}},
 	{"id": "shapesCircle", "data": {"label": "Circle", "graphicShape": "circle"}},
-	{"id": "shapesTriangle", "data": {"label": "Triangle", "graphicShape": "triangle"}},
 	{"id": "shapesSquare", "data": {"label": "Square", "graphicShape": "square"}},
-	{"id": "shapesPentagon", "data": {"label": "Pentagon", "graphicShape": "pentagon"}},
 	{"id": "labelPosition", "data": {
 		"label": "Label Position",
 		"content": "<p>Change the label position relative to the node graphic by simply specifying 'left', 'right', 'top', 'bottom', or 'center'.</p>"}},
@@ -92,9 +90,7 @@
   {"source": "styles", "target": "edgeStyles"},
   {"source": "styles", "target": "icons"},
   {"source": "shapes", "target": "shapesCircle"},
-  {"source": "shapes", "target": "shapesTriangle"},
   {"source": "shapes", "target": "shapesSquare"},
-  {"source": "shapes", "target": "shapesPentagon"},
 	{"source": "edgeStyles", "target": "edgeStyles01", "data": {"edgeLineColor": "#b6cc3d", "edgeLineThickness": 4, "arrowhead": true}},
 	{"source": "edgeStyles", "target": "edgeStyles02", "data": {"edgeLineColor": "#65a4cd", "edgeLineThickness": 8}},
 	{"source": "edgeStyles", "target": "edgeStyles03", "data": {"edgeLineColor": "#999999"}},
