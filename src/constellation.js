@@ -585,17 +585,17 @@ Constellation.prototype.addEdge = function(edgeId, tailNodeId, headNodeId, data)
 	this.debug('Add edge:', edgeId);
 	
 	if (this.getEdge(edgeId)) {
-		throw "Failed to add edge. Edge already exists. id=" + edgeId;
+		throw "Failed to add edge. Edge already exists. edge_id=" + edgeId;
 	}
 	
 	var tailNode = this.getNode(tailNodeId);
 	if (!tailNode) {
-		throw "Failed to add edge. Tail node does not exist. id=" + tailNodeId;
+		throw "Failed to add edge. Tail node does not exist. edge_id=" + edgeId + ", tail_node_id=" + tailNodeId;
 	}
 	
 	var headNode = this.getNode(headNodeId);
 	if (!headNode) {
-		throw "Failed to add edge. Head node does not exist. id=" + headNodeId;
+		throw "Failed to add edge. Head node does not exist. edge_id=" + edgeId + ", head_node_id=" + headNodeId;
 	}
 
 	var rendererClass = this.getStyle('edge', data && data['class'] ? data['class'].split(/\s/) : [],
