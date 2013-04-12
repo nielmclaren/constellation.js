@@ -537,6 +537,10 @@ Constellation.prototype.removeNode = function(nodeId){
 	for (var i = 0; i < this.nodes.length; i++) {
 		var node = this.nodes[i];
 		if (node['id'] == nodeId) {
+			while (node['edges'].length > 0) {
+				this.removeEdge(node['edges'][0].id);
+			}
+
 			node['destroy'](node);
 			this.nodes.splice(i, 1);
 			

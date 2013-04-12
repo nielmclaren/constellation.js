@@ -145,6 +145,10 @@ Graph.prototype['getNodeLength'] = Graph.prototype.getNodeLength;
 Graph.prototype.removeNode = function(nodeId) {
 	for (var i = 0; i < this.nodes.length; i++) {
 		if (this.nodes[i]['id'] == nodeId) {
+			while (this.nodes[i]['edges'].length > 0) {
+				this.removeEdge(this.nodes[i]['edges'][0].id);
+			}
+
 			this.nodes.splice(i, 1);
 			return;
 		}
