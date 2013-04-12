@@ -533,7 +533,7 @@ Constellation.prototype['getNodeLength'] = Constellation.prototype.getNodeLength
 
 Constellation.prototype.removeNode = function(nodeId){
 	this.debug('Remove node:', nodeId);
-	
+
 	for (var i = 0; i < this.nodes.length; i++) {
 		var node = this.nodes[i];
 		if (node['id'] == nodeId) {
@@ -727,7 +727,7 @@ Constellation.prototype.modelChanged = function(){
 		this.graphView.sourceChanged();
 	}
 
-		jQuery(this).trigger('modelchanged');
+	jQuery(this).trigger('modelchanged');
 };
 Constellation.prototype['modelChanged'] = Constellation.prototype.modelChanged;
 
@@ -741,7 +741,7 @@ Constellation.prototype.viewChanged = function(){
 		this.layout['viewChanged']();
 	}
 
-		jQuery(this).trigger('viewchanged');
+	jQuery(this).trigger('viewchanged');
 };
 Constellation.prototype['viewChanged'] = Constellation.prototype.viewChanged;
 
