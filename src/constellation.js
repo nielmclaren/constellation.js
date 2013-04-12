@@ -68,10 +68,10 @@ Constellation.prototype.init = function(){
 		throw "Failed to initialize Constellation. SVG not supported.";
 	}
 	
-	var containerId = '#' + this['config']['id'];
-	var placeholder = jQuery(containerId);
+	var selector = this['config']['selector'];
+	var placeholder = jQuery(selector);
 	if (placeholder.length <= 0) {
-		throw "Failed to initialize Constellation. Container does not exist. id=" + containerId;
+		throw "Failed to initialize Constellation. Container does not exist. selector=" + selector;
 	}
 	
 	placeholder.html('<div style="position:relative;width:100%;height:100%">' +
@@ -166,7 +166,7 @@ Constellation.prototype.initZoomControls = function(){
 		'<button class="zoomOutButton">Zoom out</button>' +
 		'</div>');
 	
-	var id = this['config']['id'];
+	var selector = this['config']['selector'];
 	
 	jQuery('head').append('<style type="text/css">' +
 		selector + ' .zoomControls { position: absolute; right: 20px; top: 20px; width: 20px; z-index: 1 } ' +
@@ -185,7 +185,7 @@ Constellation.prototype.initZoomControls = function(){
 		var constellation = event.data.context;
 		constellation.setZoomScale(Math.min(p['max'], constellation.getZoomScale() + p['step']));
 	});
-	jQuery('#' + id + ' .zoomOutButton').button({
+	jQuery(selector + ' .zoomOutButton').button({
 		'icons': {
 			'primary': 'ui-icon-minus'
 		},
@@ -196,7 +196,7 @@ Constellation.prototype.initZoomControls = function(){
 		var constellation = event.data.context;
 		constellation.setZoomScale(Math.max(p['min'], constellation.getZoomScale() - p['step']));
 	});
-	jQuery('#' + id + ' .zoomSlider').slider(p).bind('slide', {
+	jQuery(selector + ' .zoomSlider').slider(p).bind('slide', {
 		'context': this
 	}, function(event, ui){
 		event.data.context.setZoomScale(ui.value);
@@ -212,12 +212,12 @@ Constellation.prototype.initZoomControls = function(){
 
 		case 'auto':
 			if ('createTouch' in document) {
-				jQuery('#' + id + ' .zoomControls').hide();
+				jQuery(selector + ' .zoomControls').hide();
 			}
 			break;
 
 		default:
-			jQuery('#' + id + ' .zoomControls').hide();
+			jQuery(selector + ' .zoomControls').hide();
 	}
 	
 	// Set initial zoom scale.
@@ -240,7 +240,7 @@ Constellation.prototype.svgLoadHandler = function(){
  * Default configuration values.
  */
 Constellation.prototype.defaultConfig = {
-	'id': 'constellation',
+	'selector': '#constellation',
 	'graphLoaderClass': SimpleGraphLoader,
 	'graphLoader': {
 	},
@@ -772,8 +772,8 @@ Constellation.prototype.refreshViewportSize = function(){
 
 Constellation.prototype.refreshZui = function(){
 	if (this.container.button && this.container.slider) {
-		var id = this['config']['id'];
-		jQuery('#' + id + ' .zoomSlider').slider('option', 'value', this.zoomScale);
+		var selector = this['config']['selector'];
+		jQuery(selector + ' .zoomSlider').slider('option', 'value', this.zoomScale);
 	}
 
 	jQuery(this.zuiContainer).attr('transform',
