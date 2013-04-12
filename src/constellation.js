@@ -1110,7 +1110,9 @@ Constellation.prototype.clickHandler = function(event){
 Constellation.prototype.mousewheelHandler = function(event, delta){
 	event.preventDefault();
 	var p = this['config']['zoomSlider'];
-	this.setZoomScale(Math.max(p['min'], Math.min(p['max'], this.getZoomScale() + delta * 0.05)));
+	if (!isNaN) {
+		this.setZoomScale(Math.max(p['min'], Math.min(p['max'], this.getZoomScale() + delta * 0.05)));
+	}
 	
 	// FIXME: The zoom should center around the mouse!
 
