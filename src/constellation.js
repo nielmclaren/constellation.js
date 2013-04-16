@@ -14,6 +14,9 @@ Constellation = function(config, styles){
 	
 	this.nodes = [];
 	this.edges = [];
+
+	this.addedNodes = [];
+	this.addedEdges = [];
 	
 	// The jQuery SVG wrapper.
 	this['svg'] = null;
@@ -480,8 +483,9 @@ Constellation.prototype.addNode = function(nodeId, data){
 	
 	var node = new rendererClass(this, nodeId, data);
 	node['create']();
-	node['draw']();
 	this.nodes.push(node);
+
+	this.addedNodes.push(node);
 	
 	jQuery(this).trigger('nodeAdded', node);
 	
@@ -593,8 +597,9 @@ Constellation.prototype.addEdge = function(edgeId, tailNodeId, headNodeId, data)
 	
 	var edge = new rendererClass(this, edgeId, tailNode, headNode, data);
 	edge['create']();
-	edge['draw']();
 	this.edges.push(edge);
+
+	this.addedEdges.push(edge);
 	
 	tailNode['edges'].push(edge);
 	headNode['edges'].push(edge);
@@ -744,19 +749,29 @@ Constellation.prototype.layoutChanged = function() {
 Constellation.prototype['layoutChanged'] = Constellation.prototype.layoutChanged;
 
 Constellation.prototype.draw = function(){
-	var i;
+	var i, node, edge;
 	
 	this.refreshViewportSize();
+
+	while (this.addedNodes.length > 0) {
+		node = this.addedNodes.pop()
+		node['draw']();
+	}
+	
+	while (this.addedEdges.length > 0) {
+		edge = this.addedEdges.pop();
+		edge['draw']();
+	}
 	
 	var nodes = this.nodes;
 	for (i = 0; i < nodes.length; i++) {
-		var node = nodes[i];
+		node = nodes[i];
 		node['position']();
 	}
 	
 	var edges = this.edges;
 	for (i = 0; i < edges.length; i++) {
-		var edge = edges[i];
+		edge = edges[i];
 		edge['position']();
 	}
 };
