@@ -1297,6 +1297,11 @@ RoamerLayout.prototype.setConstellation = function(constellation) {
 			.bind('nodetouchstart', {context: this}, function(event, node) {
 				event.data.context.nodetouchstartHandler(event, node);
 			})
+			.bind('viewportchange', {context: this}, function(event, node) {
+				event.data.context.viewportchangeHandler(event, node);
+			});
+
+		this.viewport = this['constellation'].getViewportBounds();	
 		
 		this.start();
 	}
@@ -1324,6 +1329,11 @@ RoamerLayout.prototype.nodetouchstartHandler = function(event, node) {
 	this.start();
 };
 
+RoamerLayout.prototype.viewportchangeHandler = function(event, node) {
+	this.start();
+	this.viewport = this['constellation'].getViewportBounds();
+};
+
 RoamerLayout.prototype.start = function() {
 	this.stepCount = 0;
 	if (!this.playing) {
@@ -1346,6 +1356,8 @@ RoamerLayout.prototype.step = function() {
 	var repulsionFactor = p['repulsionFactor'] != null ? p['repulsionFactor'] : 0.2;
 	var accelerationLimit = p['accelerationLimit'] != null ? p['accelerationLimit'] : 15;
 	var dampingConstant = p['dampingConstant'] != null ? p['dampingConstant'] : 0.3;
+
+	var bounded = p['bounded'];
 
 	var forceFactor;
 	if (this.stepCount < this.coolingDelay) {
@@ -1453,6 +1465,26 @@ RoamerLayout.prototype.step = function() {
 		
 		node['x'] += node['vx'] + scrollX;
 		node['y'] += node['vy'] + scrollY;
+
+		if (bounded) {
+			var nodeBounds = node.getSvg().getBBox();
+			if (node['x'] - nodeBounds.width/2 < this.viewport['x']) {
+				node['x'] = this.viewport['x'] + nodeBounds.width/2;
+				node['vx'] *= -1;
+			}
+			if (node['y'] - nodeBounds.height/2 < this.viewport['y']) {
+				node['y'] = this.viewport['y'] + nodeBounds.height/2;
+				node['vy'] *= -1;
+			}
+			if (node['x'] + nodeBounds.width/2 > this.viewport['x'] + this.viewport['width']) {
+				node['x'] = this.viewport['x'] - nodeBounds.width/2 + this.viewport['width'];
+				node['vx'] *= -1;
+			}
+			if (node['y'] + nodeBounds.height/2 > this.viewport['y'] + this.viewport['height']) {
+				node['y'] = this.viewport['y'] - nodeBounds.height/2 + this.viewport['height'];
+				node['vy'] *= -1;
+			}
+		}
 		
 		// Set acceleration back to zero so it can be recalculated during the next
 		// step. This also allows subclasses to adjust the acceleration before the step.
@@ -3367,6 +3399,14 @@ Constellation.prototype.pageToViewportY = function(x, y){
 	return y - this.container.offset().top;
 };
 Constellation.prototype['pageToViewportY'] = Constellation.prototype.pageToViewportY;
+
+Constellation.prototype.getViewportBounds = function() {
+	var bounds = {x: this.viewportToWorldX(0, 0), y: this.viewportToWorldY(0, 0)};
+	bounds.width = this.viewportToWorldX(this.viewportWidth, this.viewportHeight) - bounds.x;
+	bounds.height = this.viewportToWorldY(this.viewportWidth, this.viewportHeight) - bounds.y;
+	return bounds;
+};
+Constellation.prototype['getViewportBounds'] = Constellation.prototype.getViewportBounds;
 
 // Renderer event callbacks
 

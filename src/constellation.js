@@ -858,6 +858,14 @@ Constellation.prototype.pageToViewportY = function(x, y){
 };
 Constellation.prototype['pageToViewportY'] = Constellation.prototype.pageToViewportY;
 
+Constellation.prototype.getViewportBounds = function() {
+	var bounds = {x: this.viewportToWorldX(0, 0), y: this.viewportToWorldY(0, 0)};
+	bounds.width = this.viewportToWorldX(this.viewportWidth, this.viewportHeight) - bounds.x;
+	bounds.height = this.viewportToWorldY(this.viewportWidth, this.viewportHeight) - bounds.y;
+	return bounds;
+};
+Constellation.prototype['getViewportBounds'] = Constellation.prototype.getViewportBounds;
+
 // Renderer event callbacks
 
 Constellation.prototype.nodemouseoverHandler = function(event, node){
