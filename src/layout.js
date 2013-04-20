@@ -366,22 +366,25 @@ RoamerLayout.prototype.step = function() {
 		node['y'] += node['vy'] + scrollY;
 
 		if (bounded) {
-			var nodeBounds = node.getSvg().getBBox();
-			if (node['x'] - nodeBounds.width/2 < this.viewport['x']) {
-				node['x'] = this.viewport['x'] + nodeBounds.width/2;
-				node['vx'] *= -1;
-			}
-			if (node['y'] - nodeBounds.height/2 < this.viewport['y']) {
-				node['y'] = this.viewport['y'] + nodeBounds.height/2;
-				node['vy'] *= -1;
-			}
-			if (node['x'] + nodeBounds.width/2 > this.viewport['x'] + this.viewport['width']) {
-				node['x'] = this.viewport['x'] - nodeBounds.width/2 + this.viewport['width'];
-				node['vx'] *= -1;
-			}
-			if (node['y'] + nodeBounds.height/2 > this.viewport['y'] + this.viewport['height']) {
-				node['y'] = this.viewport['y'] - nodeBounds.height/2 + this.viewport['height'];
-				node['vy'] *= -1;
+			var nodeSvg = node.getSvg();
+			if (jQuery(nodeSvg).css('display') != 'none') {
+				var nodeBounds = node.getSvg().getBBox();
+				if (node['x'] - nodeBounds.width/2 < this.viewport['x']) {
+					node['x'] = this.viewport['x'] + nodeBounds.width/2;
+					node['vx'] *= -1;
+				}
+				if (node['y'] - nodeBounds.height/2 < this.viewport['y']) {
+					node['y'] = this.viewport['y'] + nodeBounds.height/2;
+					node['vy'] *= -1;
+				}
+				if (node['x'] + nodeBounds.width/2 > this.viewport['x'] + this.viewport['width']) {
+					node['x'] = this.viewport['x'] - nodeBounds.width/2 + this.viewport['width'];
+					node['vx'] *= -1;
+				}
+				if (node['y'] + nodeBounds.height/2 > this.viewport['y'] + this.viewport['height']) {
+					node['y'] = this.viewport['y'] - nodeBounds.height/2 + this.viewport['height'];
+					node['vy'] *= -1;
+				}
 			}
 		}
 		
