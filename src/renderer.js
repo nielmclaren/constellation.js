@@ -730,10 +730,10 @@ DefaultEdgeRenderer.prototype.create = function() {
 	var svg = this['constellation']['svg'];
 	var container = this['constellation'].getEdgeContainer();
 
-	var group = svg['group'](container);
+	var group = svg['group'](container, {'display': 'inline'});
 	this.renderer = {
 		group: group,
-		line: svg['line'](group, 0, 0, 10, 0, {
+		line: svg['line'](group, 0, 0, 0, 0, {
 			'stroke': this.getStyle('edgeLineColor'),
 			'strokeWidth': this.getStyle('edgeLineThickness')
 		}),
