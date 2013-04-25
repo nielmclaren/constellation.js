@@ -275,14 +275,16 @@ RoamerLayout.prototype.step = function() {
 		this.toBePlacedNodes = [];
 	}
 	
-	// Figure out the bounds center.
-	var bounds = this['constellation'].getRendererBounds();
-	var centerX = bounds['x'] + bounds['width']/2;
-	var centerY = bounds['y'] + bounds['height']/2;
-	//var centerLength = Math.sqrt(centerX * centerX   +   centerY * centerY);
-	var scrollX = -scrollRate * centerX;
-	var scrollY = -scrollRate * centerY;
-	
+	var scrollX = 0, scrollY = 0;
+	if (!bounded) {
+		// Figure out the bounds center.
+		var bounds = this['constellation'].getRendererBounds();
+		var centerX = bounds['x'] + bounds['width']/2;
+		var centerY = bounds['y'] + bounds['height']/2;
+		scrollX = -scrollRate * centerX;
+		scrollY = -scrollRate * centerY;
+	}
+		
 	// FIXME: Shouldn't be calling concat here.
 	var nodes = this['constellation'].getNodes();
 	// FIXME: Naive implementation. Optimize!
