@@ -1064,6 +1064,9 @@ Constellation.prototype['edgetouchendHandler'] = Constellation.prototype.edgetou
 // UI Events
 
 Constellation.prototype.mousedownHandler = function(event){
+	event.stopPropagation();
+	event.preventDefault();
+
 	var touchMetadata = this.touchMetadata['_mouse'] = {
 		isTouch: false,
 		touch: event,
