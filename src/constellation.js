@@ -781,10 +781,14 @@ Constellation.prototype.draw = function(){
 // Transformations
 
 Constellation.prototype.refreshViewportSize = function(){
-	this.viewportWidth = this.container.width();
-	this.viewportHeight = this.container.height();
-	this.refreshZui();
-	jQuery(this).trigger('viewportchange');
+	var w = this.container.width();
+	var h = this.container.height();
+	if (w != this.viewportWidth || h != this.viewportHeight) {
+		this.viewportWidth = w;
+		this.viewportHeight = h;
+		this.refreshZui();
+		jQuery(this).trigger('viewportchange');
+	}
 };
 
 Constellation.prototype.refreshZui = function(){
