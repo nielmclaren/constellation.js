@@ -157,6 +157,26 @@ Constellation.prototype['init'] = Constellation.prototype.init;
 Constellation.prototype.initZoomControls = function(){
 	var p = this['config']['zoomSlider'];
 
+	switch (p['display']) {
+		case 'on':
+		case 'yes':
+		case 'true':
+		case true:
+		case 1:
+			break;
+
+		case 'auto':
+			if ('createTouch' in document) {
+				this.setZoomScale(p['value']);
+				return;
+			}
+			break;
+
+		default:
+			this.setZoomScale(p['value']);
+			return;
+	}
+	
 	if (!this.container.button || !this.container.slider) {
 		this.warn('Missing jQuery UI so skipping zoom controls initialization.');
 		this.setZoomScale(p['value']);
@@ -205,24 +225,6 @@ Constellation.prototype.initZoomControls = function(){
 		event.data.context.setZoomScale(ui.value);
 	});
 
-	switch (p['display']) {
-		case 'on':
-		case 'yes':
-		case 'true':
-		case true:
-		case 1:
-			break;
-
-		case 'auto':
-			if ('createTouch' in document) {
-				jQuery(selector + ' .zoomControls').hide();
-			}
-			break;
-
-		default:
-			jQuery(selector + ' .zoomControls').hide();
-	}
-	
 	// Set initial zoom scale.
 	this.setZoomScale(p['value']);
 };
