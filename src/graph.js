@@ -308,3 +308,10 @@ Graph.prototype.upsertEdge = function(edgeId, tailNodeId, headNodeId, data, doEx
 	return edge;
 };
 Graph.prototype['upsertEdge'] = Graph.prototype.upsertEdge;
+
+Graph.prototype.clear = function() {
+	this.nodes = [];
+	this.edges = [];
+};
+Graph.prototype['clear'] = Graph.prototype.clear;
+
