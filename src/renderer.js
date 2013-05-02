@@ -197,6 +197,9 @@ DefaultNodeRenderer.prototype.create = function(){
 DefaultNodeRenderer.prototype["create"] = DefaultNodeRenderer.prototype.create;
 
 DefaultNodeRenderer.prototype.draw = function() {
+	// Cancel draw if renderer hasn't been created yet.
+	if (!this.renderer) return;
+
 	var svg = this['constellation']['svg'];
 
 	// Update the display at the beginning of the draw call so getBBox doesn't fail in Firefox.
@@ -453,6 +456,9 @@ DefaultNodeRenderer.prototype.destroy = function() {
 DefaultNodeRenderer.prototype["destroy"] = DefaultNodeRenderer.prototype.destroy;
 
 DefaultNodeRenderer.prototype.getCenterToEdgeVector = function(angle) {
+	// Return zero vector if the node renderer hasn't been created yet.
+	if (!this.renderer) return {x: 0, y: 0};
+
 	var rotatedAngle = angle + this['constellation'].getRotation();
 
 	// FIXME: Implement for other shapes.
@@ -765,6 +771,9 @@ DefaultEdgeRenderer.prototype.create = function() {
 DefaultEdgeRenderer.prototype["create"] = DefaultEdgeRenderer.prototype.create;
 
 DefaultEdgeRenderer.prototype.draw = function() {
+	// Cancel draw if renderer hasn't been created yet.
+	if (!this.renderer) return;
+
 	var svg = this['constellation']['svg'];
 
 	var lineColor = this.getStyle('edgeLineColor');
