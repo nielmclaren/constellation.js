@@ -13,13 +13,20 @@ Node = function(nodeId, data) {
 window["Node"] = Node;
 
 Node.prototype.getNeighborNodes = function() {
+	var resultIds = [];
 	var result = [];
 	for (var i = 0; i < this['edges'].length; i++) {
-		if (this['edges'][i]['tailNode']['id'] == this['id']) {
-			result.push(this['edges'][i]['headNode']);
+		var tailNode = this['edges'][i]['tailNode'];
+		var headNode = this['edges'][i]['headNode'];
+		if (tailNode['id'] == this['id']) {
+			if (resultIds.indexOf(headNode['id']) < 0) {
+				result.push(headNode);
+				resultIds.push(headNode['id'])
+			}
 		}
-		else {
-			result.push(this['edges'][i]['tailNode']);
+		else if (resultIds.indexOf(tailNode['id']) < 0) {
+			result.push(tailNode);
+			resultIds.push(tailNode['id'])
 		}
 	}
 	return result;
