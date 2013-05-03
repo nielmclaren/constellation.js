@@ -182,7 +182,7 @@ RoamerLayout.prototype.setConstellation = function(constellation) {
 			.unbind('nodetouchstart.RoamerLayout')
 			.unbind('viewportchange.RoamerLayout');
 		
-		if (this.timeoutId) clearTimeout(this.timeoutId);
+		this.stop();
 	}
 	
 	Layout.prototype.setConstellation.call(this, constellation);
