@@ -207,8 +207,7 @@ TreeGraphView.prototype.constructor = TreeGraphView;
 
 TreeGraphView.prototype.setConstellation = function(constellation){
 	if (this['constellation']) {
-		// FIXME: This is unbinding *all* nodeselect listeners. Need to just unbind our listener.
-		jQuery(this['constellation']).unbind('nodeselect');
+		jQuery(this['constellation']).unbind('nodeselect.TreeGraphView');
 	}
 	
 	GraphView.prototype.setConstellation.call(this, constellation);
@@ -218,7 +217,7 @@ TreeGraphView.prototype.setConstellation = function(constellation){
 		this.selectedNodeId = this['constellation'].getSelectedNodeId();
 		this.selectedNodeChanged = this.selectedNodeId != prevSelectedNodeId;
 
-		jQuery(this['constellation']).bind('nodeselect', {context: this}, function(event){
+		jQuery(this['constellation']).bind('nodeselect.TreeGraphView', {context: this}, function(event){
 			event.data.context.selectedNodeHandler();
 		});
 	}
@@ -352,12 +351,12 @@ TreeGraphView.prototype.validate = function() {
 	// Remove remaining doomed nodes and edges.
 	for (i = 0; i < doomedEdgeIds.length; i++) {
 		var doomedEdgeId = doomedEdgeIds[i];
-		jQuery(this['source'].getNode(doomedEdgeId)).unbind('dataChange', this.edgeDataChangeHandler);
+		jQuery(this['source'].getNode(doomedEdgeId)).unbind('dataChange.TreeGraphView', this.edgeDataChangeHandler);
 		this['result'].removeEdge(doomedEdgeId);
 	}
 	for (i = 0; i < doomedNodeIds.length; i++) {
 		var doomedNodeId = doomedNodeIds[i];
-		jQuery(this['source'].getNode(doomedNodeId)).unbind('dataChange', this.nodeDataChangeHandler);
+		jQuery(this['source'].getNode(doomedNodeId)).unbind('dataChange.TreeGraphView', this.nodeDataChangeHandler);
 		this['result'].removeNode(doomedNodeId);
 	}
 	
@@ -368,7 +367,7 @@ TreeGraphView.prototype.validate = function() {
 			resultNode['id'],
 			// FIXME: Should the data be cloned and if so, shallow or deep copy?
 			jQuery.extend({}, resultNode['data']));
-		jQuery(resultNode).bind('dataChange', {context: this, result: n}, this.dataChangeHandler);
+		jQuery(resultNode).bind('dataChange.TreeGraphView', {context: this, result: n}, this.dataChangeHandler);
 	}
 	for (i = 0; i < resultEdges.length; i++) {
 		var resultEdge = resultEdges[i];
@@ -378,7 +377,7 @@ TreeGraphView.prototype.validate = function() {
 			resultEdge['headNode']['id'],
 			// FIXME: Should the data be cloned and if so, shallow or deep copy?
 			jQuery.extend({}, resultEdge['data']));
-		jQuery(resultEdge).bind('dataChange', {context: this, result: e}, this.dataChangeHandler);
+		jQuery(resultEdge).bind('dataChange.TreeGraphView', {context: this, result: e}, this.dataChangeHandler);
 	}
 	
 	this.selectedNodeChanged = false;

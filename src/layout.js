@@ -54,27 +54,26 @@ StaticLayout.prototype.constructor = StaticLayout;
 
 StaticLayout.prototype.setConstellation = function(constellation) {
 	if (this['constellation']) {
-		// FIXME: This is unbinding *all* nodeselect listeners. Need to just unbind our listener.
 		jQuery(this['constellation'])
-			.unbind('nodemousedown')
-			.unbind('nodemouseup')
-			.unbind('mouseup')
-			.unbind('nodetouchstart')
-			.unbind('nodetouchend')
-			.unbind('touchend');
+			.unbind('nodemousedown.StaticLayout')
+			.unbind('nodemouseup.StaticLayout')
+			.unbind('mouseup.StaticLayout')
+			.unbind('nodetouchstart.StaticLayout')
+			.unbind('nodetouchend.StaticLayout')
+			.unbind('touchend.StaticLayout');
 	}
 	
 	Layout.prototype.setConstellation.call(this, constellation);
 	
 	if (this['constellation']) {
 		jQuery(this['constellation'])
-			.bind('nodemousedown', {context: this}, function(event) {
+			.bind('nodemousedown.StaticLayout', {context: this}, function(event) {
 				event.data.context.nodemousedownHandler(event); })
-			.bind('nodemouseup mouseup', {context: this}, function(event) {
+			.bind('nodemouseup.StaticLayout mouseup.StaticLayout', {context: this}, function(event) {
 				event.data.context.mouseupHandler(event); })
-			.bind('nodetouchstart', {context: this}, function(event) {
+			.bind('nodetouchstart.StaticLayout', {context: this}, function(event) {
 				event.data.context.nodetouchstartHandler(event); })
-			.bind('nodetouchend touchend', {context: this}, function(event) {
+			.bind('nodetouchend.StaticLayout touchend.StaticLayout', {context: this}, function(event) {
 				event.data.context.touchendHandler(event); });
 	}
 };
@@ -177,8 +176,11 @@ RoamerLayout.prototype.constructor = RoamerLayout;
 
 RoamerLayout.prototype.setConstellation = function(constellation) {
 	if (this['constellation']) {
-		// FIXME: This is unbinding *all* nodeselect listeners. Need to just unbind our listener.
-		jQuery(this['constellation']).unbind('nodeAdded');
+		jQuery(this['constellation'])
+			.unbind('nodeAdded.RoamerLayout')
+			.unbind('nodemousedown.RoamerLayout')
+			.unbind('nodetouchstart.RoamerLayout')
+			.unbind('viewportchange.RoamerLayout');
 		
 		if (this.timeoutId) clearTimeout(this.timeoutId);
 	}
@@ -187,16 +189,16 @@ RoamerLayout.prototype.setConstellation = function(constellation) {
 
 	if (this['constellation']) {
 		jQuery(this['constellation'])
-			.bind('nodeAdded', {context: this}, function(event, node) {
+			.bind('nodeAdded.RoamerLayout', {context: this}, function(event, node) {
 				event.data.context.nodeAddedHandler(event, node);
 			})
-			.bind('nodemousedown', {context: this}, function(event, node) {
+			.bind('nodemousedown.RoamerLayout', {context: this}, function(event, node) {
 				event.data.context.nodemousedownHandler(event, node);
 			})
-			.bind('nodetouchstart', {context: this}, function(event, node) {
+			.bind('nodetouchstart.RoamerLayout', {context: this}, function(event, node) {
 				event.data.context.nodetouchstartHandler(event, node);
 			})
-			.bind('viewportchange', {context: this}, function(event, node) {
+			.bind('viewportchange.RoamerLayout', {context: this}, function(event, node) {
 				event.data.context.viewportchangeHandler(event, node);
 			});
 

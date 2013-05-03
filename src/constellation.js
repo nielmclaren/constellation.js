@@ -314,8 +314,7 @@ Constellation.prototype.setGraphView = function(graphView) {
 		this.graphView['setConstellation'](null);
 		this.graphView['setSource'](null);
 		this.graphView['setResult'](null);
-		// FIXME: This is unbinding *all* nodeselect listeners. Need to just unbind our listener.
-		jQuery(this.graphView).unbind('change');
+		jQuery(this.graphView).unbind('change.Constellation');
 	}
 	
 	this.graphView = graphView;
@@ -325,7 +324,7 @@ Constellation.prototype.setGraphView = function(graphView) {
 		this.graphView['setSource'](this.model);
 		this.graphView['setResult'](this);
 		
-		jQuery(this.graphView).bind('change', {'context': this}, function(event){
+		jQuery(this.graphView).bind('change.Constellation', {'context': this}, function(event){
 			event.data.context.viewChanged();
 		});
 	}
@@ -372,8 +371,7 @@ Constellation.prototype.setGraphParser = function(graphParser) {
 		}
 		this.graphParser['setGraph'](null);
 		
-		// FIXME: This is unbinding *all* nodeselect listeners. Need to just unbind our listener.
-		jQuery(this.graphParser).unbind('complete');
+		jQuery(this.graphParser).unbind('complete.Constellation');
 	}
 	
 	this.graphParser = graphParser;
@@ -384,7 +382,7 @@ Constellation.prototype.setGraphParser = function(graphParser) {
 		}
 		this.graphParser['setGraph'](this.model);
 		
-		jQuery(this.graphParser).bind('complete', {'context': this}, function(event) {
+		jQuery(this.graphParser).bind('complete.Constellation', {'context': this}, function(event) {
 			event.data.context.modelChanged();
 		});
 	}
@@ -402,8 +400,7 @@ Constellation.prototype.setLayout = function(layout) {
 	if (this.layout) {
 		this.layout['setConstellation'](null);
 
-		// FIXME: This is unbinding *all* nodeselect listeners. Need to just unbind our listener.
-		jQuery(this.layout).unbind('change');
+		jQuery(this.layout).unbind('change.Constellation');
 	}
 	
 	this.layout = layout;
@@ -411,7 +408,7 @@ Constellation.prototype.setLayout = function(layout) {
 	if (this.layout) {
 		this.layout['setConstellation'](this);
 		
-		jQuery(this.layout).bind('change', {'context': this}, function(event){
+		jQuery(this.layout).bind('change.Constellation', {'context': this}, function(event){
 			event.data.context.layoutChanged();
 		});
 	}

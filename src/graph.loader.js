@@ -50,14 +50,13 @@ SimpleGraphLoader.prototype.constructor = SimpleGraphLoader;
 
 SimpleGraphLoader.prototype.setConstellation = function(constellation) {
 	if (this['constellation']) {
-		// FIXME: This is unbinding *all* nodeselect listeners. Need to just unbind our listener.
-		jQuery(this['constellation']).unbind('initialized');
+		jQuery(this['constellation']).unbind('initialized.SimpleGraphLoader');
 	}
 	
 	GraphLoader.prototype.setConstellation.call(this, constellation);
 
 	if (this['constellation']) {
-		jQuery(this['constellation']).bind('initialized', {context:this}, function(event) {
+		jQuery(this['constellation']).bind('initialized.SimpleGraphLoader', {context:this}, function(event) {
 			var graphLoader = event.data.context;
 			if (graphLoader['config']['url']) {
 				graphLoader.load(graphLoader['config']['url']);
@@ -101,10 +100,13 @@ TreeGraphLoader.prototype = new GraphLoader();
 TreeGraphLoader.prototype.constructor = TreeGraphLoader;
 
 TreeGraphLoader.prototype.setConstellation = function(constellation) {
+	if (this['constellation']) {
+		jQuery(this['constellation']).unbind('nodeselected.TreeGraphLoader');
+	}
 	GraphLoader.prototype.setConstellation.call(this, constellation);
 	
 	// When the selected node changes, load more of the graph.
-	jQuery(this['constellation']).bind('nodeselected', function(event, node) {
+	jQuery(this['constellation']).bind('nodeselected.TreeGraphLoader', function(event, node) {
 		// FIXME: Implement TreeGraphLoader.
 	});
 };
