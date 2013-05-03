@@ -9,7 +9,7 @@ GraphParser = function(config) {
 	// Constructor with no arguments is used for subclasses.
 	if (arguments.length <= 0) return;
 	
-	this['config'] = config;
+	this['config'] = config == null ? {} : config;
 	this['graph'] = null;
 };
 window["GraphParser"] = GraphParser;

@@ -5,7 +5,7 @@
  */
 Layout = function(config) {
 	if (arguments.length <= 0) return;
-	this['config'] = config;
+	this['config'] = config == null ? {} : config;
 };
 window["Layout"] = Layout;
 

@@ -6,7 +6,7 @@ GraphLoader = function(config) {
 	// Constructor with no arguments is used for subclasses.
 	if (arguments.length <= 0) return;
 	
-	this['config'] = config;
+	this['config'] = config == null ? {} : config;
 	this['constellation'] = null;
 	this['parser'] = null;
 };
