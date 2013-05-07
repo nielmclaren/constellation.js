@@ -126,27 +126,25 @@ Constellation.prototype.init = function(){
 				event.data.context.touchcancelHandler(event);
 			});
 	}
-	else {
-		// Use mouse events.
-		this.container.find('svg')
-			.mousedown({'context': this}, function(event){
-				event.data.context.mousedownHandler(event);
-			})
-			.click({'context': this}, function(event){
-				event.data.context.clickHandler(event);
-			})
-			// Uses the jQuery Mousewheel Plugin.
-			// @see https://github.com/brandonaaron/jquery-mousewheel
-			.bind('mousewheel', {'context': this}, function(event, delta, deltaX, deltaY){
-				event.data.context.mousewheelHandler(event, delta);
-			});
-		
-		jQuery(document).mousemove({'context': this}, function(event){
-				event.data.context.mousemoveHandler(event);
-			}).mouseup({'context': this}, function(event){
-				event.data.context.mouseupHandler(event, true);
-			});
-	}
+	
+	this.container.find('svg')
+		.mousedown({'context': this}, function(event){
+			event.data.context.mousedownHandler(event);
+		})
+		.click({'context': this}, function(event){
+			event.data.context.clickHandler(event);
+		})
+		// Uses the jQuery Mousewheel Plugin.
+		// @see https://github.com/brandonaaron/jquery-mousewheel
+		.bind('mousewheel', {'context': this}, function(event, delta, deltaX, deltaY){
+			event.data.context.mousewheelHandler(event, delta);
+		});
+	
+	jQuery(document).mousemove({'context': this}, function(event){
+			event.data.context.mousemoveHandler(event);
+		}).mouseup({'context': this}, function(event){
+			event.data.context.mouseupHandler(event, true);
+		});
 	
 	this.refreshViewportSize();
 	
