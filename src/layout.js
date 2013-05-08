@@ -438,6 +438,13 @@ RoamerLayout.prototype.setNodeInitialPositions = function(nodes) {
 RoamerLayout.prototype["setNodeInitialPositions"] = RoamerLayout.prototype.setNodeInitialPositions;
 
 RoamerLayout.prototype.setNodeInitialPosition = function(node) {
+	// If the position is set in the data use it.
+	if (!isNaN(node['data']['x']) && !isNaN(node['data']['y'])) {
+		node['x'] = Number(node['data']['x']);
+		node['y'] = Number(node['data']['y']);
+		return;
+	}
+	
 	var x = 0, y = 0;
 	
 	// Get the average position of all neighbour nodes that have already been placed.
