@@ -1184,8 +1184,17 @@ Constellation.prototype.touchmoveHandler = function(event){
 	event.stopPropagation();
 	event.preventDefault();
 
+	for (var i = 0; i < event['originalEvent']['changedTouches'].length; i++) {
+		var touch = event['originalEvent']['changedTouches'][i];
+		var touchMetadata = this.touchMetadata['_' + touch['identifier']];
+
+		// We need to update the touch property with the new event to capture
+		// the new page coordinates.
+		touchMetadata.touch = touch;
+	}
+		
 	this.containerDrag();
-	
+
 	jQuery(this).trigger('touchmove');
 };
 
