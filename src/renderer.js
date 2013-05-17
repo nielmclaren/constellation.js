@@ -65,6 +65,8 @@ NodeRenderer.prototype.dataChanged = function() {
 			this.addClass(classes[i]);
 		}
 	}
+
+	this.draw();
 };
 NodeRenderer.prototype["dataChanged"] = NodeRenderer.prototype.dataChanged;
 
@@ -680,6 +682,8 @@ EdgeRenderer.prototype.dataChanged = function() {
 			this.addClass(classes[i]);
 		}
 	}
+
+	this.draw();
 };
 EdgeRenderer.prototype["dataChanged"] = EdgeRenderer.prototype.dataChanged;
 

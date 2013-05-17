@@ -137,6 +137,7 @@ DirectGraphView.prototype.validate = function(){
 		if (index >= 0) {
 			edge = this['result'].getEdge(resultEdges[i]['id']);
 			edge['data'] = resultEdges[i]['data'];
+			edge.dataChanged();
 			
 			doomedEdgeIds.splice(index, 1);
 			resultEdges.splice(i, 1);
@@ -148,6 +149,7 @@ DirectGraphView.prototype.validate = function(){
 		if (index >= 0) {
 			node = this['result'].getNode(resultNodes[i]['id']);
 			node['data'] = resultNodes[i]['data'];
+			node.dataChanged();
 			
 			doomedNodeIds.splice(index, 1);
 			resultNodes.splice(i, 1);
