@@ -244,18 +244,24 @@ Constellation.prototype.svgLoadHandler = function(){
  */
 Constellation.prototype.defaultConfig = {
 	'selector': '#constellation',
+	'pinchRotate': true,
+
 	'graphLoaderClass': SimpleGraphLoader,
 	'graphLoader': {
 	},
+
 	'graphParserClass': JsonGraphParser,
 	'graphParser': {
 	},
+
 	'graphViewClass': DirectGraphView,
 	'graphView': {
 	},
+
 	'layoutClass': RoamerLayout,
 	'layout': {
 	},
+
 	'zoomSlider': {
 		'display': 'auto',
 		'orientation': 'vertical',
@@ -1298,7 +1304,7 @@ Constellation.prototype.containerDrag = function(){
 				dr = 2 * Math.PI + dr;
 
 			this.zoomScale = this.zoomScale * d1 / d0;
-			this.rotation = this.rotation + dr;
+			if (this['config']['pinchRotate']) this.rotation = this.rotation + dr;
 			this.scrollOffsetX = this.scrollOffsetX +
 				this.worldToViewportX(m0.x, m0.y) -
 				this.pageToViewportX(m0.touch.pageX, m0.touch.pageY);
@@ -1306,7 +1312,7 @@ Constellation.prototype.containerDrag = function(){
 				this.worldToViewportY(m0.x, m0.y) -
 				this.pageToViewportY(m0.touch.pageX, m0.touch.pageY);
 
-			if (dr != 0) {
+			if (this['config']['pinchRotate'] && dr != 0) {
 				// Have to redraw the nodes to update their rotation.
 				this.draw();
 			}
