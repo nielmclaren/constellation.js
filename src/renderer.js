@@ -570,6 +570,9 @@ GephiNodeRenderer.prototype.create = function(){
 GephiNodeRenderer.prototype["create"] = GephiNodeRenderer.prototype.create;
 
 GephiNodeRenderer.prototype.draw = function() {
+	// Cancel draw if renderer hasn't been created yet.
+	if (!this.renderer) return;
+	
 	var svg = this['constellation']['svg'];
 
 	// Update the display at the beginning of the draw call so getBBox doesn't fail in Firefox.

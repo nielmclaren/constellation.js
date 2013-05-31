@@ -260,6 +260,13 @@ CustomEdgeRenderer.prototype.draw = function() {
 		.css('display', 'inline');
 };
 
+CustomEdgeRenderer.prototype.position = function() {
+	// FIXME: Try to factor out unnecessary draw code.
+	this.draw();
+};
+
+DefaultEdgeRenderer.prototype["position"] = DefaultEdgeRenderer.prototype.position;
+
 CustomEdgeRenderer.prototype.destroy = function() {
 	jQuery(this.renderer.line).remove();
 };
