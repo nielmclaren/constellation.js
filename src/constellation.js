@@ -281,6 +281,20 @@ Constellation.prototype.defaultStyles = [
 	}]
 ];
 
+Constellation.prototype.resize = function() {
+	var w = this.container.width();
+	var h = this.container.height();
+	if (w != this.viewportWidth || h != this.viewportHeight) {
+		this.viewportWidth = w;
+		this.viewportHeight = h;
+		$(this['svg']['_svg'])
+			.attr('width', w)
+			.attr('height', h);
+		this.refreshZui();
+	}
+};
+Constellation.prototype['resize'] = Constellation.prototype.resize;
+
 /// Accessors
 
 Constellation.prototype.getModel = function() {
