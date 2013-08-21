@@ -78,10 +78,10 @@ Constellation.prototype.init = function(){
 	}
 	
 	placeholder.html('<div style="position:relative;width:100%;height:100%">' +
-	'<div class="container" style="overflow:hidden;position:absolute;width:100%;height:100%;z-index:2"></div>' +
-	'<div class="background" style="position:absolute;width:100%;height:100%;z-index:1"></div>' +
+	'<div class="constellation-container" style="overflow:hidden;position:absolute;width:100%;height:100%;z-index:2"></div>' +
+	'<div class="constellation-background" style="position:absolute;width:100%;height:100%;z-index:1"></div>' +
 	'</div>');
-	this.container = placeholder.find('div.container');
+	this.container = placeholder.find('div.constellation-container');
 	
 	this.container.svg({
 		'onLoad': function(constellation){
@@ -181,21 +181,21 @@ Constellation.prototype.initZoomControls = function(){
 		return;
 	}
 
-	this.container.append('<div class="zoomControls">' +
-		'<button class="zoomInButton">Zoom in</button>' +
-		'<div class="zoomSlider"></div>' +
-		'<button class="zoomOutButton">Zoom out</button>' +
+	this.container.append('<div class="constellation-zoomControls">' +
+		'<button class="constellation-zoomInButton">Zoom in</button>' +
+		'<div class="constellation-zoomSlider"></div>' +
+		'<button class="constellation-zoomOutButton">Zoom out</button>' +
 		'</div>');
 	
 	var selector = this['config']['selector'];
 	
 	jQuery('head').append('<style type="text/css">' +
-		selector + ' .zoomControls { position: absolute; right: 20px; top: 20px; width: 20px; z-index: 1 } ' +
-		selector + ' .zoomControls .ui-button { height: 20px; margin: 1px 0; width: 20px } ' +
-		selector + ' .zoomSlider { left: 3px; height: 225px; margin: 11px 0 } ' +
+		selector + ' .constellation-zoomControls { position: absolute; right: 20px; top: 20px; width: 20px; z-index: 1 } ' +
+		selector + ' .constellation-zoomControls .ui-button { height: 20px; margin: 1px 0; width: 20px } ' +
+		selector + ' .constellation-zoomSlider { left: 3px; height: 225px; margin: 11px 0 } ' +
 		'</style>');
 	
-	jQuery(selector + ' .zoomInButton').button({
+	jQuery(selector + ' .constellation-zoomInButton').button({
 		'icons': {
 			'primary': 'ui-icon-plus'
 		},
@@ -206,7 +206,7 @@ Constellation.prototype.initZoomControls = function(){
 		var constellation = event.data.context;
 		constellation.setZoomScale(Math.min(p['max'], constellation.getZoomScale() + p['step']));
 	});
-	jQuery(selector + ' .zoomOutButton').button({
+	jQuery(selector + ' .constellation-zoomOutButton').button({
 		'icons': {
 			'primary': 'ui-icon-minus'
 		},
@@ -217,7 +217,7 @@ Constellation.prototype.initZoomControls = function(){
 		var constellation = event.data.context;
 		constellation.setZoomScale(Math.max(p['min'], constellation.getZoomScale() - p['step']));
 	});
-	jQuery(selector + ' .zoomSlider').slider(p).bind('slide', {
+	jQuery(selector + ' .constellation-zoomSlider').slider(p).bind('slide', {
 		'context': this
 	}, function(event, ui){
 		event.data.context.setZoomScale(ui.value);
@@ -809,7 +809,7 @@ Constellation.prototype.refreshViewportSize = function(){
 Constellation.prototype.refreshZui = function(){
 	if (this.container.button && this.container.slider) {
 		var selector = this['config']['selector'];
-		jQuery(selector + ' .zoomSlider').slider('option', 'value', this.zoomScale);
+		jQuery(selector + ' .constellation-zoomSlider').slider('option', 'value', this.zoomScale);
 	}
 
 	jQuery(this.zuiContainer).attr('transform',
