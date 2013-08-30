@@ -168,7 +168,9 @@ GraphMlParser.prototype.parse = function(data) {
 		
 		var nodeData = {};
 		for (var key in nodeKeys) {
-			var attributeName = nodeKeys[key].attr('attr.name').replace(/[^a-zA-Z0-9]/g, '_');
+			var attributeName = nodeKeys[key].attr('attr.name');
+			if (!attributeName) attributeName = nodeKeys[key].attr('id');
+			attributeName = attributeName.replace(/[^a-zA-Z0-9]/g, '_');
 			var dataElems = nodeElem.find('data[key="' + key + '"]');
 			if (dataElems.length > 0) {
 				nodeData[attributeName] = dataElems.text();
@@ -183,7 +185,9 @@ GraphMlParser.prototype.parse = function(data) {
 		
 		var edgeData = {};
 		for (var key in edgeKeys) {
-			var attributeName = edgeKeys[key].attr('attr.name').replace(/[^a-zA-Z0-9]/g, '_');
+			var attributeName = edgeKeys[key].attr('attr.name');
+			if (!attributeName) attributeName = edgeKeys[key].attr('id');
+			attributeName = attributeName.replace(/[^a-zA-Z0-9]/g, '_');
 			var dataElems = edgeElem.find('data[key="' + key + '"]');
 			if (dataElems.length > 0) {
 				edgeData[attributeName] = dataElems.text();
